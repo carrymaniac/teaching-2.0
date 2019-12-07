@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.gdou.teaching.dao.UserReExperimentDao">
+    <sql id="table">user_re_experiment</sql>
+    <sql id="selectFields">
+      user_experiment_id, experiment_id, user_id,user_experiment_text,
+      experiment_achievement,create_time,update_time,status,teacher_comment
+    </sql>
+    <sql id="insertFields">
+      experiment_id, user_id,user_experiment_text,experiment_achievement,status
+    </sql>
+
+    <select id="getCountByExperimentId" resultType="integer" parameterType="integer">
+       Select count(distinct user_id) as number
+       from  <include refid="table"/>
+       where experiment_id = #{experimentId} and `status` in (0,1)
+    </select>
+
+</mapper>

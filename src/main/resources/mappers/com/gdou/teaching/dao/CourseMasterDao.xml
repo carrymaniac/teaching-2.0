@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.gdou.teaching.dao.CourseMasterDao">
+    <sql id="table">course_master</sql>
+    <sql id="selectFields">course_id,course_name,teacher_id,course_detail_id,course_status,course_number,create_time,update_time</sql>
+    <sql id="insertFields">course_name,teacher_id,course_detail_id,course_status,course_number</sql>
+
+    <update id="deleteCourseMasterByCourseId" parameterType="Integer">
+        update  <include refid="table"/>
+        <set>
+            course_status=2
+        </set>
+        where course_id = #{courseId}
+    </update>
+</mapper>

@@ -1,0 +1,2126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdou.teaching.mbg.mapper.UserReExperimentMapper">
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <id column="user_experiment_id" jdbcType="INTEGER" property="userExperimentId" />
+    <result column="experiment_id" jdbcType="INTEGER" property="experimentId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="experiment_name" jdbcType="VARCHAR" property="experimentName" />
+    <result column="experiment_achievement" jdbcType="DOUBLE" property="experimentAchievement" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="have_check_answer" jdbcType="BIT" property="haveCheckAnswer" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <result column="user_experiment_text" jdbcType="LONGVARCHAR" property="userExperimentText" />
+    <result column="teacher_comment" jdbcType="LONGVARCHAR" property="teacherComment" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    user_experiment_id, experiment_id, user_id, class_id, experiment_name, experiment_achievement, 
+    create_time, update_time, status, have_check_answer
+  </sql>
+  <sql id="Blob_Column_List">
+    user_experiment_text, teacher_comment
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample">
+    delete from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment (user_experiment_id, experiment_id, user_id, 
+      class_id, experiment_name, experiment_achievement, 
+      create_time, update_time, status, 
+      have_check_answer, user_experiment_text, teacher_comment
+      )
+    values (#{userExperimentId,jdbcType=INTEGER}, #{experimentId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{classId,jdbcType=INTEGER}, #{experimentName,jdbcType=VARCHAR}, #{experimentAchievement,jdbcType=DOUBLE}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
+      #{haveCheckAnswer,jdbcType=BIT}, #{userExperimentText,jdbcType=LONGVARCHAR}, #{teacherComment,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        user_experiment_id,
+      </if>
+      <if test="experimentId != null">
+        experiment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="experimentName != null">
+        experiment_name,
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer,
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text,
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        #{userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentId != null">
+        #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentName != null">
+        #{experimentName,jdbcType=VARCHAR},
+      </if>
+      <if test="experimentAchievement != null">
+        #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultType="java.lang.Integer">
+    select count(*) from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_re_experiment
+    <set>
+      <if test="record.userExperimentId != null">
+        user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentId != null">
+        experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.classId != null">
+        class_id = #{record.classId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentName != null">
+        experiment_name = #{record.experimentName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.experimentAchievement != null">
+        experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.haveCheckAnswer != null">
+        have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="record.userExperimentText != null">
+        user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.teacherComment != null">
+        teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_name = #{record.experimentName,jdbcType=VARCHAR},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_name = #{record.experimentName,jdbcType=VARCHAR},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    <set>
+      <if test="experimentId != null">
+        experiment_id = #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentName != null">
+        experiment_name = #{experimentName,jdbcType=VARCHAR},
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_name = #{experimentName,jdbcType=VARCHAR},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_name = #{experimentName,jdbcType=VARCHAR},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <id column="user_experiment_id" jdbcType="INTEGER" property="userExperimentId" />
+    <result column="experiment_id" jdbcType="INTEGER" property="experimentId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="experiment_achievement" jdbcType="DOUBLE" property="experimentAchievement" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="have_check_answer" jdbcType="BIT" property="haveCheckAnswer" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <result column="user_experiment_text" jdbcType="LONGVARCHAR" property="userExperimentText" />
+    <result column="teacher_comment" jdbcType="LONGVARCHAR" property="teacherComment" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    user_experiment_id, experiment_id, user_id, class_id, experiment_achievement, create_time, 
+    update_time, status, have_check_answer
+  </sql>
+  <sql id="Blob_Column_List">
+    user_experiment_text, teacher_comment
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample">
+    delete from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment (user_experiment_id, experiment_id, user_id, 
+      class_id, experiment_achievement, create_time, 
+      update_time, status, have_check_answer, 
+      user_experiment_text, teacher_comment
+      )
+    values (#{userExperimentId,jdbcType=INTEGER}, #{experimentId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{classId,jdbcType=INTEGER}, #{experimentAchievement,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{haveCheckAnswer,jdbcType=BIT}, 
+      #{userExperimentText,jdbcType=LONGVARCHAR}, #{teacherComment,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        user_experiment_id,
+      </if>
+      <if test="experimentId != null">
+        experiment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer,
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text,
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        #{userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentId != null">
+        #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultType="java.lang.Integer">
+    select count(*) from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_re_experiment
+    <set>
+      <if test="record.userExperimentId != null">
+        user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentId != null">
+        experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.classId != null">
+        class_id = #{record.classId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentAchievement != null">
+        experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.haveCheckAnswer != null">
+        have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="record.userExperimentText != null">
+        user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.teacherComment != null">
+        teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    <set>
+      <if test="experimentId != null">
+        experiment_id = #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <id column="user_experiment_id" jdbcType="INTEGER" property="userExperimentId" />
+    <result column="experiment_id" jdbcType="INTEGER" property="experimentId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="experiment_achievement" jdbcType="DOUBLE" property="experimentAchievement" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="have_check_answer" jdbcType="BIT" property="haveCheckAnswer" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <result column="user_experiment_text" jdbcType="LONGVARCHAR" property="userExperimentText" />
+    <result column="teacher_comment" jdbcType="LONGVARCHAR" property="teacherComment" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    user_experiment_id, experiment_id, user_id, class_id, experiment_achievement, create_time, 
+    update_time, status, have_check_answer
+  </sql>
+  <sql id="Blob_Column_List">
+    user_experiment_text, teacher_comment
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample">
+    delete from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment (user_experiment_id, experiment_id, user_id, 
+      class_id, experiment_achievement, create_time, 
+      update_time, status, have_check_answer, 
+      user_experiment_text, teacher_comment
+      )
+    values (#{userExperimentId,jdbcType=INTEGER}, #{experimentId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, 
+      #{classId,jdbcType=INTEGER}, #{experimentAchievement,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{haveCheckAnswer,jdbcType=BIT}, 
+      #{userExperimentText,jdbcType=LONGVARCHAR}, #{teacherComment,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        user_experiment_id,
+      </if>
+      <if test="experimentId != null">
+        experiment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer,
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text,
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        #{userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentId != null">
+        #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultType="java.lang.Integer">
+    select count(*) from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_re_experiment
+    <set>
+      <if test="record.userExperimentId != null">
+        user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentId != null">
+        experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.classId != null">
+        class_id = #{record.classId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentAchievement != null">
+        experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.haveCheckAnswer != null">
+        have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="record.userExperimentText != null">
+        user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.teacherComment != null">
+        teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    <set>
+      <if test="experimentId != null">
+        experiment_id = #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <id column="user_experiment_id" jdbcType="INTEGER" property="userExperimentId" />
+    <result column="experiment_id" jdbcType="INTEGER" property="experimentId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="experiment_achievement" jdbcType="DOUBLE" property="experimentAchievement" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="have_check_answer" jdbcType="BIT" property="haveCheckAnswer" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <result column="user_experiment_text" jdbcType="LONGVARCHAR" property="userExperimentText" />
+    <result column="teacher_comment" jdbcType="LONGVARCHAR" property="teacherComment" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    user_experiment_id, experiment_id, user_id, class_id, experiment_achievement, create_time, 
+    update_time, status, have_check_answer
+  </sql>
+  <sql id="Blob_Column_List">
+    user_experiment_text, teacher_comment
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample">
+    delete from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment (user_experiment_id, experiment_id, user_id, 
+      class_id, experiment_achievement, create_time, 
+      update_time, status, have_check_answer, 
+      user_experiment_text, teacher_comment
+      )
+    values (#{userExperimentId,jdbcType=INTEGER}, #{experimentId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, 
+      #{classId,jdbcType=INTEGER}, #{experimentAchievement,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{haveCheckAnswer,jdbcType=BIT}, 
+      #{userExperimentText,jdbcType=LONGVARCHAR}, #{teacherComment,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        user_experiment_id,
+      </if>
+      <if test="experimentId != null">
+        experiment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer,
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text,
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        #{userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentId != null">
+        #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultType="java.lang.Integer">
+    select count(*) from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_re_experiment
+    <set>
+      <if test="record.userExperimentId != null">
+        user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentId != null">
+        experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.classId != null">
+        class_id = #{record.classId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentAchievement != null">
+        experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.haveCheckAnswer != null">
+        have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="record.userExperimentText != null">
+        user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.teacherComment != null">
+        teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    <set>
+      <if test="experimentId != null">
+        experiment_id = #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <id column="user_experiment_id" jdbcType="INTEGER" property="userExperimentId" />
+    <result column="experiment_id" jdbcType="INTEGER" property="experimentId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="experiment_achievement" jdbcType="DOUBLE" property="experimentAchievement" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="have_check_answer" jdbcType="BIT" property="haveCheckAnswer" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <result column="user_experiment_text" jdbcType="LONGVARCHAR" property="userExperimentText" />
+    <result column="teacher_comment" jdbcType="LONGVARCHAR" property="teacherComment" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    user_experiment_id, experiment_id, user_id, class_id, experiment_achievement, create_time, 
+    update_time, status, have_check_answer
+  </sql>
+  <sql id="Blob_Column_List">
+    user_experiment_text, teacher_comment
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample">
+    delete from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment (user_experiment_id, experiment_id, user_id, 
+      class_id, experiment_achievement, create_time, 
+      update_time, status, have_check_answer, 
+      user_experiment_text, teacher_comment
+      )
+    values (#{userExperimentId,jdbcType=INTEGER}, #{experimentId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, 
+      #{classId,jdbcType=INTEGER}, #{experimentAchievement,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{haveCheckAnswer,jdbcType=BIT}, 
+      #{userExperimentText,jdbcType=LONGVARCHAR}, #{teacherComment,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        user_experiment_id,
+      </if>
+      <if test="experimentId != null">
+        experiment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer,
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text,
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        #{userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentId != null">
+        #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultType="java.lang.Integer">
+    select count(*) from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_re_experiment
+    <set>
+      <if test="record.userExperimentId != null">
+        user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentId != null">
+        experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.classId != null">
+        class_id = #{record.classId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentAchievement != null">
+        experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.haveCheckAnswer != null">
+        have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="record.userExperimentText != null">
+        user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.teacherComment != null">
+        teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      have_check_answer = #{record.haveCheckAnswer,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    <set>
+      <if test="experimentId != null">
+        experiment_id = #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="haveCheckAnswer != null">
+        have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT},
+      user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      have_check_answer = #{haveCheckAnswer,jdbcType=BIT}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <id column="user_experiment_id" jdbcType="INTEGER" property="userExperimentId" />
+    <result column="experiment_id" jdbcType="INTEGER" property="experimentId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="class_id" jdbcType="INTEGER" property="classId" />
+    <result column="experiment_achievement" jdbcType="DOUBLE" property="experimentAchievement" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.UserReExperiment">
+    <result column="user_experiment_text" jdbcType="LONGVARCHAR" property="userExperimentText" />
+    <result column="teacher_comment" jdbcType="LONGVARCHAR" property="teacherComment" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    user_experiment_id, experiment_id, user_id, class_id, experiment_achievement, create_time, 
+    update_time, status
+  </sql>
+  <sql id="Blob_Column_List">
+    user_experiment_text, teacher_comment
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_re_experiment
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample">
+    delete from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment (user_experiment_id, experiment_id, user_id, 
+      class_id, experiment_achievement, create_time, 
+      update_time, status, user_experiment_text, 
+      teacher_comment)
+    values (#{userExperimentId,jdbcType=INTEGER}, #{experimentId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, 
+      #{classId,jdbcType=INTEGER}, #{experimentAchievement,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{userExperimentText,jdbcType=LONGVARCHAR}, 
+      #{teacherComment,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    insert into user_re_experiment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        user_experiment_id,
+      </if>
+      <if test="experimentId != null">
+        experiment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="classId != null">
+        class_id,
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text,
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userExperimentId != null">
+        #{userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentId != null">
+        #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="userExperimentText != null">
+        #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.UserReExperimentExample" resultType="java.lang.Integer">
+    select count(*) from user_re_experiment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update user_re_experiment
+    <set>
+      <if test="record.userExperimentId != null">
+        user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentId != null">
+        experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.classId != null">
+        class_id = #{record.classId,jdbcType=INTEGER},
+      </if>
+      <if test="record.experimentAchievement != null">
+        experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.userExperimentText != null">
+        user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.teacherComment != null">
+        teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT},
+      user_experiment_text = #{record.userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{record.teacherComment,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update user_re_experiment
+    set user_experiment_id = #{record.userExperimentId,jdbcType=INTEGER},
+      experiment_id = #{record.experimentId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      class_id = #{record.classId,jdbcType=INTEGER},
+      experiment_achievement = #{record.experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    <set>
+      <if test="experimentId != null">
+        experiment_id = #{experimentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="classId != null">
+        class_id = #{classId,jdbcType=INTEGER},
+      </if>
+      <if test="experimentAchievement != null">
+        experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="userExperimentText != null">
+        user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="teacherComment != null">
+        teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT},
+      user_experiment_text = #{userExperimentText,jdbcType=LONGVARCHAR},
+      teacher_comment = #{teacherComment,jdbcType=LONGVARCHAR}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.UserReExperiment">
+    update user_re_experiment
+    set experiment_id = #{experimentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=INTEGER},
+      experiment_achievement = #{experimentAchievement,jdbcType=DOUBLE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT}
+    where user_experiment_id = #{userExperimentId,jdbcType=INTEGER}
+  </update>
+</mapper>

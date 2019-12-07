@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.gdou.teaching.dao.FileDao">
+    <sql id="table">file</sql>
+    <sql id="selectFields"> file_id,file_category,file_category_id,
+  file_name,file_path,file_type,create_time,update_time,file_status,file_size </sql>
+    <sql id="insertFields"> file_category,file_category_id,file_name,file_path,file_type,file_status,file_size</sql>
+
+    <insert id="insertList" parameterType="list" useGeneratedKeys="true" keyProperty="fileId">
+        INSERT INTO <include refid="table"/>
+        (<include refid="insertFields"/>) VALUES
+        <foreach collection="list" item="file" index="index" separator=",">
+             (#{file.fileCategory},#{file.fileCategoryId},#{file.fileName},#{file.filePath},#{file.fileType},#{file.fileStatus},#{file.fileSize})
+        </foreach>
+    </insert>
+</mapper>

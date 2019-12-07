@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.gdou.teaching.dao.AchievementDao">
+
+    <sql id="table">achievement</sql>
+    <sql id="selectFields">  achievement_id, course_id, course_name, user_id, user_name, teacher_id, class_id,
+    course_achievement, create_time, update_time</sql>
+    <sql id="insertFields"> course_id, course_name, user_id, user_name, teacher_id, class_id,
+    course_achievement</sql>
+
+    <insert id="insertList" parameterType="arraylist">
+        INSERT INTO <include refid="table"/>
+        (<include refid="insertFields"/>)
+        VALUES
+        <foreach collection="list" item="achievement" index="index" separator=",">
+            (#{achievement.course_id},#{achievement.course_name},#{achievement.user_id},#{achievement.user_name},#{achievement.teacher_id},#{achievement.class_id},#{achievement.course_achievement})
+        </foreach>
+    </insert>
+
+</mapper>

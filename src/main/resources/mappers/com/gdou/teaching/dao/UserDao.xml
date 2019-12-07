@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.gdou.teaching.dao.UserDao">
+    <sql id="table">user</sql>
+    <sql id="selectFields">user_id, nickname, user_number,password,head_url,salt,class_id,user_status,user_ident,create_time,update_time</sql>
+    <sql id="insertFields">nickname,user_number,password,salt,class_id,head_url,user_status,user_ident</sql>
+
+
+    <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO <include refid="table"/>
+        (<include refid="insertFields"/>)
+        VALUES
+        <foreach collection="list" item="user" index="index" separator=",">
+            (#{user.nickname},#{user.userNumber},#{user.password},#{user.salt},#{user.classId},#{user.headUrl},#{user.userStatus},#{user.userIdent})
+        </foreach>
+    </insert>
+
+
+    <select id="selectByUserNumberLimitOne" resultType="com.gdou.teaching.mbg.model.User">
+        SELECT<include refid="selectFields"/>FROM
+        <include refid="table"/>
+        WHERE  user_number = #{userNumber}
+        limit 1
+    </select>
+</mapper>

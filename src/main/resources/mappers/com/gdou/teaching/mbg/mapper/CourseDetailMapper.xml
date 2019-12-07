@@ -1,0 +1,1702 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdou.teaching.mbg.mapper.CourseDetailMapper">
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <id column="course_detail_id" jdbcType="INTEGER" property="courseDetailId" />
+    <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="course_code" jdbcType="VARCHAR" property="courseCode" />
+    <result column="course_credit" jdbcType="DECIMAL" property="courseCredit" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <result column="course_introduction" jdbcType="LONGVARCHAR" property="courseIntroduction" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    course_detail_id, course_name, course_code, course_credit, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    course_introduction
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample">
+    delete from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail (course_detail_id, course_name, course_code, 
+      course_credit, create_time, update_time, 
+      course_introduction)
+    values (#{courseDetailId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR}, 
+      #{courseCredit,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{courseIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        course_detail_id,
+      </if>
+      <if test="courseName != null">
+        course_name,
+      </if>
+      <if test="courseCode != null">
+        course_code,
+      </if>
+      <if test="courseCredit != null">
+        course_credit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        #{courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="courseName != null">
+        #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultType="java.lang.Integer">
+    select count(*) from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update course_detail
+    <set>
+      <if test="record.courseDetailId != null">
+        course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseName != null">
+        course_name = #{record.courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCode != null">
+        course_code = #{record.courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCredit != null">
+        course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.courseIntroduction != null">
+        course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    <set>
+      <if test="courseName != null">
+        course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        course_code = #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        course_credit = #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <id column="course_detail_id" jdbcType="INTEGER" property="courseDetailId" />
+    <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="course_code" jdbcType="VARCHAR" property="courseCode" />
+    <result column="course_credit" jdbcType="DECIMAL" property="courseCredit" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <result column="course_introduction" jdbcType="LONGVARCHAR" property="courseIntroduction" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    course_detail_id, course_name, course_code, course_credit, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    course_introduction
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample">
+    delete from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail (course_detail_id, course_name, course_code, 
+      course_credit, create_time, update_time, 
+      course_introduction)
+    values (#{courseDetailId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR}, 
+      #{courseCredit,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{courseIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        course_detail_id,
+      </if>
+      <if test="courseName != null">
+        course_name,
+      </if>
+      <if test="courseCode != null">
+        course_code,
+      </if>
+      <if test="courseCredit != null">
+        course_credit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        #{courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="courseName != null">
+        #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultType="java.lang.Integer">
+    select count(*) from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update course_detail
+    <set>
+      <if test="record.courseDetailId != null">
+        course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseName != null">
+        course_name = #{record.courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCode != null">
+        course_code = #{record.courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCredit != null">
+        course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.courseIntroduction != null">
+        course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    <set>
+      <if test="courseName != null">
+        course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        course_code = #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        course_credit = #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <id column="course_detail_id" jdbcType="INTEGER" property="courseDetailId" />
+    <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="course_code" jdbcType="VARCHAR" property="courseCode" />
+    <result column="course_credit" jdbcType="DECIMAL" property="courseCredit" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <result column="course_introduction" jdbcType="LONGVARCHAR" property="courseIntroduction" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    course_detail_id, course_name, course_code, course_credit, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    course_introduction
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample">
+    delete from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail (course_detail_id, course_name, course_code, 
+      course_credit, create_time, update_time, 
+      course_introduction)
+    values (#{courseDetailId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR}, 
+      #{courseCredit,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{courseIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        course_detail_id,
+      </if>
+      <if test="courseName != null">
+        course_name,
+      </if>
+      <if test="courseCode != null">
+        course_code,
+      </if>
+      <if test="courseCredit != null">
+        course_credit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        #{courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="courseName != null">
+        #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultType="java.lang.Integer">
+    select count(*) from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update course_detail
+    <set>
+      <if test="record.courseDetailId != null">
+        course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseName != null">
+        course_name = #{record.courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCode != null">
+        course_code = #{record.courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCredit != null">
+        course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.courseIntroduction != null">
+        course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    <set>
+      <if test="courseName != null">
+        course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        course_code = #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        course_credit = #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <id column="course_detail_id" jdbcType="INTEGER" property="courseDetailId" />
+    <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="course_code" jdbcType="VARCHAR" property="courseCode" />
+    <result column="course_credit" jdbcType="DECIMAL" property="courseCredit" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <result column="course_introduction" jdbcType="LONGVARCHAR" property="courseIntroduction" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    course_detail_id, course_name, course_code, course_credit, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    course_introduction
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample">
+    delete from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail (course_detail_id, course_name, course_code, 
+      course_credit, create_time, update_time, 
+      course_introduction)
+    values (#{courseDetailId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR}, 
+      #{courseCredit,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{courseIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        course_detail_id,
+      </if>
+      <if test="courseName != null">
+        course_name,
+      </if>
+      <if test="courseCode != null">
+        course_code,
+      </if>
+      <if test="courseCredit != null">
+        course_credit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        #{courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="courseName != null">
+        #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultType="java.lang.Integer">
+    select count(*) from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update course_detail
+    <set>
+      <if test="record.courseDetailId != null">
+        course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseName != null">
+        course_name = #{record.courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCode != null">
+        course_code = #{record.courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCredit != null">
+        course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.courseIntroduction != null">
+        course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    <set>
+      <if test="courseName != null">
+        course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        course_code = #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        course_credit = #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <id column="course_detail_id" jdbcType="INTEGER" property="courseDetailId" />
+    <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="course_code" jdbcType="VARCHAR" property="courseCode" />
+    <result column="course_credit" jdbcType="DECIMAL" property="courseCredit" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <result column="course_introduction" jdbcType="LONGVARCHAR" property="courseIntroduction" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    course_detail_id, course_name, course_code, course_credit, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    course_introduction
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample">
+    delete from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail (course_detail_id, course_name, course_code, 
+      course_credit, create_time, update_time, 
+      course_introduction)
+    values (#{courseDetailId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR}, 
+      #{courseCredit,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{courseIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        course_detail_id,
+      </if>
+      <if test="courseName != null">
+        course_name,
+      </if>
+      <if test="courseCode != null">
+        course_code,
+      </if>
+      <if test="courseCredit != null">
+        course_credit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        #{courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="courseName != null">
+        #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultType="java.lang.Integer">
+    select count(*) from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update course_detail
+    <set>
+      <if test="record.courseDetailId != null">
+        course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseName != null">
+        course_name = #{record.courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCode != null">
+        course_code = #{record.courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCredit != null">
+        course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.courseIntroduction != null">
+        course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    <set>
+      <if test="courseName != null">
+        course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        course_code = #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        course_credit = #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <resultMap id="BaseResultMap" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <id column="course_detail_id" jdbcType="INTEGER" property="courseDetailId" />
+    <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="course_code" jdbcType="VARCHAR" property="courseCode" />
+    <result column="course_credit" jdbcType="DECIMAL" property="courseCredit" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.CourseDetail">
+    <result column="course_introduction" jdbcType="LONGVARCHAR" property="courseIntroduction" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    course_detail_id, course_name, course_code, course_credit, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    course_introduction
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from course_detail
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample">
+    delete from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail (course_detail_id, course_name, course_code, 
+      course_credit, create_time, update_time, 
+      course_introduction)
+    values (#{courseDetailId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR}, 
+      #{courseCredit,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{courseIntroduction,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    insert into course_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        course_detail_id,
+      </if>
+      <if test="courseName != null">
+        course_name,
+      </if>
+      <if test="courseCode != null">
+        course_code,
+      </if>
+      <if test="courseCredit != null">
+        course_credit,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="courseDetailId != null">
+        #{courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="courseName != null">
+        #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.gdou.teaching.mbg.model.CourseDetailExample" resultType="java.lang.Integer">
+    select count(*) from course_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update course_detail
+    <set>
+      <if test="record.courseDetailId != null">
+        course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseName != null">
+        course_name = #{record.courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCode != null">
+        course_code = #{record.courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.courseCredit != null">
+        course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.courseIntroduction != null">
+        course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{record.courseIntroduction,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update course_detail
+    set course_detail_id = #{record.courseDetailId,jdbcType=INTEGER},
+      course_name = #{record.courseName,jdbcType=VARCHAR},
+      course_code = #{record.courseCode,jdbcType=VARCHAR},
+      course_credit = #{record.courseCredit,jdbcType=DECIMAL},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    <set>
+      <if test="courseName != null">
+        course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCode != null">
+        course_code = #{courseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="courseCredit != null">
+        course_credit = #{courseCredit,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="courseIntroduction != null">
+        course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      course_introduction = #{courseIntroduction,jdbcType=LONGVARCHAR}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.gdou.teaching.mbg.model.CourseDetail">
+    update course_detail
+    set course_name = #{courseName,jdbcType=VARCHAR},
+      course_code = #{courseCode,jdbcType=VARCHAR},
+      course_credit = #{courseCredit,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where course_detail_id = #{courseDetailId,jdbcType=INTEGER}
+  </update>
+</mapper>
