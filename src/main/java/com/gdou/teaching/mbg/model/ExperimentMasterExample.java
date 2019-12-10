@@ -545,63 +545,63 @@ public class ExperimentMasterExample {
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberIsNull() {
-            addCriterion("experiment_participation_number is null");
+        public Criteria andExperimentParticipationNumIsNull() {
+            addCriterion("experiment_participation_num is null");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberIsNotNull() {
-            addCriterion("experiment_participation_number is not null");
+        public Criteria andExperimentParticipationNumIsNotNull() {
+            addCriterion("experiment_participation_num is not null");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberEqualTo(Integer value) {
-            addCriterion("experiment_participation_number =", value, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumEqualTo(Integer value) {
+            addCriterion("experiment_participation_num =", value, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberNotEqualTo(Integer value) {
-            addCriterion("experiment_participation_number <>", value, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumNotEqualTo(Integer value) {
+            addCriterion("experiment_participation_num <>", value, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberGreaterThan(Integer value) {
-            addCriterion("experiment_participation_number >", value, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumGreaterThan(Integer value) {
+            addCriterion("experiment_participation_num >", value, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberGreaterThanOrEqualTo(Integer value) {
-            addCriterion("experiment_participation_number >=", value, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumGreaterThanOrEqualTo(Integer value) {
+            addCriterion("experiment_participation_num >=", value, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberLessThan(Integer value) {
-            addCriterion("experiment_participation_number <", value, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumLessThan(Integer value) {
+            addCriterion("experiment_participation_num <", value, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberLessThanOrEqualTo(Integer value) {
-            addCriterion("experiment_participation_number <=", value, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumLessThanOrEqualTo(Integer value) {
+            addCriterion("experiment_participation_num <=", value, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberIn(List<Integer> values) {
-            addCriterion("experiment_participation_number in", values, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumIn(List<Integer> values) {
+            addCriterion("experiment_participation_num in", values, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberNotIn(List<Integer> values) {
-            addCriterion("experiment_participation_number not in", values, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumNotIn(List<Integer> values) {
+            addCriterion("experiment_participation_num not in", values, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberBetween(Integer value1, Integer value2) {
-            addCriterion("experiment_participation_number between", value1, value2, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumBetween(Integer value1, Integer value2) {
+            addCriterion("experiment_participation_num between", value1, value2, "experimentParticipationNum");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentParticipationNumberNotBetween(Integer value1, Integer value2) {
-            addCriterion("experiment_participation_number not between", value1, value2, "experimentParticipationNumber");
+        public Criteria andExperimentParticipationNumNotBetween(Integer value1, Integer value2) {
+            addCriterion("experiment_participation_num not between", value1, value2, "experimentParticipationNum");
             return (Criteria) this;
         }
 

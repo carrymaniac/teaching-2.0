@@ -58,7 +58,7 @@ public class ExperimentMaster implements Serializable {
      *
      * @mbggenerated
      */
-    private Integer experimentParticipationNumber;
+    private Integer experimentParticipationNum;
 
     /**
      * 阈值
@@ -153,12 +153,12 @@ public class ExperimentMaster implements Serializable {
         this.experimentCommitNum = experimentCommitNum;
     }
 
-    public Integer getExperimentParticipationNumber() {
-        return experimentParticipationNumber;
+    public Integer getExperimentParticipationNum() {
+        return experimentParticipationNum;
     }
 
-    public void setExperimentParticipationNumber(Integer experimentParticipationNumber) {
-        this.experimentParticipationNumber = experimentParticipationNumber;
+    public void setExperimentParticipationNum(Integer experimentParticipationNum) {
+        this.experimentParticipationNum = experimentParticipationNum;
     }
 
     public Float getValve() {
@@ -214,7 +214,7 @@ public class ExperimentMaster implements Serializable {
         sb.append(", courseId=").append(courseId);
         sb.append(", experimentAnswerId=").append(experimentAnswerId);
         sb.append(", experimentCommitNum=").append(experimentCommitNum);
-        sb.append(", experimentParticipationNumber=").append(experimentParticipationNumber);
+        sb.append(", experimentParticipationNum=").append(experimentParticipationNum);
         sb.append(", valve=").append(valve);
         sb.append(", punishment=").append(punishment);
         sb.append(", createTime=").append(createTime);

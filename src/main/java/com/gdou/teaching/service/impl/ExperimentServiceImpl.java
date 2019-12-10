@@ -76,7 +76,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         //查询应提交人数
         Integer courseId = experimentDTO.getCourseId();
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
-        experimentDTO.setExperimentParticipationNumber(courseMaster.getCourseNumber());
+        experimentDTO.setExperimentParticipationNum(courseMaster.getCourseNumber());
         //检查是否需要加上默认值
         if(experimentDTO.getValve()==null){
             experimentDTO.setValve((float) 0.9);

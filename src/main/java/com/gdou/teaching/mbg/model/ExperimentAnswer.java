@@ -30,7 +30,7 @@ public class ExperimentAnswer implements Serializable {
      *
      * @mbggenerated
      */
-    private Byte experimentStatus;
+    private Byte experimentAnswerStatus;
 
     /**
      * 实验答案内容
@@ -65,12 +65,12 @@ public class ExperimentAnswer implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Byte getExperimentStatus() {
-        return experimentStatus;
+    public Byte getExperimentAnswerStatus() {
+        return experimentAnswerStatus;
     }
 
-    public void setExperimentStatus(Byte experimentStatus) {
-        this.experimentStatus = experimentStatus;
+    public void setExperimentAnswerStatus(Byte experimentAnswerStatus) {
+        this.experimentAnswerStatus = experimentAnswerStatus;
     }
 
     public String getExperimentAnswerContent() {
@@ -90,7 +90,7 @@ public class ExperimentAnswer implements Serializable {
         sb.append(", experimentAnswerId=").append(experimentAnswerId);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
-        sb.append(", experimentStatus=").append(experimentStatus);
+        sb.append(", experimentAnswerStatus=").append(experimentAnswerStatus);
         sb.append(", experimentAnswerContent=").append(experimentAnswerContent);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

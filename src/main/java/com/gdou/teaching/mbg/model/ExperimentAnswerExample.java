@@ -285,63 +285,63 @@ public class ExperimentAnswerExample {
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusIsNull() {
-            addCriterion("experiment_status is null");
+        public Criteria andExperimentAnswerStatusIsNull() {
+            addCriterion("experiment_answer_status is null");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusIsNotNull() {
-            addCriterion("experiment_status is not null");
+        public Criteria andExperimentAnswerStatusIsNotNull() {
+            addCriterion("experiment_answer_status is not null");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusEqualTo(Byte value) {
-            addCriterion("experiment_status =", value, "experimentStatus");
+        public Criteria andExperimentAnswerStatusEqualTo(Byte value) {
+            addCriterion("experiment_answer_status =", value, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusNotEqualTo(Byte value) {
-            addCriterion("experiment_status <>", value, "experimentStatus");
+        public Criteria andExperimentAnswerStatusNotEqualTo(Byte value) {
+            addCriterion("experiment_answer_status <>", value, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusGreaterThan(Byte value) {
-            addCriterion("experiment_status >", value, "experimentStatus");
+        public Criteria andExperimentAnswerStatusGreaterThan(Byte value) {
+            addCriterion("experiment_answer_status >", value, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusGreaterThanOrEqualTo(Byte value) {
-            addCriterion("experiment_status >=", value, "experimentStatus");
+        public Criteria andExperimentAnswerStatusGreaterThanOrEqualTo(Byte value) {
+            addCriterion("experiment_answer_status >=", value, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusLessThan(Byte value) {
-            addCriterion("experiment_status <", value, "experimentStatus");
+        public Criteria andExperimentAnswerStatusLessThan(Byte value) {
+            addCriterion("experiment_answer_status <", value, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusLessThanOrEqualTo(Byte value) {
-            addCriterion("experiment_status <=", value, "experimentStatus");
+        public Criteria andExperimentAnswerStatusLessThanOrEqualTo(Byte value) {
+            addCriterion("experiment_answer_status <=", value, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusIn(List<Byte> values) {
-            addCriterion("experiment_status in", values, "experimentStatus");
+        public Criteria andExperimentAnswerStatusIn(List<Byte> values) {
+            addCriterion("experiment_answer_status in", values, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusNotIn(List<Byte> values) {
-            addCriterion("experiment_status not in", values, "experimentStatus");
+        public Criteria andExperimentAnswerStatusNotIn(List<Byte> values) {
+            addCriterion("experiment_answer_status not in", values, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusBetween(Byte value1, Byte value2) {
-            addCriterion("experiment_status between", value1, value2, "experimentStatus");
+        public Criteria andExperimentAnswerStatusBetween(Byte value1, Byte value2) {
+            addCriterion("experiment_answer_status between", value1, value2, "experimentAnswerStatus");
             return (Criteria) this;
         }
 
-        public Criteria andExperimentStatusNotBetween(Byte value1, Byte value2) {
-            addCriterion("experiment_status not between", value1, value2, "experimentStatus");
+        public Criteria andExperimentAnswerStatusNotBetween(Byte value1, Byte value2) {
+            addCriterion("experiment_answer_status not between", value1, value2, "experimentAnswerStatus");
             return (Criteria) this;
         }
     }

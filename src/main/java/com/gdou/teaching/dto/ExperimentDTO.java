@@ -64,7 +64,7 @@ public class ExperimentDTO {
      *
      * @mbggenerated
      */
-    private Integer experimentParticipationNumber;
+    private Integer experimentParticipationNum;
 
     /**
      * 阈值

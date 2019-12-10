@@ -5,7 +5,7 @@
     <id column="experiment_answer_id" jdbcType="INTEGER" property="experimentAnswerId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="experiment_status" jdbcType="TINYINT" property="experimentStatus" />
+    <result column="experiment_answer_status" jdbcType="TINYINT" property="experimentAnswerStatus" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.gdou.teaching.mbg.model.ExperimentAnswer">
     <result column="experiment_answer_content" jdbcType="LONGVARCHAR" property="experimentAnswerContent" />
@@ -69,7 +69,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    experiment_answer_id, create_time, update_time, experiment_status
+    experiment_answer_id, create_time, update_time, experiment_answer_status
   </sql>
   <sql id="Blob_Column_List">
     experiment_answer_content
@@ -126,9 +126,9 @@
     <selectKey keyProperty="experimentAnswerId" order="AFTER" resultType="java.lang.Integer">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into experiment_answer (create_time, update_time, experiment_status, 
+    insert into experiment_answer (create_time, update_time, experiment_answer_status, 
       experiment_answer_content)
-    values (#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{experimentStatus,jdbcType=TINYINT}, 
+    values (#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{experimentAnswerStatus,jdbcType=TINYINT}, 
       #{experimentAnswerContent,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.gdou.teaching.mbg.model.ExperimentAnswer">
@@ -143,8 +143,8 @@
       <if test="updateTime != null">
         update_time,
       </if>
-      <if test="experimentStatus != null">
-        experiment_status,
+      <if test="experimentAnswerStatus != null">
+        experiment_answer_status,
       </if>
       <if test="experimentAnswerContent != null">
         experiment_answer_content,
@@ -157,8 +157,8 @@
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="experimentStatus != null">
-        #{experimentStatus,jdbcType=TINYINT},
+      <if test="experimentAnswerStatus != null">
+        #{experimentAnswerStatus,jdbcType=TINYINT},
       </if>
       <if test="experimentAnswerContent != null">
         #{experimentAnswerContent,jdbcType=LONGVARCHAR},
@@ -183,8 +183,8 @@
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.experimentStatus != null">
-        experiment_status = #{record.experimentStatus,jdbcType=TINYINT},
+      <if test="record.experimentAnswerStatus != null">
+        experiment_answer_status = #{record.experimentAnswerStatus,jdbcType=TINYINT},
       </if>
       <if test="record.experimentAnswerContent != null">
         experiment_answer_content = #{record.experimentAnswerContent,jdbcType=LONGVARCHAR},
@@ -199,7 +199,7 @@
     set experiment_answer_id = #{record.experimentAnswerId,jdbcType=INTEGER},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      experiment_status = #{record.experimentStatus,jdbcType=TINYINT},
+      experiment_answer_status = #{record.experimentAnswerStatus,jdbcType=TINYINT},
       experiment_answer_content = #{record.experimentAnswerContent,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -210,7 +210,7 @@
     set experiment_answer_id = #{record.experimentAnswerId,jdbcType=INTEGER},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      experiment_status = #{record.experimentStatus,jdbcType=TINYINT}
+      experiment_answer_status = #{record.experimentAnswerStatus,jdbcType=TINYINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -224,8 +224,8 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="experimentStatus != null">
-        experiment_status = #{experimentStatus,jdbcType=TINYINT},
+      <if test="experimentAnswerStatus != null">
+        experiment_answer_status = #{experimentAnswerStatus,jdbcType=TINYINT},
       </if>
       <if test="experimentAnswerContent != null">
         experiment_answer_content = #{experimentAnswerContent,jdbcType=LONGVARCHAR},
@@ -237,7 +237,7 @@
     update experiment_answer
     set create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      experiment_status = #{experimentStatus,jdbcType=TINYINT},
+      experiment_answer_status = #{experimentAnswerStatus,jdbcType=TINYINT},
       experiment_answer_content = #{experimentAnswerContent,jdbcType=LONGVARCHAR}
     where experiment_answer_id = #{experimentAnswerId,jdbcType=INTEGER}
   </update>
@@ -245,7 +245,7 @@
     update experiment_answer
     set create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      experiment_status = #{experimentStatus,jdbcType=TINYINT}
+      experiment_answer_status = #{experimentAnswerStatus,jdbcType=TINYINT}
     where experiment_answer_id = #{experimentAnswerId,jdbcType=INTEGER}
   </update>
 </mapper>

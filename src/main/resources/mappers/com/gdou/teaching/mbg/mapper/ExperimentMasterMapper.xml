@@ -9,7 +9,7 @@
     <result column="course_id" jdbcType="INTEGER" property="courseId" />
     <result column="experiment_answer_id" jdbcType="INTEGER" property="experimentAnswerId" />
     <result column="experiment_commit_num" jdbcType="INTEGER" property="experimentCommitNum" />
-    <result column="experiment_participation_number" jdbcType="INTEGER" property="experimentParticipationNumber" />
+    <result column="experiment_participation_num" jdbcType="INTEGER" property="experimentParticipationNum" />
     <result column="valve" jdbcType="REAL" property="valve" />
     <result column="punishment" jdbcType="REAL" property="punishment" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -76,7 +76,7 @@
   </sql>
   <sql id="Base_Column_List">
     experiment_id, experiment_name, experiment_intro, experiment_detail_id, course_id, 
-    experiment_answer_id, experiment_commit_num, experiment_participation_number, valve, 
+    experiment_answer_id, experiment_commit_num, experiment_participation_num, valve, 
     punishment, create_time, update_time, experiment_status
   </sql>
   <select id="selectByExample" parameterType="com.gdou.teaching.mbg.model.ExperimentMasterExample" resultMap="BaseResultMap">
@@ -115,12 +115,12 @@
     </selectKey>
     insert into experiment_master (experiment_name, experiment_intro, 
       experiment_detail_id, course_id, experiment_answer_id, 
-      experiment_commit_num, experiment_participation_number, 
+      experiment_commit_num, experiment_participation_num, 
       valve, punishment, create_time, 
       update_time, experiment_status)
     values (#{experimentName,jdbcType=VARCHAR}, #{experimentIntro,jdbcType=VARCHAR}, 
       #{experimentDetailId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER}, #{experimentAnswerId,jdbcType=INTEGER}, 
-      #{experimentCommitNum,jdbcType=INTEGER}, #{experimentParticipationNumber,jdbcType=INTEGER}, 
+      #{experimentCommitNum,jdbcType=INTEGER}, #{experimentParticipationNum,jdbcType=INTEGER}, 
       #{valve,jdbcType=REAL}, #{punishment,jdbcType=REAL}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP}, #{experimentStatus,jdbcType=TINYINT})
   </insert>
@@ -148,8 +148,8 @@
       <if test="experimentCommitNum != null">
         experiment_commit_num,
       </if>
-      <if test="experimentParticipationNumber != null">
-        experiment_participation_number,
+      <if test="experimentParticipationNum != null">
+        experiment_participation_num,
       </if>
       <if test="valve != null">
         valve,
@@ -186,8 +186,8 @@
       <if test="experimentCommitNum != null">
         #{experimentCommitNum,jdbcType=INTEGER},
       </if>
-      <if test="experimentParticipationNumber != null">
-        #{experimentParticipationNumber,jdbcType=INTEGER},
+      <if test="experimentParticipationNum != null">
+        #{experimentParticipationNum,jdbcType=INTEGER},
       </if>
       <if test="valve != null">
         #{valve,jdbcType=REAL},
@@ -236,8 +236,8 @@
       <if test="record.experimentCommitNum != null">
         experiment_commit_num = #{record.experimentCommitNum,jdbcType=INTEGER},
       </if>
-      <if test="record.experimentParticipationNumber != null">
-        experiment_participation_number = #{record.experimentParticipationNumber,jdbcType=INTEGER},
+      <if test="record.experimentParticipationNum != null">
+        experiment_participation_num = #{record.experimentParticipationNum,jdbcType=INTEGER},
       </if>
       <if test="record.valve != null">
         valve = #{record.valve,jdbcType=REAL},
@@ -268,7 +268,7 @@
       course_id = #{record.courseId,jdbcType=INTEGER},
       experiment_answer_id = #{record.experimentAnswerId,jdbcType=INTEGER},
       experiment_commit_num = #{record.experimentCommitNum,jdbcType=INTEGER},
-      experiment_participation_number = #{record.experimentParticipationNumber,jdbcType=INTEGER},
+      experiment_participation_num = #{record.experimentParticipationNum,jdbcType=INTEGER},
       valve = #{record.valve,jdbcType=REAL},
       punishment = #{record.punishment,jdbcType=REAL},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -299,8 +299,8 @@
       <if test="experimentCommitNum != null">
         experiment_commit_num = #{experimentCommitNum,jdbcType=INTEGER},
       </if>
-      <if test="experimentParticipationNumber != null">
-        experiment_participation_number = #{experimentParticipationNumber,jdbcType=INTEGER},
+      <if test="experimentParticipationNum != null">
+        experiment_participation_num = #{experimentParticipationNum,jdbcType=INTEGER},
       </if>
       <if test="valve != null">
         valve = #{valve,jdbcType=REAL},
@@ -328,7 +328,7 @@
       course_id = #{courseId,jdbcType=INTEGER},
       experiment_answer_id = #{experimentAnswerId,jdbcType=INTEGER},
       experiment_commit_num = #{experimentCommitNum,jdbcType=INTEGER},
-      experiment_participation_number = #{experimentParticipationNumber,jdbcType=INTEGER},
+      experiment_participation_num = #{experimentParticipationNum,jdbcType=INTEGER},
       valve = #{valve,jdbcType=REAL},
       punishment = #{punishment,jdbcType=REAL},
       create_time = #{createTime,jdbcType=TIMESTAMP},
