@@ -15,7 +15,7 @@
         (<include refid="insertFields"/>)
         VALUES
         <foreach collection="list" item="achievement" index="index" separator=",">
-            (#{achievement.course_id},#{achievement.course_name},#{achievement.user_id},#{achievement.user_name},#{achievement.teacher_id},#{achievement.class_id},#{achievement.course_achievement})
+            (#{achievement.courseId},#{achievement.courseName},#{achievement.userId},#{achievement.userName},#{achievement.teacherId},#{achievement.classId},#{achievement.courseAchievement})
         </foreach>
     </insert>
 

@@ -75,8 +75,8 @@ public class CourseServiceImpl implements CourseService {
         // 先对courseDetail进行新增/更新
         BeanUtils.copyProperties(courseDTO,courseDetail);
         if (courseDetail.getCourseDetailId()==null){
-            courseDetailMapper.insert(courseDetail);
-            if (courseDetail.getCourseDetailId()==null){
+            int insert = courseDetailMapper.insert(courseDetail);
+            if (insert<=0){
                 log.error("保存课表,保存课程详情失败,courseDetail={}",courseDetail);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
@@ -109,7 +109,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /**
-     * 通过老师UserID获取课程信息 ---隶属教师端
+     * 通过老师UserID获取课程信息 不包含info信息 ---隶属教师端
      * @param userId
      * @return
      */
@@ -127,7 +127,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     /**
-     *  获取课程详细信息 -----隶属老师端
+     *  获取课程详细信息 通用
      * @param courseId
      * @return
      */
@@ -206,6 +206,11 @@ public class CourseServiceImpl implements CourseService {
         return true;
     }
 
+    /**
+     * 给学生用的课程list
+     * @param userId
+     * @return
+     */
     @Override
     public List<CourseDTO> list(Integer userId) {
         //查询课程主表记录

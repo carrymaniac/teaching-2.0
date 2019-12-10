@@ -315,52 +315,52 @@ public class CourseDetailExample {
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditEqualTo(Long value) {
+        public Criteria andCourseCreditEqualTo(Double value) {
             addCriterion("course_credit =", value, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditNotEqualTo(Long value) {
+        public Criteria andCourseCreditNotEqualTo(Double value) {
             addCriterion("course_credit <>", value, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditGreaterThan(Long value) {
+        public Criteria andCourseCreditGreaterThan(Double value) {
             addCriterion("course_credit >", value, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditGreaterThanOrEqualTo(Long value) {
+        public Criteria andCourseCreditGreaterThanOrEqualTo(Double value) {
             addCriterion("course_credit >=", value, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditLessThan(Long value) {
+        public Criteria andCourseCreditLessThan(Double value) {
             addCriterion("course_credit <", value, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditLessThanOrEqualTo(Long value) {
+        public Criteria andCourseCreditLessThanOrEqualTo(Double value) {
             addCriterion("course_credit <=", value, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditIn(List<Long> values) {
+        public Criteria andCourseCreditIn(List<Double> values) {
             addCriterion("course_credit in", values, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditNotIn(List<Long> values) {
+        public Criteria andCourseCreditNotIn(List<Double> values) {
             addCriterion("course_credit not in", values, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditBetween(Long value1, Long value2) {
+        public Criteria andCourseCreditBetween(Double value1, Double value2) {
             addCriterion("course_credit between", value1, value2, "courseCredit");
             return (Criteria) this;
         }
 
-        public Criteria andCourseCreditNotBetween(Long value1, Long value2) {
+        public Criteria andCourseCreditNotBetween(Double value1, Double value2) {
             addCriterion("course_credit not between", value1, value2, "courseCredit");
             return (Criteria) this;
         }

@@ -66,6 +66,14 @@ public interface UserService {
      */
     List<Map.Entry<Integer, String>> selectTeacherList();
 
+
+    /**
+     * 根据班级ID获取用户列表
+     * @param clazzId
+     * @return
+     */
+    List<User> getStudentByClazzId(Integer clazzId);
+
 //    List<UserDTO> getUsersByUserId(List<Integer> userIds);
 
     /**

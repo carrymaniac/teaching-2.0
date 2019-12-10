@@ -2,11 +2,9 @@ package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
-import com.gdou.teaching.dataobject.ExperimentAnswer;
 import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
-import com.gdou.teaching.mapper.ExperimentAnswerMapper;
 import com.gdou.teaching.mbg.mapper.ExperimentAnswerMapper;
 import com.gdou.teaching.mbg.mapper.FileMapper;
 import com.gdou.teaching.mbg.model.ExperimentAnswer;
@@ -58,7 +56,9 @@ public class AnswerServiceImpl implements AnswerService {
                 throw new TeachingException(ResultEnum.PARAM_ERROR);
             }
             //重新插入答案
-            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),answerDTO.getExperimentAnswerFileList());
+            if(answerDTO.getExperimentAnswerFileList()!=null&&!answerDTO.getExperimentAnswerFileList().isEmpty()){
+                fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),answerDTO.getExperimentAnswerFileList());
+            }
             //回填实验答案Id
             answerDTO.setExperimentAnswerId(experimentAnswer.getExperimentAnswerId());
         }else{ //更新操作
@@ -69,8 +69,10 @@ public class AnswerServiceImpl implements AnswerService {
             }
             //先删除之前的
             fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId());
-            //重新插入
-            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),answerDTO.getExperimentAnswerFileList());
+            //重新插入答案
+            if(answerDTO.getExperimentAnswerFileList()!=null&&!answerDTO.getExperimentAnswerFileList().isEmpty()){
+                fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),answerDTO.getExperimentAnswerFileList());
+            }
         }
         return answerDTO;
     }

@@ -4,9 +4,7 @@ import com.gdou.teaching.mbg.model.ExperimentAnswer;
 import com.gdou.teaching.mbg.model.ExperimentAnswerExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface ExperimentAnswerMapper {
     int countByExample(ExperimentAnswerExample example);
 

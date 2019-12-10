@@ -30,7 +30,7 @@ public class CourseDetail implements Serializable {
      *
      * @mbggenerated
      */
-    private Long courseCredit;
+    private Double courseCredit;
 
     /**
      * 创建时间
@@ -79,11 +79,11 @@ public class CourseDetail implements Serializable {
         this.courseCode = courseCode;
     }
 
-    public Long getCourseCredit() {
+    public Double getCourseCredit() {
         return courseCredit;
     }
 
-    public void setCourseCredit(Long courseCredit) {
+    public void setCourseCredit(Double courseCredit) {
         this.courseCredit = courseCredit;
     }
 

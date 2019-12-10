@@ -36,8 +36,38 @@
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.gdou.teaching.mbg.mapper"
                              targetProject="/Users/carrymaniac/ideaProject/teaching-2.0/src/main/java"/>
         <!--生成全部表tableName设为%-->
-        <table tableName="%">
-            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        <table tableName="achievement">
+            <generatedKey column="achievement_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="class">
+            <generatedKey column="class_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="course_detail">
+            <generatedKey column="course_detail_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="course_master">
+            <generatedKey column="course_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="experiment_answer">
+            <generatedKey column="experiment_answer_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="experiment_detail">
+            <generatedKey column="experiment_detail_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="experiment_master">
+            <generatedKey column="experiment_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="file">
+            <generatedKey column="file_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="user">
+            <generatedKey column="user_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="user_info">
+            <generatedKey column="user_info_id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="user_re_experiment">
+            <generatedKey column="user_experiment_id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>
 </generatorConfiguration>

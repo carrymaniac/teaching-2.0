@@ -1,6 +1,7 @@
 package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.UserDao;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
@@ -60,12 +61,13 @@ public class UserServiceImpl implements UserService {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberEqualTo(userNumber);
         List<User> users = userMapper.selectByExample(userExample);
-        if(users!=null||!users.isEmpty()){
+        if(users!=null&&!users.isEmpty()){
             return false;
         }
         String salt = UUID.randomUUID().toString().substring(0,5);
         user.setSalt(salt);
         user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+        user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
         user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
         return userMapper.insert(user)>0;
     }
@@ -103,6 +105,19 @@ public class UserServiceImpl implements UserService {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberIn(userNumbers);
         List<User> userList = userMapper.selectByExample(userExample);
+        if(userList!=null&&!userList.isEmpty()){
+            StringBuilder sb = new StringBuilder();
+            sb.append("用户");
+            userList.forEach(user -> {
+                sb.append(" 学号-").append(user.getUserNumber());
+                sb.append(" 姓名-").append(user.getNickname());
+                sb.append(",");
+            });
+            sb.deleteCharAt(sb.length()-1);
+            sb.append(" 已存在,请检查数据是否有误");
+            throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
+        }
+        //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
         return userDao.insertList(userList)==userList.size();
     }
 
@@ -110,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean deleteUserByBatch(List<String> userNumbers) {
-        //TODO
+        //TODO 不清楚这里的批量删除是逻辑还是物理
         return null;
     }
 
@@ -141,12 +156,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getStudentByClazzId(Integer clazzId) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andClassIdEqualTo(clazzId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
+        return userMapper.selectByExample(userExample);
+    }
+
+    @Override
     public Boolean updatePassword(Integer userId,String oldPassword ,String newPassword) {
         User user = userMapper.selectByPrimaryKey(userId);
         if(!DigestUtils.md5DigestAsHex((oldPassword+user.getSalt()).getBytes()).equals(user.getPassword())){
             return false;
         }
-        user.setPassword(DigestUtils.md5DigestAsHex((newPassword+user.getSalt()).getBytes()));
+        //重新更新盐值
+        String salt = UUID.randomUUID().toString().substring(0,5);
+        user.setSalt(salt);
+        user.setPassword(DigestUtils.md5DigestAsHex((newPassword+salt).getBytes()));
         return userMapper.updateByPrimaryKey(user)>0;
     }
 }

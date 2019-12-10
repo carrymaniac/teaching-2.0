@@ -10,7 +10,7 @@ import java.util.Map;
  * @date Created in 14:34 2019-08-14
  * @description
  **/
-public interface ClazzService {
+public interface ClassService {
 
     /**
      * 注册一个班级
@@ -36,13 +36,8 @@ public interface ClazzService {
      */
     Boolean updateClazz(Class clazz);
 
-
-    List<Integer> getStudentByClazzId(Integer clazzId);
-
-    Integer getStudentCountByClazzId(Integer clazzId);
-
     /**
      * 获取班级列表
      */
-    List<Map.Entry<Integer, String>> getAllClazzList();
+    List<Class> getAllClazzList();
 }

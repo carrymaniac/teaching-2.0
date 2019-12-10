@@ -11,6 +11,7 @@ import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.ExperimentMasterMapper;
 import com.gdou.teaching.mbg.mapper.UserReExperimentMapper;
 import com.gdou.teaching.mbg.model.ExperimentMaster;
+import com.gdou.teaching.mbg.model.ExperimentMasterExample;
 import com.gdou.teaching.mbg.model.UserReExperiment;
 import com.gdou.teaching.mbg.model.UserReExperimentExample;
 import com.gdou.teaching.service.FileService;
@@ -22,6 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ProjectName: teaching-2.0
@@ -47,36 +49,49 @@ public class RecordServiceImpl implements RecordService {
     public RecordDTO save(RecordDTO recordDTO) {
         //查询该实验的状态。
         ExperimentMaster experiment = experimentMasterMapper.selectByPrimaryKey(recordDTO.getExperimentId());
-        if (!experiment.getExperimentStatus().equals(ExperimentStatusEnum.NORMAL.getCode())){
+        if (ExperimentStatusEnum.NORMAL.getCode().byteValue()!=experiment.getExperimentStatus()){
             log.error("保存纪录,保存实验记录失败,当前实验不可提交,ExperimentStatus={}",experiment.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
-        //查询用户的上一次提交
-        UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
-        userReExperimentExample.createCriteria().andUserIdEqualTo(recordDTO.getUserId()).andExperimentIdEqualTo(recordDTO.getExperimentId());
-        List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
-        if(userReExperiments!=null&&!userReExperiments.isEmpty()){
-            Byte preStatus = userReExperiments.get(0).getStatus();
-            if(preStatus.equals(RecordStatusEnum.PASS.getCode().byteValue())||preStatus.equals(RecordStatusEnum.LOCK.getCode().byteValue())){
-                //如果已经通过审核或者是实验被锁定，无法再次提交
-                log.error("保存实验记录失败,已有实验提交记录被审核通过或实验已被锁定,preStatus={}",preStatus);
-                throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
-            }
-        }
-
-        //存储记录
+        //准备变量
+        List<FileDTO> fileDTOs = recordDTO.getUserExperimentFile();
         UserReExperiment userReExperiment = new UserReExperiment();
         BeanUtils.copyProperties(recordDTO,userReExperiment);
         userReExperiment.setExperimentAchievement((double)0);
         userReExperiment.setStatus(RecordStatusEnum.REVIEWING.getCode().byteValue());
+
+        //查询用户的上一次提交
+        UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
+        userReExperimentExample.createCriteria().andUserIdEqualTo(recordDTO.getUserId()).andExperimentIdEqualTo(recordDTO.getExperimentId());
+        List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+        //上次提交过
+        if(userReExperiments!=null&&!userReExperiments.isEmpty()){
+
+            Byte preStatus = userReExperiments.get(0).getStatus();
+            //检查状态
+            if(preStatus.equals(RecordStatusEnum.PASS.getCode().byteValue())||preStatus.equals(RecordStatusEnum.LOCK.getCode().byteValue())){
+                //如果已经通过审核或者是实验被锁定，无法再次提交
+                log.error("保存实验记录失败,已有实验提交记录被审核通过或实验已被锁定,preStatus={}",preStatus);
+                throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
+            }else{
+                Integer userExperimentId = userReExperiments.get(0).getUserExperimentId();
+                //更新，先删除之前所有的文件记录，进行重新插入
+                fileService.deleteFiles(FileCategoryEnum.RECORD_FILE.getCode(),userExperimentId);
+                if(fileDTOs!=null&&!fileDTOs.isEmpty()){
+                    fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(),userExperimentId,recordDTO.getUserExperimentFile());
+                }
+                userReExperiment.setUserExperimentId(userReExperiments.get(0).getUserExperimentId());
+                userReExperimentMapper.updateByPrimaryKeySelective(userReExperiment);
+            }
+        }
+
+        //进行新增存储记录
         int insert = userReExperimentMapper.insert(userReExperiment);
         if (insert<=0){
             log.error("保存记录,保存实验记录失败,record={}",userReExperiment);
             throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
         }
-
         //存储文件
-        List<FileDTO> fileDTOs = recordDTO.getUserExperimentFile();
         if(fileDTOs!=null&&!fileDTOs.isEmpty()) {
             fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId(), fileDTOs);
         }
@@ -113,10 +128,22 @@ public class RecordServiceImpl implements RecordService {
         experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
     }
 
-
     @Override
     public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer CourseId) {
-
-        return null;
+        ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(CourseId);
+        List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
+        List<Integer> experimentIds = experimentMasters.stream().map(experimentMaster -> {
+            return experimentMaster.getExperimentId();
+        }).collect(Collectors.toList());
+        UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
+        userReExperimentExample.createCriteria().andExperimentIdIn(experimentIds).andUserIdEqualTo(userId);
+        List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+        List<RecordDTO> collect = userReExperiments.stream().map(userReExperiment -> {
+            RecordDTO recordDTO = new RecordDTO();
+            BeanUtils.copyProperties(userReExperiment, recordDTO);
+            return recordDTO;
+        }).collect(Collectors.toList());
+        return collect;
     }
 }

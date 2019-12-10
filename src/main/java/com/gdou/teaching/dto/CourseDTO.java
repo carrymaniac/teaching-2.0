@@ -40,7 +40,7 @@ public class CourseDTO {
     /**
      * 课程状态 默认为正常状态
      */
-    private Integer courseStatus = 0;
+    private Byte courseStatus = 0;
 
     /**
      * 学分

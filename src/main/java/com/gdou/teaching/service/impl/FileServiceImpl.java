@@ -83,4 +83,11 @@ public class FileServiceImpl implements FileService {
         }).collect(Collectors.toList());
         return fileDao.insertList(files);
     }
+
+    @Override
+    public boolean deleteFiles(Integer fileCategory, Integer fileCategoryId) {
+        FileExample fileExample = new FileExample();
+        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
+        return fileMapper.deleteByExample(fileExample)>0;
+    }
 }

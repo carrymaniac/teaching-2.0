@@ -4,9 +4,7 @@ import com.gdou.teaching.mbg.model.CourseMaster;
 import com.gdou.teaching.mbg.model.CourseMasterExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface CourseMasterMapper {
     int countByExample(CourseMasterExample example);
 

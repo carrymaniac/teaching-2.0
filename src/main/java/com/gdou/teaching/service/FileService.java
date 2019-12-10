@@ -54,6 +54,6 @@ public interface FileService {
      * @param fileCategoryId
      * @return
      */
-    int deleteFiles(Integer fileCategory, Integer fileCategoryId);
+    boolean deleteFiles(Integer fileCategory, Integer fileCategoryId);
 
 }

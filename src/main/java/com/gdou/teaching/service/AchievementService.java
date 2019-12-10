@@ -3,6 +3,7 @@ package com.gdou.teaching.service;
 
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.mbg.model.Achievement;
+import com.gdou.teaching.vo.ClazzVO;
 
 
 import java.util.List;
@@ -36,11 +37,6 @@ public interface AchievementService {
      * @return
      */
     boolean deleteAchievementByStudentList(Integer courseId, List<Integer> studentIdList);
-//
-//    /**
-//     * 根据课程id 查询班级id列表
-//     */
-//    List<ClazzVO> getClazzIdListByCourseId(Integer courseId);
 
     /**
      * 根据用户ID查询学生选修的课程数量
@@ -64,5 +60,8 @@ public interface AchievementService {
      */
     List<AchievementDTO> getAchievementByCourseId(Integer courseId);
 
-
+//    /**
+//     * 根据课程id 查询班级id列表
+//     */
+//    List<ClazzVO> getClazzIdListByCourseId(Integer courseId);
 }

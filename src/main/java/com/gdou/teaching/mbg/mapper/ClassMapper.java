@@ -4,9 +4,7 @@ import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.mbg.model.ClassExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface ClassMapper {
     int countByExample(ClassExample example);
 

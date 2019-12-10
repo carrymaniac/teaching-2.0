@@ -101,4 +101,15 @@ public class ExperimentDTO {
      * @mbggenerated
      */
     private String experimentText;
+    /**
+     * 实验答案内容
+     *
+     * @mbggenerated
+     */
+    private String experimentAnswerContent;
+    /**
+     * 实验附件文档
+     */
+    private List<FileDTO> experimentAnswerFile;
+
 }

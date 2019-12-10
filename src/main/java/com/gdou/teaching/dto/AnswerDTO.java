@@ -22,5 +22,5 @@ public class AnswerDTO {
     //实验ID
     private Integer experimentId;
     //实验答案状态，可以用于删除，0表示正常，1表示删除
-    private Integer experimentStatus;
+    private Byte experimentStatus;
 }

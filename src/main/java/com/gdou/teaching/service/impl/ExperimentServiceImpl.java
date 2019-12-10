@@ -1,22 +1,21 @@
 package com.gdou.teaching.service.impl;
 
+import com.gdou.teaching.Enum.ExperimentStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
-import com.gdou.teaching.mbg.mapper.ExperimentDetailMapper;
-import com.gdou.teaching.mbg.mapper.ExperimentMasterMapper;
-import com.gdou.teaching.mbg.mapper.FileMapper;
-import com.gdou.teaching.mbg.model.ExperimentDetail;
-import com.gdou.teaching.mbg.model.ExperimentMaster;
-import com.gdou.teaching.mbg.model.ExperimentMasterExample;
+import com.gdou.teaching.mbg.mapper.*;
+import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,8 +40,15 @@ public class ExperimentServiceImpl implements ExperimentService {
     FileMapper fileMapper;
     @Autowired
     FileService fileService;
+    @Autowired
+    CourseMasterMapper courseMasterMapper;
+
+    @Autowired
+    ExperimentAnswerMapper answerMapper;
     @Override
     public ExperimentDTO detail(Integer experimentId) {
+        //需要查询的数据有：
+        // 主表数据 副表detail数据 实验文件数据
         ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
         if(experimentMaster==null){
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
@@ -53,7 +59,9 @@ public class ExperimentServiceImpl implements ExperimentService {
         }
         ExperimentDTO experimentDTO = new ExperimentDTO();
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
-        experimentDTO.setExperimentDetailFile(fileDTOList);
+        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
+            experimentDTO.setExperimentDetailFile(fileDTOList);
+        }
         //属性拷贝
         BeanUtils.copyProperties(experimentDetail,experimentDTO);
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
@@ -61,9 +69,23 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     @Override
+    @Transactional
     public ExperimentDTO save(ExperimentDTO experimentDTO) {
         ExperimentMaster experimentMaster=new ExperimentMaster();
         ExperimentDetail experimentDetail=new ExperimentDetail();
+        //查询应提交人数
+        Integer courseId = experimentDTO.getCourseId();
+        CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
+        experimentDTO.setExperimentParticipationNumber(courseMaster.getCourseNumber());
+        //检查是否需要加上默认值
+        if(experimentDTO.getValve()==null){
+            experimentDTO.setValve((float) 0.9);
+        }
+        if(experimentDTO.getPunishment()==null){
+            experimentDTO.setPunishment((float) 0.9);
+        }
+        experimentDTO.setExperimentCommitNum(0);
+        experimentDTO.setExperimentStatus(ExperimentStatusEnum.NORMAL.getCode().byteValue());
         // 先对experimentDetail进行新增/更新
         BeanUtils.copyProperties(experimentDTO,experimentDetail);
         if (experimentDetail.getExperimentDetailId()==null){
@@ -79,9 +101,24 @@ public class ExperimentServiceImpl implements ExperimentService {
                 throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
             }
         }
-
         //回填ExperimentDetailId
         experimentDTO.setExperimentDetailId(experimentDetail.getExperimentDetailId());
+
+
+        //如果有答案 插入到答案表
+        if(experimentDTO.getExperimentAnswerContent()!=null){
+            ExperimentAnswer answer = new ExperimentAnswer();
+            answer.setExperimentAnswerContent(experimentDTO.getExperimentAnswerContent());
+            answerMapper.insert(answer);
+            //如果有答案文件 需要插入到文件表
+            List<FileDTO> experimentAnswerFile = experimentDTO.getExperimentAnswerFile();
+            if(experimentAnswerFile!=null&&!experimentAnswerFile.isEmpty()){
+                fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),answer.getExperimentAnswerId(),experimentAnswerFile);
+            }
+            experimentDTO.setExperimentAnswerId(answer.getExperimentAnswerId());
+        }
+
+
         BeanUtils.copyProperties(experimentDTO,experimentMaster);
         if (experimentMaster.getExperimentId()==null){
             Integer i = experimentMasterMapper.insert(experimentMaster);
@@ -96,9 +133,14 @@ public class ExperimentServiceImpl implements ExperimentService {
                 throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
             }
         }
-
         //回填ExperimentId
         experimentDTO.setExperimentId(experimentMaster.getExperimentId());
+
+        //新增实验的文件：
+        List<FileDTO> experimentDetailFile = experimentDTO.getExperimentDetailFile();
+        if(experimentDetailFile!=null&&!experimentDetailFile.isEmpty()){
+            fileService.saveFile(FileCategoryEnum.EXPERIMENT_FILE.getCode(),experimentMaster.getExperimentId(),experimentDetailFile);
+        }
         return experimentDTO;
     }
     @Override
