@@ -32,6 +32,9 @@ class UserServiceImplTest {
     UserServiceImpl userService;
     @Test
     void getUserById() {
+        User userById = userService.getUserById(17);
+        Assert.notNull(userById,"error");
+        log.info("user:{}",userById);
     }
 
     @Test

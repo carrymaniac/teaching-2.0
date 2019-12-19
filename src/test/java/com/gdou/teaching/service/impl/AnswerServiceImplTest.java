@@ -39,7 +39,9 @@ class AnswerServiceImplTest {
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setExperimentAnswerContent("这是一个🌲的实验答案");
         answerDTO.setExperimentId(1);
-        answerDTO.setExperimentStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
-        answerService.save(answerDTO);
+        answerDTO.setExperimentAnswerStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
+        AnswerDTO save = answerService.save(answerDTO);
+        Assert.notNull(save.getExperimentAnswerId(),"error");
     }
+
 }

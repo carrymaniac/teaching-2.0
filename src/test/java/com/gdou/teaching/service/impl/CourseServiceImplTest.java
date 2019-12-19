@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -24,26 +25,32 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Slf4j
 @SpringBootTest
-class CourseSewrviceImplTest {
+class  CourseServiceImplTest {
 
     @Autowired
     CourseServiceImpl courseService;
     @Test
     void info() {
+        CourseDTO info = courseService.info(4);
+        Assert.notNull(info,"error");
     }
 
     @Test
+    @Transactional
     void save() {
         CourseDTO courseDTO = new CourseDTO();
         courseDTO.setTeacherNickname("一学铭");
+        //courseDTO.setCourseId(26);
+        //courseDTO.setCourseDetailId(39);
         courseDTO.setTeacherId(5);
         courseDTO.setCourseName("数据结构与算法");
         courseDTO.setCourseCredit(5.0);
-        courseDTO.setCourseIntroduction("这课程🐂🍺疯了");
+        courseDTO.setCourseIntroduction("这课程一般般");
         courseDTO.setCourseCode("XSWL233");
         courseDTO.setCourseNumber(60);
         courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
-        courseService.save(courseDTO);
+        CourseDTO save = courseService.save(courseDTO);
+        Assert.notNull(save.getCourseId(),"error");
     }
 
     @Test
@@ -61,14 +68,30 @@ class CourseSewrviceImplTest {
     }
 
     @Test
+    @Transactional
     void invalid() {
+        boolean invalid = courseService.invalid(4);
+        Assert.isTrue(invalid,"invalid is error");
     }
 
     @Test
+    @Transactional
     void restore() {
+        boolean restore = courseService.restore(4);
+        Assert.isTrue(restore,"restore is error");
     }
+
 
     @Test
     void list() {
+        List<CourseDTO> list = courseService.list(17);
+        log.info("list is {}",list);
+        Assert.notNull(list,"list is null");
+    }
+
+    @Test
+    @Transactional
+    void updateNumber(){
+        courseService.updateNumber(4);
     }
 }

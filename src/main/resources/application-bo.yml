@@ -1,0 +1,41 @@
+teaching:
+  uploadPath: /Users/carrymaniac/upload/
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: Wzb199808.
+    url: jdbc:mysql://118.31.16.137/teaching?characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+    hikari:
+      validation-timeout: 3000
+#      连接超时时间
+      connection-timeout: 60000
+#     idle超时时间
+      idle-timeout: 600000
+#     一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired）
+      max-lifetime: 60000
+#      数据库连接池大小
+      maximum-pool-size: 10
+#      控制连接池空闲连接的最小数量
+      minimum-idle: 10
+    type: com.zaxxer.hikari.HikariDataSource
+  redis:
+    host: 118.31.16.137
+    port: 6379
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+server:
+  servlet:
+    context-path: /teaching
+  port: 8080
+mybatis:
+  mapper-locations:
+   - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml
+   - classpath:mappers/com/gdou/teaching/dao/*.xml
+
+

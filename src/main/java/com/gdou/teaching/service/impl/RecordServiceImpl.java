@@ -103,6 +103,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public RecordDTO selectOne(Integer experimentId, Integer userId) {
+        //todo 无法查询教师评语teacherComment,userExperimentText 大文本内容
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         userReExperimentExample.setOrderByClause("create_time desc");
         userReExperimentExample.createCriteria().andUserIdEqualTo(userId).andExperimentIdEqualTo(experimentId);
@@ -132,6 +133,7 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer courseId) {
+        //todo 无法查询教师评语teacherComment,userExperimentText 大文本内容和提交的文件记录
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);

@@ -1,6 +1,7 @@
 package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.mbg.model.Class;
+import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.impl.ClassServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -32,23 +33,26 @@ class ClassServiceImplTest {
     @Test
     @Transactional
     void registerClass() {
-        classService.registerClass("信管1163");
+        Class clazz = classService.registerClass("信管1164");
     }
 
     @Test
     void getClassByClazzId() {
-        classService.getClassByClazzId(1);
+        Class classByClazzId = classService.getClassByClazzId(1);
+        Assert.notNull(classByClazzId,"error");
     }
 
     @Test
     void getClassesByPage() {
+
     }
+
 
     @Test
     @Transactional
     void updateClazz() {
         Class clazz = new Class();
-        clazz.setClassName("信管1161");
+        clazz.setClassName("信管1164");
         clazz.setClassId(1);
         Boolean aBoolean = classService.updateClazz(clazz);
         Assert.isTrue(aBoolean,"update class is false");
@@ -57,7 +61,13 @@ class ClassServiceImplTest {
 
     @Test
     void getStudentCountByClazzId() {
-
+        Integer studentCountByClazzId = classService.getStudentCountByClazzId(1);
+        Assert.notNull(studentCountByClazzId,"error");
+    }
+    @Test
+    void getStudentByClazzId(){
+        List<User> studentByClazzId = classService.getStudentByClazzId(1);
+        Assert.notNull(studentByClazzId,"error");
     }
 
     @Test

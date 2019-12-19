@@ -56,6 +56,7 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public CourseDTO info(Integer courseId) {
+        //todo 仅查询 课程主表信息, 未查询课程详情表信息
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(courseMaster,courseDTO);
@@ -213,6 +214,7 @@ public class CourseServiceImpl implements CourseService {
      */
     @Override
     public List<CourseDTO> list(Integer userId) {
+        //todo 仅查询 课程主表信息, 未查询课程详情表信息
         //查询课程主表记录
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andUserIdEqualTo(userId);

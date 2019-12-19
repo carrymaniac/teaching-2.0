@@ -1,7 +1,6 @@
 package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.dto.AchievementDTO;
-import com.gdou.teaching.mbg.mapper.AchievementMapper;
 import com.gdou.teaching.mbg.model.Achievement;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import org.springframework.util.Assert;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @ProjectName: teaching-2.0
@@ -44,12 +42,15 @@ class AchievementServiceImplTest {
     }
 
     @Test
+    @Transactional
     void deleteAchievementByStudentList() {
+        boolean b = achievementService.deleteAchievementByStudentList(1, Arrays.asList(1));
+        Assert.isTrue(b,"error");
     }
 
     @Test
     void getCourseNumberByUserId() {
-        Integer courseNumberByUserId = achievementService.getCourseNumberByUserId(1);
+        Integer courseNumberByUserId = achievementService.getCourseNumberByUserId(17);
         log.info("number:{}",courseNumberByUserId);
     }
 
@@ -66,4 +67,9 @@ class AchievementServiceImplTest {
         Assert.isTrue(!achievementByCourseId.isEmpty(),"error");
         log.info("AchievementList:{}",achievementByCourseId);
     }
+
+   @Test
+   void updateAchievement(){
+        achievementService.updateAchievement(4,17);
+   }
 }
