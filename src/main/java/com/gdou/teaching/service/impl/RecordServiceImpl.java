@@ -14,12 +14,12 @@ import com.gdou.teaching.mbg.model.ExperimentMaster;
 import com.gdou.teaching.mbg.model.ExperimentMasterExample;
 import com.gdou.teaching.mbg.model.UserReExperiment;
 import com.gdou.teaching.mbg.model.UserReExperimentExample;
+import com.gdou.teaching.service.AchievementService;
 import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.service.RecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +45,8 @@ public class RecordServiceImpl implements RecordService {
     UserReExperimentDao userReExperimentDao;
     @Autowired
     FileService fileService;
+    @Autowired
+    AchievementService achievementService;
     @Override
     public RecordDTO save(RecordDTO recordDTO) {
         //查询该实验的状态。
@@ -54,7 +56,7 @@ public class RecordServiceImpl implements RecordService {
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
         //准备变量
-        List<FileDTO> fileDTOs = recordDTO.getUserExperimentFile();
+        List<FileDTO> fileDTOList = recordDTO.getUserExperimentFile();
         UserReExperiment userReExperiment = new UserReExperiment();
         BeanUtils.copyProperties(recordDTO,userReExperiment);
         userReExperiment.setExperimentAchievement((double)0);
@@ -77,7 +79,7 @@ public class RecordServiceImpl implements RecordService {
                 Integer userExperimentId = userReExperiments.get(0).getUserExperimentId();
                 //更新，先删除之前所有的文件记录，进行重新插入
                 fileService.deleteFiles(FileCategoryEnum.RECORD_FILE.getCode(),userExperimentId);
-                if(fileDTOs!=null&&!fileDTOs.isEmpty()){
+                if(fileDTOList!=null&&!fileDTOList.isEmpty()){
                     fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(),userExperimentId,recordDTO.getUserExperimentFile());
                 }
                 userReExperiment.setUserExperimentId(userReExperiments.get(0).getUserExperimentId());
@@ -92,8 +94,8 @@ public class RecordServiceImpl implements RecordService {
             throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
         }
         //存储文件
-        if(fileDTOs!=null&&!fileDTOs.isEmpty()) {
-            fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId(), fileDTOs);
+        if(fileDTOList!=null&&!fileDTOList.isEmpty()) {
+            fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId(), fileDTOList);
         }
         recordDTO.setUserExperimentId(userReExperiment.getUserExperimentId());
         return recordDTO;
@@ -129,13 +131,11 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer CourseId) {
+    public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer courseId) {
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
-        experimentMasterExample.createCriteria().andCourseIdEqualTo(CourseId);
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
-        List<Integer> experimentIds = experimentMasters.stream().map(experimentMaster -> {
-            return experimentMaster.getExperimentId();
-        }).collect(Collectors.toList());
+        List<Integer> experimentIds = experimentMasters.stream().map(ExperimentMaster::getExperimentId).collect(Collectors.toList());
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         userReExperimentExample.createCriteria().andExperimentIdIn(experimentIds).andUserIdEqualTo(userId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
@@ -145,5 +145,39 @@ public class RecordServiceImpl implements RecordService {
             return recordDTO;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public void judge(RecordDTO recordDTO) {
+        //判断是否提前看过答案
+        ExperimentMaster experiment = experimentMasterMapper.selectByPrimaryKey(recordDTO.getExperimentId());
+        if(recordDTO.getHaveCheckAnswer()){
+            Float punishment = experiment.getPunishment();
+            recordDTO.setExperimentAchievement(recordDTO.getExperimentAchievement()*punishment);
+        }
+        UserReExperiment userReExperiment = new UserReExperiment();
+        BeanUtils.copyProperties(recordDTO,userReExperiment);
+        userReExperimentMapper.updateByPrimaryKeySelective(userReExperiment);
+        //更新课程成绩
+        achievementService.updateAchievement(experiment.getCourseId(),recordDTO.getUserId());
+    }
+
+    @Override
+    public void batchJudge(List<RecordDTO> recordDTO) {
+        Integer experimentId = recordDTO.get(0).getExperimentId();
+        ExperimentMaster experiment = experimentMasterMapper.selectByPrimaryKey(experimentId);
+        Float punishment = experiment.getPunishment();
+        List<UserReExperiment> recordList = recordDTO.stream().map(r -> {
+            UserReExperiment record = new UserReExperiment();
+            //判断是否提前查看过答案
+            if (r.getHaveCheckAnswer()) {
+                r.setExperimentAchievement(r.getExperimentAchievement() * punishment);
+            }
+            BeanUtils.copyProperties(r, record);
+            return record;
+        }).collect(Collectors.toList());
+        //更新操作
+        userReExperimentDao.updateUserReExperimentByList(recordList);
+        //todo 之后需要批量去更新学生的成绩
     }
 }

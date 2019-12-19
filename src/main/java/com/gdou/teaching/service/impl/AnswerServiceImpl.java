@@ -55,7 +55,7 @@ public class AnswerServiceImpl implements AnswerService {
                 log.error("保存实验答案,新增实验答案失败,experimentAnswer={}",experimentAnswer);
                 throw new TeachingException(ResultEnum.PARAM_ERROR);
             }
-            //重新插入答案
+            //新增答案文件
             if(answerDTO.getExperimentAnswerFileList()!=null&&!answerDTO.getExperimentAnswerFileList().isEmpty()){
                 fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),answerDTO.getExperimentAnswerFileList());
             }
@@ -76,22 +76,4 @@ public class AnswerServiceImpl implements AnswerService {
         }
         return answerDTO;
     }
-
-//    //todo 现实现根据experimentId删除实验答案, 可修改为根据experimentAnswerId删除(待讨论)
-//    @Override
-//    public boolean invalid(Integer experimentId) {
-//        ExperimentAnswer experimentAnswer
-//                = answerMapper.selectExperimentAnswerByExperimentId(experimentId);
-//        if (experimentAnswer == null) {
-//            log.error("删除实验答案,该实验答案不存在或已被删除");
-//            throw new TeachingException(ResultEnum.ANSWER_NOT_EXIST);
-//        }
-//        //更新
-//        boolean flag = answerMapper.deleteExperimentAnswerByExperimentAnswerId(experimentAnswer.getExperimentAnswerId());
-//        if (!flag){
-//            log.error("删除实验答案,实验答案删除失败");
-//            throw new TeachingException(ResultEnum.ANSWER_INVALID_ERROR);
-//        }
-//        return true;
-//    }
 }

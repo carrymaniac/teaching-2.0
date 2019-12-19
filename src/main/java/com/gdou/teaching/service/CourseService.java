@@ -61,8 +61,10 @@ public interface CourseService {
      */
     boolean restore(Integer courseId);
 
-    
-
-
+    /**
+     * 更新 课程及其下属实验的上课人数
+     * @param courseId
+     */
+    void updateNumber(Integer courseId);
 
 }

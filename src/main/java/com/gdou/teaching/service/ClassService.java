@@ -1,9 +1,11 @@
 package com.gdou.teaching.service;
 
 import com.gdou.teaching.mbg.model.Class;
+import com.gdou.teaching.mbg.model.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author carrymaniac
@@ -40,4 +42,19 @@ public interface ClassService {
      * 获取班级列表
      */
     List<Class> getAllClazzList();
+
+    /**
+     * 根据clazzId 获取学生列表
+     * @param clazzId
+     * @return
+     */
+    List<User> getStudentByClazzId(Integer clazzId);
+
+    /**
+     * 根据classID 获取学生数量
+     * @param clazzId
+     * @return
+     */
+    Integer getStudentCountByClazzId(Integer clazzId);
+
 }

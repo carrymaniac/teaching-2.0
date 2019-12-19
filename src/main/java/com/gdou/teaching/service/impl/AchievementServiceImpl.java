@@ -1,13 +1,11 @@
 package com.gdou.teaching.service.impl;
 
+import com.gdou.teaching.Enum.RecordStatusEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dao.AchievementDao;
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.exception.TeachingException;
-import com.gdou.teaching.mbg.mapper.AchievementMapper;
-import com.gdou.teaching.mbg.mapper.ClassMapper;
-import com.gdou.teaching.mbg.mapper.CourseMasterMapper;
-import com.gdou.teaching.mbg.mapper.UserMapper;
+import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.service.AchievementService;
@@ -45,6 +43,10 @@ public class AchievementServiceImpl implements AchievementService {
     AchievementMapper achievementMapper;
     @Autowired
     ClassMapper classMapper;
+    @Autowired
+    ExperimentMasterMapper experimentMasterMapper;
+    @Autowired
+    UserReExperimentMapper userReExperimentMapper;
     @Override
     public boolean addAchievementByClazzId(Integer courseId, Integer clazzId) {
         return false;
@@ -101,6 +103,7 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public List<AchievementDTO> getAchievementByCourseId(Integer courseId) {
+
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andCourseIdEqualTo(courseId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
@@ -133,5 +136,51 @@ public class AchievementServiceImpl implements AchievementService {
         }).collect(Collectors.toList());
         return result;
 
+    }
+
+    @Override
+    public void updateAchievement(Integer courseId, Integer userId) {
+        //获取实验列表
+        ExperimentMasterExample example = new ExperimentMasterExample();
+        example.createCriteria().andCourseIdEqualTo(courseId);
+        List<ExperimentMaster> experimentMasterList = experimentMasterMapper.selectByExample(example);
+        UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
+        List<UserReExperiment> recordList = experimentMasterList.stream().map(experimentMaster -> {
+            userReExperimentExample.clear();
+            userReExperimentExample.createCriteria().andUserIdEqualTo(userId).andExperimentIdEqualTo(experimentMaster.getExperimentId());
+            List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+            if (userReExperiments != null && !userReExperiments.isEmpty()) {
+                UserReExperiment userReExperiment = userReExperiments.get(0);
+                if (RecordStatusEnum.PASS.getCode().byteValue() == userReExperiment.getStatus()) {
+                    return userReExperiment;
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }).collect(Collectors.toList());
+
+
+        //通过审核的实验个数
+        int num=0;
+        Double result=0.0;
+        for(int i=0;i<recordList.size();i++){
+            if(recordList.get(i)!=null){
+                result+=recordList.get(i).getExperimentAchievement();
+                num++;
+            }
+        }
+        //通过审核的实验个数不为零,更新课程成绩
+        AchievementExample achievementExample = new AchievementExample();
+        achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdEqualTo(userId);
+        Achievement achievement = new Achievement();
+        if (num!=0){
+            result=result/num;
+            achievement.setCourseAchievement(result);
+        }else { //通过审核的实验个数为零,课程成绩置为0
+            achievement.setCourseAchievement(0.0);
+        }
+        achievementMapper.updateByExampleSelective(achievement,achievementExample);
     }
 }

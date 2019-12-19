@@ -60,8 +60,10 @@ public interface AchievementService {
      */
     List<AchievementDTO> getAchievementByCourseId(Integer courseId);
 
-//    /**
-//     * 根据课程id 查询班级id列表
-//     */
-//    List<ClazzVO> getClazzIdListByCourseId(Integer courseId);
+    /**
+     * 根据现在各个实验的成绩更新科目的成绩
+     * @param courseId
+     * @param userId
+     */
+    void updateAchievement(Integer courseId,Integer userId);
 }

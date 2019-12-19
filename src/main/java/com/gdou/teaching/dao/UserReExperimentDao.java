@@ -1,7 +1,10 @@
 package com.gdou.teaching.dao;
 
+import com.gdou.teaching.mbg.model.UserReExperiment;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Mapper
 @Repository
@@ -12,4 +15,11 @@ public interface UserReExperimentDao {
      * @return
      */
     Integer getCountByExperimentId(Integer experimentId);
+
+    /**
+     * 批量更新用户提交数量
+     * @param record
+     * @return
+     */
+    Integer updateUserReExperimentByList(List<UserReExperiment> record);
 }

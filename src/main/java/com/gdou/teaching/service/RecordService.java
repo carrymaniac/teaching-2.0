@@ -14,11 +14,14 @@ public interface RecordService {
     /**
      * 保存或修改提交记录
      * @param recordDTO
+     * @return
      */
     RecordDTO save(RecordDTO recordDTO);
 
     /**
-     * 展示提交记录
+     * 通过实验ID和用户ID获取用户的实验提交记录
+     * @param experimentId
+     * @param userId
      * @return
      */
     RecordDTO selectOne(Integer experimentId, Integer userId);
@@ -32,8 +35,25 @@ public interface RecordService {
 
     /**
      * 根据用户Id和课程Id,获取用户在这门课的所有实验的成绩
+     * @param userId 用户ID
+     * @param CourseId 课程ID
+     * @return
      */
     List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer CourseId);
+
+
+    /**
+     * 教师评改
+     * @param recordDTO
+     */
+    void judge(RecordDTO recordDTO);
+
+
+    /**
+     * 教师评改 批量批改
+     * @param recordDTO
+     */
+    void batchJudge(List<RecordDTO> recordDTO);
 
 
 }

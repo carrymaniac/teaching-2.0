@@ -23,6 +23,14 @@ public class FileUtil {
 
     public String genUploadPath(){return uploadPath;}
 
+    static final  int B = 1024;
+    static final  int KB = 1048576;
+    static final  int MB = 1073741824;
+    static final String DOC = ".doc";
+    static final String DOCX = ".docx";
+    static final String PPT = ".ppt";
+    static final String PPTX = ".pptx";
+
     public static URI getHost(URI uri) {
         URI effectiveURI = null;
         try {
@@ -34,10 +42,10 @@ public class FileUtil {
     }
 
     public String getType(String suffixName){
-        if(".doc".equals(suffixName)|| ".docx".equals(suffixName)){
+        if(DOC.equals(suffixName)|| DOCX.equals(suffixName)){
             return "doc";
         }
-        if(".ppt".equals(suffixName)|| ".pptx".equals(suffixName)){
+        if(PPT.equals(suffixName)|| PPTX.equals(suffixName)){
             return "ppt";
         }
         if(".xls".equals(suffixName)|| ".xlsx".equals(suffixName)){
@@ -55,14 +63,14 @@ public class FileUtil {
     public String getFileSize(Long fileSize){
         DecimalFormat df = new DecimalFormat("#.00");
         String size = "";
-        if (fileSize < 1024) {
+        if (fileSize < B) {
             size = df.format((double) fileSize) + "BT";
-        } else if (fileSize < 1048576) {
-            size = df.format((double) fileSize / 1024) + "KB";
-        } else if (fileSize < 1073741824) {
-            size = df.format((double) fileSize / 1048576) + "MB";
+        } else if (fileSize < KB) {
+            size = df.format((double) fileSize / B) + "KB";
+        } else if (fileSize < MB) {
+            size = df.format((double) fileSize / KB) + "MB";
         } else {
-            size = df.format((double) fileSize / 1073741824) +"GB";
+            size = df.format((double) fileSize / MB) +"GB";
         }
         return size;
     }

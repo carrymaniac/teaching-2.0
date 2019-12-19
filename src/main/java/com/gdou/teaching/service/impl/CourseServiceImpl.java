@@ -6,16 +6,14 @@ import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
-import com.gdou.teaching.mbg.mapper.AchievementMapper;
-import com.gdou.teaching.mbg.mapper.CourseDetailMapper;
-import com.gdou.teaching.mbg.mapper.CourseMasterMapper;
-import com.gdou.teaching.mbg.mapper.UserMapper;
+import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +45,8 @@ public class CourseServiceImpl implements CourseService {
     UserService userService;
     @Autowired
     CourseMasterDao courseMasterDao;
+    @Autowired
+    ExperimentMasterMapper experimentMasterMapper;
 
 
     /**
@@ -254,4 +254,28 @@ public class CourseServiceImpl implements CourseService {
         return result;
     }
 
+
+    @Override
+    @Transactional
+    @Async
+    public void updateNumber(Integer courseId) {
+
+        //获取人数
+        AchievementExample example = new AchievementExample();
+        example.createCriteria().andCourseIdEqualTo(courseId);
+        int number = achievementMapper.countByExample(example);
+
+        //更新人数
+        CourseMaster courseMaster = new CourseMaster();
+        courseMaster.setCourseId(courseId);
+        courseMaster.setCourseNumber(number);
+        courseMasterMapper.updateByPrimaryKeySelective(courseMaster);
+
+        //更新到各个实验
+        ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
+        ExperimentMaster experimentMaster = new ExperimentMaster();
+        experimentMaster.setExperimentParticipationNum(number);
+        experimentMasterMapper.updateByExampleSelective(experimentMaster,experimentMasterExample);
+    }
 }

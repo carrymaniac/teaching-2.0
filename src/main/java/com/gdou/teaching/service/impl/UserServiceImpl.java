@@ -1,6 +1,7 @@
 package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.UserDao;
 import com.gdou.teaching.dto.UserDTO;
@@ -125,8 +126,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean deleteUserByBatch(List<String> userNumbers) {
-        //TODO 不清楚这里的批量删除是逻辑还是物理
-        return null;
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserNumberIn(userNumbers);
+        User user = new User();
+        user.setUserStatus(UserStatusEnum.INVALID.getCode().byteValue());
+        int i = userMapper.updateByExampleSelective(user, userExample);
+        return i==userNumbers.size();
     }
 
     @Override
@@ -151,15 +156,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Map.Entry<Integer, String>> selectTeacherList() {
-        return null;
+    public List<UserDTO> getStudentListByClassId(Integer classId) {
+        UserExample userExample = new UserExample();
+        if(classId!=0){
+            userExample.createCriteria().andClassIdEqualTo(classId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
+        }else {
+            userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
+        }
+        List<User> users = userMapper.selectByExample(userExample);
+        List<UserDTO> userDTOS = users.stream().map(user -> {
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            return userDTO;
+        }).collect(Collectors.toList());
+        return userDTOS;
     }
 
     @Override
-    public List<User> getStudentByClazzId(Integer clazzId) {
+    public List<User> selectTeacherList() {
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andClassIdEqualTo(clazzId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
-        return userMapper.selectByExample(userExample);
+        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue());
+        List<User> teachers = userMapper.selectByExample(userExample);
+        return teachers;
+    }
+
+    @Override
+    public List<UserDTO> getUsersByUserId(List<Integer> userIds) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserIdIn(userIds);
+        List<User> users = userMapper.selectByExample(userExample);
+        List<UserDTO> userDTOS = users.stream().map(user -> {
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            return userDTO;
+        }).collect(Collectors.toList());
+        return userDTOS;
     }
 
     @Override

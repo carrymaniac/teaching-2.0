@@ -40,14 +40,16 @@ public interface UserService {
      * @return
      */
     User getUserByUserNumber(String userNumber);
+
     /**
      * 批量增加用户
+     * @param users
      * @return
      */
     Boolean addUserByBatch(List<User> users);
 
     /**
-     * 通过用户工号学号，批量删除用户
+     * 通过用户工号学号，批量注销用户
      * @param userNumbers
      * @return
      */
@@ -62,25 +64,31 @@ public interface UserService {
 
 
     /**
-     * 查询所有的教师列表
-     */
-    List<Map.Entry<Integer, String>> selectTeacherList();
-
-
-    /**
-     * 根据班级ID获取用户列表
-     * @param clazzId
+     * 根据班级Id查询学生列表, 若classId为0即全查
+     * @param classId
      * @return
      */
-    List<User> getStudentByClazzId(Integer clazzId);
+    List<UserDTO> getStudentListByClassId(Integer classId);
 
-//    List<UserDTO> getUsersByUserId(List<Integer> userIds);
+    /**
+     * 查询所有的教师列表
+     * @return
+     */
+    List<User> selectTeacherList();
+
+    /**
+     * 通过ID列表批量获取用户信息
+     * @param userIds
+     * @return
+     */
+    List<UserDTO> getUsersByUserId(List<Integer> userIds);
 
     /**
      * 更新密码
-     * @param userId
-     * @param newPassword
-     * @return
+     * @param userId 用户ID
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否更新成功
      */
     Boolean updatePassword(Integer userId,String oldPassword ,String newPassword);
 

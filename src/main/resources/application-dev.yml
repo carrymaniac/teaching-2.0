@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: admin
-    url: jdbc:mysql://127.0.0.1/teaching?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://127.0.0.1/teaching?characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
     hikari:
       validation-timeout: 3000
 #      连接超时时间

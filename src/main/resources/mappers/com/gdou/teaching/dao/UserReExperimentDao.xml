@@ -18,4 +18,18 @@
        where experiment_id = #{experimentId} and `status` in (0,1)
     </select>
 
+    <update id="updateUserReExperimentByList" parameterType="java.util.List" >
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            UPDATE <include refid="table"/>
+            <set>
+                experiment_achievement = #{item.experimentAchievement},
+                status=#{item.status},
+                teacher_comment=#{item.teacherComment}
+            </set>
+            <where>
+                user_experiment_id = #{item.userExperimentId}
+            </where>
+        </foreach>
+    </update>
+
 </mapper>
