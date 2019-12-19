@@ -2,6 +2,8 @@ package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.Enum.RecordStatusEnum;
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.AchievementDao;
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.exception.TeachingException;
@@ -54,8 +56,22 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public boolean addAchievementByStudentList(Integer courseId, List<Integer> studentIdList) {
+        AchievementExample achievementExample = new AchievementExample();
+        achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdIn(studentIdList);
+        List<Achievement> exist = achievementMapper.selectByExample(achievementExample);
+        if(exist!=null&&!exist.isEmpty()){
+            StringBuilder sb = new StringBuilder();
+            sb.append("学生 ");
+            for(Achievement a :exist){
+                sb.append(a.getUserName());
+                sb.append("、");
+            }
+            sb.deleteCharAt(sb.length()-1);
+            sb.append("已存在,请检查");
+            throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(),sb.toString());
+        }
+
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdIn(studentIdList);
         List<User> users = userMapper.selectByExample(userExample);
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if(courseMaster==null){

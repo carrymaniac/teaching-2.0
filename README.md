@@ -5,7 +5,7 @@
 
 ## 2.0的不同之处
 ### 技术上
-mybatis将会使用mbg来代替原本人工的进行mapper编写
+mybatis将会使用mbg来代替原本人工的进行mapper编写，同时分页操作将使用pageHelper来代替之前的手动分页
 
 ### coding上
 - 统一所有的Result返回类，不再加入更多的复杂code
