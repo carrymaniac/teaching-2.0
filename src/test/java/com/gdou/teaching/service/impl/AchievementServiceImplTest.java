@@ -66,4 +66,9 @@ class AchievementServiceImplTest {
         Assert.isTrue(!achievementByCourseId.isEmpty(),"error");
         log.info("AchievementList:{}",achievementByCourseId);
     }
+
+    @Test
+    void updateAchievement(){
+        achievementService.updateAchievement(1,3);
+    }
 }
