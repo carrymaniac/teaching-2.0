@@ -170,9 +170,10 @@ public class CourseServiceImpl implements CourseService {
             log.error("注销课程,该课程不存在或已被删除");
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
         }
-        //更新
-        boolean flag = courseMasterDao.deleteCourseMasterByCourseId(courseId);
-        if (!flag){
+        CourseMaster course = new CourseMaster();
+        course.setCourseStatus(CourseStatusEnum.INVALID.getCode().byteValue());
+        course.setCourseId(courseId);
+        if (courseMasterMapper.updateByPrimaryKeySelective(course)!=1){
             log.error("注销课程,课程注销失败");
             throw new TeachingException(ResultEnum.COURSE_INVALID_ERROR);
         }

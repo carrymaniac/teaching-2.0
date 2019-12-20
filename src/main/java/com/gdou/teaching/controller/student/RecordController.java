@@ -50,7 +50,7 @@ public class RecordController {
             recordService.save(recordDTO);
         } catch (TeachingException e) {
             log.error("保存记录,发生异常:{}", e);
-            return ResultVOUtil.fail(e);
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"");
         }
         return ResultVOUtil.success();
     }
