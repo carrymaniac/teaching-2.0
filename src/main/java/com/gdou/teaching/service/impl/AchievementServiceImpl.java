@@ -96,7 +96,7 @@ public class AchievementServiceImpl implements AchievementService {
     public boolean deleteAchievementByStudentList(Integer courseId, List<Integer> studentIdList) {
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdIn(studentIdList);
-        return achievementMapper.deleteByExample(achievementExample)>studentIdList.size();
+        return achievementMapper.deleteByExample(achievementExample)==studentIdList.size();
     }
 
     @Override

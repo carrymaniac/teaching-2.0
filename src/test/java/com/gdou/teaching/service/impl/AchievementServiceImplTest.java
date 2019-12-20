@@ -67,8 +67,8 @@ class AchievementServiceImplTest {
         log.info("AchievementList:{}",achievementByCourseId);
     }
 
-    @Test
-    void updateAchievement(){
-        achievementService.updateAchievement(1,3);
-    }
+   @Test
+   void updateAchievement(){
+        achievementService.updateAchievement(4,17);
+   }
 }

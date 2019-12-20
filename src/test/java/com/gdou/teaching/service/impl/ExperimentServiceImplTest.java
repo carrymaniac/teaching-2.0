@@ -40,14 +40,17 @@ class ExperimentServiceImplTest {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         experimentDTO.setCourseId(1);
         experimentDTO.setExperimentIntro("关于🌲和二叉树的实验");
-        experimentDTO.setExperimentName("实验一 认识树");
-        experimentDTO.setExperimentText("实验正文");
-        experimentService.save(experimentDTO);
+        experimentDTO.setExperimentName("实验一 测试树");
+        experimentDTO.setExperimentText("实验测试正文");
+        //experimentDTO.setExperimentId(8);
+        //experimentDTO.setExperimentDetailId(13);
+        ExperimentDTO save = experimentService.save(experimentDTO);
+        log.info("save:{}",save);
     }
 
     @Test
     void list() {
-        List<ExperimentDTO> list = experimentService.list(1);
+        List<ExperimentDTO> list = experimentService.list(4);
         Assert.isTrue(!list.isEmpty(),"error ");
         log.info("list: {}",list);
     }

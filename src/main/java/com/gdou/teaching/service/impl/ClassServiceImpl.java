@@ -84,6 +84,7 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public Integer getStudentCountByClazzId(Integer clazzId) {
+        //todo 查询user表中的学生数量, 未使用clazz_size字段
         UserExample userExample = new UserExample();
         userExample.createCriteria().andClassIdEqualTo(clazzId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         return userMapper.countByExample(userExample);

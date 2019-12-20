@@ -5,7 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,15 +28,17 @@ class RecordServiceImplTest {
 
     @Autowired
     RecordServiceImpl recordService;
+
     @Test
+    @Transactional
     void save() {
         RecordDTO recordDTO = new RecordDTO();
         recordDTO.setUserId(3);
         recordDTO.setClassId(1);
         recordDTO.setHaveCheckAnswer(false);
         recordDTO.setExperimentId(1);
-        recordDTO.setExperimentName("实验一 认识树");
-        recordDTO.setUserExperimentText("实验答案，这是我的提交记录");
+        recordDTO.setExperimentName("实验一 不认识树");
+        recordDTO.setUserExperimentText("实验答案，这不是我的提交记录");
         RecordDTO save = recordService.save(recordDTO);
         Assert.notNull(save.getUserExperimentId(),"error ");
         log.info("RecordDTO with id :{}",save);
@@ -40,13 +46,47 @@ class RecordServiceImplTest {
 
     @Test
     void selectOne() {
+        RecordDTO recordDTO = recordService.selectOne(1, 20);
+        Assert.notNull(recordDTO,"error");
+        log.info("RecordDTO :{}",recordDTO);
     }
 
     @Test
+    @Transactional
     void updateExperimentCommitNumber() {
+        recordService.updateExperimentCommitNumber(4);
     }
 
     @Test
     void getRecordByUserIdAndCourseId() {
+        List<RecordDTO> recordByUserIdAndCourseId = recordService.getRecordByUserIdAndCourseId(17,4);
+        Assert.notNull(recordByUserIdAndCourseId,"error");
+        log.info("RecordDTO :{}",recordByUserIdAndCourseId);
     }
+    @Test
+    @Transactional
+    void judge(){
+        RecordDTO recordDTO = new RecordDTO();
+        recordDTO.setUserExperimentId(2);
+        recordDTO.setExperimentAchievement(80d);
+        recordDTO.setUserId(17);
+        recordDTO.setHaveCheckAnswer(false);
+        recordDTO.setExperimentId(2);
+        recordService.judge(recordDTO);
+
+    }
+
+    @Test
+    void batchJudge(){
+        List<RecordDTO> recordDTOList=new ArrayList<>();
+        RecordDTO recordDTO1 = recordService.selectOne(1, 17);
+        recordDTO1.setExperimentAchievement(30d);
+        RecordDTO recordDTO2 = recordService.selectOne(1, 20);
+        recordDTO2.setExperimentAchievement(60d);
+        recordDTOList.add(recordDTO1);
+        recordDTOList.add(recordDTO2);
+
+        recordService.batchJudge(recordDTOList);
+    }
+
 }

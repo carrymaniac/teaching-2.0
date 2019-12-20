@@ -70,6 +70,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     @Override
     @Transactional
     public ExperimentDTO save(ExperimentDTO experimentDTO) {
+        //todo 无法对实验详细表进行更新  原因在于updateByPrimaryKey方法,没有对experiment_text字段进行更新
         ExperimentMaster experimentMaster=new ExperimentMaster();
         ExperimentDetail experimentDetail=new ExperimentDetail();
         //查询应提交人数
@@ -144,6 +145,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
+        //todo 仅查询实验主表信息, 未查询实验详情表信息以及文件信息
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
