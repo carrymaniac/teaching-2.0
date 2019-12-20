@@ -103,11 +103,10 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public RecordDTO selectOne(Integer experimentId, Integer userId) {
-        //todo 无法查询教师评语teacherComment,userExperimentText 大文本内容
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         userReExperimentExample.setOrderByClause("create_time desc");
         userReExperimentExample.createCriteria().andUserIdEqualTo(userId).andExperimentIdEqualTo(experimentId);
-        List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+        List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExampleWithBLOBs(userReExperimentExample);
         if(userReExperiments==null||userReExperiments.isEmpty()){
             return null;
         }
@@ -133,7 +132,6 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer courseId) {
-        //todo 无法查询教师评语teacherComment,userExperimentText 大文本内容和提交的文件记录
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
@@ -180,6 +178,6 @@ public class RecordServiceImpl implements RecordService {
         }).collect(Collectors.toList());
         //更新操作
         userReExperimentDao.updateUserReExperimentByList(recordList);
-        //todo 之后需要批量去更新学生的成绩
+        //todo 之后需要批量去更新学生的成绩 也许是制作一个异步更新的方法
     }
 }

@@ -51,10 +51,10 @@ public interface ClassService {
     List<User> getStudentByClazzId(Integer clazzId);
 
     /**
-     * 根据classID 获取学生数量
+     * 根据classId来更新学生数量
      * @param clazzId
      * @return
      */
-    Integer getStudentCountByClazzId(Integer clazzId);
+    boolean updateStudentCountByClazzId(Integer clazzId);
 
 }

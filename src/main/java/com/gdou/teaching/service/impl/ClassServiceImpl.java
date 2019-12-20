@@ -12,6 +12,8 @@ import com.gdou.teaching.mbg.model.ClassExample;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.mbg.model.UserExample;
 import com.gdou.teaching.service.ClassService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.javassist.ClassMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,8 +59,13 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public List<Class> getClassesByPage(Integer page, Integer size) {
-        //todo 引入PageHelper再完成
-        return null;
+        //todo 待测试 仍需要讨论确定要返回list还是pageInfo
+        PageHelper.startPage(page,size);
+        ClassExample classExample = new ClassExample();
+        classExample.createCriteria();
+        List<Class> classes = classMapper.selectByExample(classExample);
+        PageInfo<Class> pageInfo = new PageInfo<>(classes);
+        return pageInfo.getList();
     }
 
     @Override
@@ -83,10 +90,13 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public Integer getStudentCountByClazzId(Integer clazzId) {
-        //todo 查询user表中的学生数量, 未使用clazz_size字段
+    public boolean updateStudentCountByClazzId(Integer clazzId) {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andClassIdEqualTo(clazzId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
-        return userMapper.countByExample(userExample);
+        int number = userMapper.countByExample(userExample);
+        Class cl = new Class();
+        cl.setClassId(clazzId);
+        cl.setClassSize(number);
+        return classMapper.updateByPrimaryKeySelective(cl)>0;
     }
 }

@@ -15,6 +15,13 @@ import java.util.List;
 public interface ExperimentService {
 
     /**
+     * 通过课程ID获取实验列表，以DTO方式返回
+     * 此处只查询实验主表即可，用于首页列表显示
+     * @param courseId
+     * @return
+     */
+    List<ExperimentDTO> list(Integer courseId);
+    /**
      * 根据experimentId查找实验主表、实验详情纪录
      * @param experimentId
      * @return
@@ -36,13 +43,18 @@ public interface ExperimentService {
     boolean invalid(Integer experimentId);
 
     /**
-     * 截止上交作业
+     * 实验停止提交
      * 根据experimentId设置实验为不可提交状态
+     * @param experimentId 实验ID
+     * @return
      */
     ExperimentMaster ban(Integer experimentId);
 
     /**
+     * 实验恢复提交
      * 根据experimentId设置实验为正常状态
+     * @param experimentId
+     * @return
      */
     ExperimentMaster restore(Integer experimentId);
 
@@ -55,10 +67,4 @@ public interface ExperimentService {
      * 根据experimentId设置实验为正常状态
      */
     ExperimentMaster unlock(Integer experimentId);
-    /**
-     * 通过课程ID获取实验列表，以DTO方式返回
-     * @param courseId
-     * @return
-     */
-    List<ExperimentDTO> list(Integer courseId);
 }
