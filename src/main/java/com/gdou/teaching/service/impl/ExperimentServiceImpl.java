@@ -52,17 +52,17 @@ public class ExperimentServiceImpl implements ExperimentService {
         // 主表数据 副表detail数据 实验文件数据
         ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
         if(experimentMaster==null){
+            log.info("[ExperimentServiceImpl]-datail查询实验详情信息,实验主表不存在,experimentId={}",experimentId);
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         ExperimentDetail experimentDetail = experimentDetailMapper.selectByPrimaryKey(experimentMaster.getExperimentDetailId());
         if(experimentDetail==null){
+            log.info("[ExperimentServiceImpl]-datail查询实验详情信息,实验详情表不存在,experimentDetailId={}",experimentMaster.getExperimentDetailId());
             throw new TeachingException(ResultEnum.EXPERIMENT_DETAIL_NOT_EXIST);
         }
         ExperimentDTO experimentDTO = new ExperimentDTO();
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
-        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
-            experimentDTO.setExperimentDetailFile(fileDTOList);
-        }
+        experimentDTO.setExperimentDetailFile(fileDTOList);
         //属性拷贝
         BeanUtils.copyProperties(experimentDetail,experimentDTO);
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
@@ -77,6 +77,10 @@ public class ExperimentServiceImpl implements ExperimentService {
         //查询应提交人数
         Integer courseId = experimentDTO.getCourseId();
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
+        if(courseMaster==null){
+            log.info("[ExperimentServiceImpl]-save 保存实验信息,课程主表不存在,courseId={}",courseId);
+            throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
+        }
         experimentDTO.setExperimentParticipationNum(courseMaster.getCourseNumber());
         //检查是否需要加上默认值
         if(experimentDTO.getValve()==null){
@@ -92,13 +96,13 @@ public class ExperimentServiceImpl implements ExperimentService {
         if (experimentDetail.getExperimentDetailId()==null){
             int insert = experimentDetailMapper.insert(experimentDetail);
             if(insert<=0){
-                log.error("保存实验,新增实验详情表失败,experimentDetail={}",experimentDetail);
+                log.error("[ExperimentServiceImpl]-保存实验,新增实验详情表失败,experimentDetail={}",experimentDetail);
                 throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
             }
         }else{
             int i = experimentDetailMapper.updateByPrimaryKeyWithBLOBs(experimentDetail);
             if(i<=0){
-                log.error("保存实验,更新实验详情表失败,experimentDetail={}",experimentDetail);
+                log.error("[ExperimentServiceImpl]-保存实验,更新实验详情表失败,experimentDetail={}",experimentDetail);
                 throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
             }
         }
@@ -109,13 +113,13 @@ public class ExperimentServiceImpl implements ExperimentService {
         if (experimentMaster.getExperimentId()==null){
             Integer i = experimentMasterMapper.insert(experimentMaster);
             if (i<=0){
-                log.error("保存实验,新增实验主表失败,experimentMaster={}",experimentMaster);
+                log.error("[ExperimentServiceImpl]-保存实验,新增实验主表失败,experimentMaster={}",experimentMaster);
                 throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
             }
         }else{
             int i = experimentMasterMapper.updateByPrimaryKey(experimentMaster);
             if (i<=0){
-                log.error("保存实验,更新实验主表失败,experimentMaster={}",experimentMaster);
+                log.error("[ExperimentServiceImpl]-保存实验,更新实验主表失败,experimentMaster={}",experimentMaster);
                 throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
             }
         }
@@ -135,6 +139,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
+            log.info("[ExperimentServiceImpl]-获取实验列表信息,实验主表不存在,courseId={}",courseId);
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         List<ExperimentDTO> experimentDTOList = experimentMasters.stream().map(experimentMaster -> {
@@ -151,12 +156,12 @@ public class ExperimentServiceImpl implements ExperimentService {
         ExperimentMaster experimentMaster =
                 experimentMasterMapper.selectByPrimaryKey(experimentId);
         if (experimentMaster == null) {
-            log.error("删除实验,该实验不存在或已被删除");
+            log.info("[ExperimentServiceImpl]-删除实验,该实验不存在或已被删除");
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         experimentMaster.setExperimentStatus(ExperimentStatusEnum.INVALID.getCode().byteValue());
         if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
-            log.error("删除实验,实验删除失败");
+            log.info("[ExperimentServiceImpl]-删除实验,实验删除失败");
             throw new TeachingException(ResultEnum.EXPERIMENT_INVALID_ERROR);
         }
         return true;
@@ -167,18 +172,18 @@ public class ExperimentServiceImpl implements ExperimentService {
         ExperimentMaster experimentMaster =
                 experimentMasterMapper.selectByPrimaryKey(experimentId);
         if (experimentMaster == null) {
-            log.error("完结实验,该实验不存在或已被删除");
+            log.info("[ExperimentServiceImpl]-完结实验,该实验不存在或已被删除");
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
         if (experimentMaster.getExperimentStatus().intValue()!=(ExperimentStatusEnum.NORMAL.getCode())
                 &&experimentMaster.getExperimentStatus().intValue()!=(ExperimentStatusEnum.LOCK.getCode())){
-            log.error("完结实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            log.info("[ExperimentServiceImpl]-完结实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
         experimentMaster.setExperimentStatus(ExperimentStatusEnum.END.getCode().byteValue());
         if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
-            log.error("完结实验,实验完结失败");
+            log.info("[ExperimentServiceImpl]-完结实验,实验完结失败");
             throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
         return true;
@@ -191,17 +196,17 @@ public class ExperimentServiceImpl implements ExperimentService {
         ExperimentMaster experimentMaster =
                 experimentMasterMapper.selectByPrimaryKey(experimentId);
         if (experimentMaster == null) {
-            log.error("锁定实验,该实验不存在或已被删除");
+            log.info("[ExperimentServiceImpl]-锁定实验,该实验不存在或已被删除");
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
         if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.NORMAL.getCode()){
-            log.error("锁定实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            log.info("[ExperimentServiceImpl]-锁定实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
         experimentMaster.setExperimentStatus(ExperimentStatusEnum.END.getCode().byteValue());
         if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
-            log.error("锁定实验,实验锁定失败");
+            log.info("[ExperimentServiceImpl]-锁定实验,实验锁定失败");
             throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
         return true;
@@ -212,17 +217,17 @@ public class ExperimentServiceImpl implements ExperimentService {
         ExperimentMaster experimentMaster =
                 experimentMasterMapper.selectByPrimaryKey(experimentId);
         if (experimentMaster == null) {
-            log.error("解锁实验,该实验不存在或已被删除");
+            log.info("[ExperimentServiceImpl]-解锁实验,该实验不存在或已被删除");
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
         if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.LOCK.getCode()){
-            log.error("解锁实验主表,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            log.info("[ExperimentServiceImpl]-解锁实验主表,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
         experimentMaster.setExperimentStatus(ExperimentStatusEnum.NORMAL.getCode().byteValue());
         if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
-            log.error("解锁实验,实验解锁失败");
+            log.info("[ExperimentServiceImpl]-解锁实验,实验解锁失败");
             throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
         return true;

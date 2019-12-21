@@ -110,15 +110,14 @@ public class RecordServiceImpl implements RecordService {
         userReExperimentExample.createCriteria().andUserIdEqualTo(userId).andExperimentIdEqualTo(experimentId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExampleWithBLOBs(userReExperimentExample);
         if(userReExperiments==null||userReExperiments.isEmpty()){
-            return null;
+            log.error("[RecordServiceImpl]-selectOne,实验提交表信息不存在,experimentId={},userId={}",experimentId,userId);
+            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
         }
         UserReExperiment userReExperiment = userReExperiments.get(0);
         RecordDTO recordDTO = new RecordDTO();
         //查询用户提交时提交的文件记录
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId());
-        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
-            recordDTO.setUserExperimentFile(fileDTOList);
-        }
+        recordDTO.setUserExperimentFile(fileDTOList);
         BeanUtils.copyProperties(userReExperiment,recordDTO);
         return recordDTO;
     }
@@ -127,14 +126,14 @@ public class RecordServiceImpl implements RecordService {
     public RecordDTO selectOne(Integer userExperimentId) {
         UserReExperiment userReExperiment = userReExperimentMapper.selectByPrimaryKey(userExperimentId);
         if(userReExperiment==null){
-            return null;
+            log.error("[RecordServiceImpl]-selectOne,实验提交表信息不存在,userExperimentId={}",userExperimentId);
+            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
         }
         RecordDTO recordDTO = new RecordDTO();
         //查询用户提交时提交的文件记录
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId());
-        if(!fileDTOList.isEmpty()){
-            recordDTO.setUserExperimentFile(fileDTOList);
-        }
+        recordDTO.setUserExperimentFile(fileDTOList);
+
         BeanUtils.copyProperties(userReExperiment,recordDTO);
         return recordDTO;
     }
@@ -154,12 +153,20 @@ public class RecordServiceImpl implements RecordService {
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
+        if (experimentMasters==null||experimentMasters.isEmpty()){
+            log.error("[RecordServiceImpl]-getRecordByUserIdAndCourseId,实验主表信息不存在,courseId={}",courseId);
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
         List<Integer> experimentIds = experimentMasters.stream().map(ExperimentMaster::getExperimentId).collect(Collectors.toList());
 
         //查询对应的实验提交记录（不带提交文本）
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         userReExperimentExample.createCriteria().andExperimentIdIn(experimentIds).andUserIdEqualTo(userId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+        if (userReExperiments==null||experimentMasters.isEmpty()){
+            log.info("[RecordServiceImpl]-getRecordByUserIdAndCourseId,实验提交表信息不存在,experimentIds={},userId={}",experimentIds,userId);
+            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
+        }
         List<RecordDTO> collect = userReExperiments.stream().map(userReExperiment -> {
             RecordDTO recordDTO = new RecordDTO();
             BeanUtils.copyProperties(userReExperiment, recordDTO);
@@ -174,6 +181,10 @@ public class RecordServiceImpl implements RecordService {
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         userReExperimentExample.createCriteria().andExperimentIdEqualTo(experimentId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+        if (userReExperiments==null||userReExperiments.isEmpty()){
+            log.info("[RecordServiceImpl]-getRecordListByExperimentId,实验提交表信息不存在,experimentId={}",experimentId);
+            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
+        }
         List<RecordDTO> recordDTOList = userReExperiments.stream().map(record -> {
             RecordDTO recordDTO = new RecordDTO();
             BeanUtils.copyProperties(record, recordDTO);
@@ -186,13 +197,21 @@ public class RecordServiceImpl implements RecordService {
     public void judge(RecordDTO recordDTO) {
         //判断是否提前看过答案
         ExperimentMaster experiment = experimentMasterMapper.selectByPrimaryKey(recordDTO.getExperimentId());
+        if (experiment==null){
+            log.info("[RecordServiceImpl]-judge,实验主表信息不存在,ExperimentId={}",recordDTO.getExperimentId());
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
         if(recordDTO.getHaveCheckAnswer()){
             Float punishment = experiment.getPunishment();
             recordDTO.setExperimentAchievement(recordDTO.getExperimentAchievement()*punishment);
         }
         UserReExperiment userReExperiment = new UserReExperiment();
         BeanUtils.copyProperties(recordDTO,userReExperiment);
-        userReExperimentMapper.updateByPrimaryKeySelective(userReExperiment);
+        int i = userReExperimentMapper.updateByPrimaryKeySelective(userReExperiment);
+        if (i<=0){
+            log.error("[RecordServiceImpl]-judge,保存实验提交表失败,userReExperiment={}",userReExperiment);
+            throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
+        }
         //更新课程成绩
         achievementService.updateAchievement(experiment.getCourseId(),recordDTO.getUserId());
     }
@@ -201,6 +220,10 @@ public class RecordServiceImpl implements RecordService {
     public void batchJudge(List<RecordDTO> recordDTO) {
         Integer experimentId = recordDTO.get(0).getExperimentId();
         ExperimentMaster experiment = experimentMasterMapper.selectByPrimaryKey(experimentId);
+        if(experiment==null){
+            log.info("[RecordServiceImpl]-batchJudge,实验主表信息不存在,experimentId={}",experimentId);
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
         Float punishment = experiment.getPunishment();
         List<UserReExperiment> recordList = recordDTO.stream().map(r -> {
             UserReExperiment record = new UserReExperiment();
@@ -212,7 +235,11 @@ public class RecordServiceImpl implements RecordService {
             return record;
         }).collect(Collectors.toList());
         //更新操作
-        userReExperimentDao.updateUserReExperimentByList(recordList);
+        Integer i = userReExperimentDao.updateUserReExperimentByList(recordList);
+        if (i<=0){
+            log.error("[RecordServiceImpl]-batchJudge,批量保存实验提交表失败,recordList={}",recordList);
+            throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
+        }
         //todo 之后需要批量去更新学生的成绩 也许是制作一个异步更新的方法
     }
 }

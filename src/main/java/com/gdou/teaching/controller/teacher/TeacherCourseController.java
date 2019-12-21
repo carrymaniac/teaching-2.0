@@ -108,8 +108,16 @@ public class TeacherCourseController {
     @GetMapping("/addCourse")
     public ResultVO addCourse() {
         HashMap<String, Object> map = new HashMap<>();
-        List<TreeMap> clazzList = classService.getAllClazzList();
-        List<UserDTO> studentList= userService.getStudentListByClassId(0);
+        List<TreeMap> clazzList;
+        List<UserDTO> studentList;
+        try{
+            clazzList = classService.getAllClazzList();
+            studentList= userService.getStudentListByClassId(0);
+        }catch (TeachingException e){
+            log.error("[TeacherCourseController]查询班级列表, 查询异常" + e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),ResultEnum.SERVER_ERROR.getMsg());
+        }
+
         HashMap<String,Object> studentForSelect=new HashMap<>();
 
         for(int i=0;i<clazzList.size();i++){
@@ -138,9 +146,22 @@ public class TeacherCourseController {
     @GetMapping("/manage/{courseId}")
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String, Object> map = new HashMap<>();
-        List<TreeMap> clazzList = classService.getAllClazzList();
-        List<UserDTO> studentList= userService.getStudentListByClassId(0);
-        List<AchievementDTO> achievementList = achievementService.getAchievementByCourseId(courseId);
+        List<TreeMap> clazzList;
+        List<UserDTO> studentList;
+        List<AchievementDTO> achievementList;
+        try{
+            clazzList = classService.getAllClazzList();
+            studentList= userService.getStudentListByClassId(0);
+        }catch (TeachingException e){
+            log.error("[TeacherCourseController]查询班级列表, 查询异常" + e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),ResultEnum.SERVER_ERROR.getMsg());
+        }
+        try{
+            achievementList= achievementService.getAchievementByCourseId(courseId);
+        }catch (TeachingException e){
+            log.error("[TeacherCourseController]查询班级列表, 查询异常" + e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
+        }
         //获取已选课程的学生id列表
         Set<Integer> hadStudentIdSet = achievementList.stream().map(achievementDTO->achievementDTO.getUserId()).collect(Collectors.toSet());
         // 已选学生列表
@@ -220,15 +241,20 @@ public class TeacherCourseController {
             courseService.save(courseDTO);
         } catch (TeachingException e) {
             log.error("保存课程,发生异常:{}", e);
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(), ResultEnum.SERVER_ERROR.getMsg());
         }
          // 新增课程课程时执行
         if (form.getCourseId()==null){
             //  todo 异步更新成绩表 addAchievementByClazzId
             List<Integer> studentIdList = form.getAddStudentIdList();
-            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
-            // 异步更新课程及其下属实验的上课人数
-            courseService.updateNumber(courseDTO.getCourseId());
+            try{
+                achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+                // 异步更新课程及其下属实验的上课人数
+                courseService.updateNumber(courseDTO.getCourseId());
+            }catch (TeachingException e){
+                log.error("更新成绩表,发生异常:{}", e);
+                return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+            }
         }
         return ResultVOUtil.success();
     }
@@ -248,8 +274,8 @@ public class TeacherCourseController {
             //todo  更新上课及其下属实验的人数
             courseService.updateNumber(form.getCourseId());
         } catch (TeachingException e) {
-            log.error("保存课程,发生异常:{}", e);
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
+            log.error("更新课程人数,发生异常:{}", e);
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
         }
         return ResultVOUtil.success();
     }
@@ -257,7 +283,13 @@ public class TeacherCourseController {
     @GetMapping("/detail/{courseId}")
     public ResultVO<CourseVO> detail(@PathVariable(value = "courseId") Integer courseId){
         CourseVO courseVO = new CourseVO();
-        CourseDTO detail = courseService.detail(courseId);
+        CourseDTO detail;
+        try {
+            detail=courseService.detail(courseId);
+        }catch (TeachingException e){
+            log.error("查询课程详细,发生异常:{}", e);
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
+        }
         BeanUtils.copyProperties(detail,courseVO);
         return ResultVOUtil.success(courseVO);
     }

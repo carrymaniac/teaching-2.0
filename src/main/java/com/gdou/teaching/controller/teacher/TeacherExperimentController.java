@@ -36,7 +36,11 @@ public class TeacherExperimentController {
     @Autowired
     private CourseService courseService;
 
-    //实验列表
+    /**
+     * 实验列表
+     * @param courseId
+     * @return
+     */
     @GetMapping(path = "/list/{courseId}")
     public ResultVO<CourseVO> list(@PathVariable(value = "courseId") Integer courseId) {
         CourseDTO courseDTO;
@@ -70,7 +74,11 @@ public class TeacherExperimentController {
         return ResultVOUtil.success(courseVO);
     }
 
-    //实验详情
+    /**
+     * 实验详情
+     * @param experimentId
+     * @return
+     */
     @GetMapping("/detail/{experimentId}")
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
@@ -93,7 +101,7 @@ public class TeacherExperimentController {
             try{
                 experimentDTO = experimentService.detail(experimentId);
             }catch (TeachingException e) {
-                log.error("查询实验详情, 查询异常" + e.getMessage());
+                log.error("查询实验详情,查询异常" + e.getMessage());
                 return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
             }
         }
@@ -105,7 +113,7 @@ public class TeacherExperimentController {
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
-            throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
+            throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
         ExperimentDTO experimentDTO = new ExperimentDTO();
         BeanUtils.copyProperties(form, experimentDTO);
@@ -113,7 +121,7 @@ public class TeacherExperimentController {
             experimentService.save(experimentDTO);
         } catch (TeachingException e) {
             log.error("保存实验,发生异常:{}", e);
-            return ResultVOUtil.fail(ResultEnum.EXPERIMENT_SAVE_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }

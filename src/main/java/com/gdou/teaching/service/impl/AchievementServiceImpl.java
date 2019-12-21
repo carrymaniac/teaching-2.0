@@ -70,10 +70,13 @@ public class AchievementServiceImpl implements AchievementService {
             sb.append("已存在,请检查");
             throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(),sb.toString());
         }
-
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserIdIn(studentIdList).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         List<User> users = userMapper.selectByExample(userExample);
+        if(users==null||users.isEmpty()){
+            log.info("[AchievementServiceImpl]-新增Achievement,用户信息不存在,studentIdList:{}",studentIdList);
+            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if(courseMaster==null){
             log.info("[AchievementServiceImpl]-新增Achievement,课程主表不存在,courseID为:{}",courseId);
@@ -113,7 +116,8 @@ public class AchievementServiceImpl implements AchievementService {
         achievementExample.createCriteria().andUserIdEqualTo(userId).andCourseIdEqualTo(courseId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
-            return null;
+            log.info("[AchievementServiceImpl]-getAchievementByUserIdAndCourseId,成绩表信息不存在,userId:{},courseId:{}",userId,courseId);
+            throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
         }
         return achievements.get(0);
     }
@@ -124,11 +128,17 @@ public class AchievementServiceImpl implements AchievementService {
         achievementExample.createCriteria().andCourseIdEqualTo(courseId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if (achievements==null||achievements.isEmpty()){
-            return null;
+            log.info("[AchievementServiceImpl]-getAchievementByCourseId,成绩表信息不存在,courseId:{}",courseId);
+           throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
         }
         //获取老师名字
         Integer teacherId = achievements.get(0).getTeacherId();
-        String teacherName = userMapper.selectByPrimaryKey(teacherId).getNickname();
+        User teacher = userMapper.selectByPrimaryKey(teacherId);
+        if (teacher==null){
+            log.info("[AchievementServiceImpl]-getAchievementByCourseId,教师信息不存在,teacherId:{}",teacherId);
+            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }
+        String teacherName = teacher.getNickname();
         //获取班级信息
         HashSet<Integer> classIds = new HashSet<>();
         achievements.stream().forEach(achievement -> {
@@ -138,6 +148,10 @@ public class AchievementServiceImpl implements AchievementService {
         ClassExample classExample = new ClassExample();
         classExample.createCriteria().andClassIdIn(classIdList);
         List<Class> classes = classMapper.selectByExample(classExample);
+        if (classes==null||classes.isEmpty()){
+            log.info("[AchievementServiceImpl]-getAchievementByCourseId,班级信息不存在,classIdList:{}",classIdList);
+            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+        }
         HashMap<Integer,String> classMap = new HashMap<Integer, String>(classes.size()){
             {
                 classes.forEach(aClass -> {
@@ -162,6 +176,10 @@ public class AchievementServiceImpl implements AchievementService {
         ExperimentMasterExample example = new ExperimentMasterExample();
         example.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasterList = experimentMasterMapper.selectByExample(example);
+        if (experimentMasterList==null||experimentMasterList.isEmpty()){
+            log.info("[AchievementServiceImpl]-updateAchievement,实验主表信息不存在,courseId:{}",courseId);
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         List<UserReExperiment> recordList = experimentMasterList.stream().map(experimentMaster -> {
             userReExperimentExample.clear();

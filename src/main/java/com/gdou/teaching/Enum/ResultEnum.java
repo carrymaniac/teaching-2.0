@@ -24,7 +24,6 @@ public enum  ResultEnum implements CodeEnum {
     //以下错误只用于后台内部,不返回到前台。
     //用户模块的状态码
 
-
     //课程模块状态码
     COURSE_SAVE_ERROR(21,"课程信息保存失败"),
     COURSE_STATUS_ERROR(22,"课程状态异常"),
@@ -43,6 +42,7 @@ public enum  ResultEnum implements CodeEnum {
 
     //实验提交记录模块状态码
     SUBMIT_RECORD_ERROR(41,"提交实验失败"),
+    RECORD_NOT_EXIST(42,"实验提交表不存在"),
 
     //实验答案模块状态码
     ANSWER_NOT_EXIST(51,"实验答案不存在"),
@@ -55,6 +55,9 @@ public enum  ResultEnum implements CodeEnum {
     //班级模块
     CLASSNAME_ERROR(71,"该班级已注册，请检查确认"),
     CLASS_NOT_EXIST(72,"班级不存在"),
+
+    //成绩模块
+    ACHIEVEMENT_NOT_EXIST(81,"成绩表不存在"),
     ;
     private final Integer code;
     private final String msg;

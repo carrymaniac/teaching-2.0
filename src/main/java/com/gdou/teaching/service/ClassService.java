@@ -21,7 +21,7 @@ public interface ClassService {
      */
     Class registerClass(String clazzName);
 
-    Class getClassByClazzId(Integer clazzId);
+    Class getClassByClazzId(Integer classId);
 
     /**
      * 分页获取班级列表
@@ -40,6 +40,7 @@ public interface ClassService {
 
     /**
      * 获取班级列表
+     * @return
      */
     List<TreeMap> getAllClazzList();
 

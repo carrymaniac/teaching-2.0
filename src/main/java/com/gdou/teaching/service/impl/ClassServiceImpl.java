@@ -14,6 +14,7 @@ import com.gdou.teaching.mbg.model.UserExample;
 import com.gdou.teaching.service.ClassService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.ClassMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import java.util.*;
  * @Version:
  */
 @Service
+@Slf4j
 public class ClassServiceImpl implements ClassService {
     @Autowired
     ClassMapper classMapper;
@@ -53,8 +55,13 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public Class getClassByClazzId(Integer clazzId) {
-        return classMapper.selectByPrimaryKey(clazzId);
+    public Class getClassByClazzId(Integer classId) {
+        Class Class = classMapper.selectByPrimaryKey(classId);
+        if(Class==null){
+            log.info("[ClassServiceImpl]-getClassByClazzId,班级信息不存在,classId:{}",classId);
+            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+        }
+        return Class;
     }
 
     @Override
@@ -80,7 +87,10 @@ public class ClassServiceImpl implements ClassService {
         ClassExample classExample = new ClassExample();
         classExample.createCriteria().andClassStatusEqualTo(ClazzStatusEnum.NORMAL.getCode().byteValue());
         List<Class> classes = classMapper.selectByExample(classExample);
-
+        if(classes==null||classes.isEmpty()){
+            log.info("[ClassServiceImpl]-获取班级列表,班级信息不存在");
+            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+        }
         classes.forEach(clazze -> {
             TreeMap<String,Object> map = new TreeMap<>();
             map.put("classId",clazze.getClassId());

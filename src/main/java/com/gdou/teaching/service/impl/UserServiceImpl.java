@@ -15,6 +15,7 @@ import com.gdou.teaching.mbg.model.UserExample;
 import com.gdou.teaching.mbg.model.UserInfo;
 import com.gdou.teaching.mbg.model.UserInfoExample;
 import com.gdou.teaching.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ import static com.gdou.teaching.Enum.ResultEnum.USER_NOT_EXIST;
  * @Version:
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     UserMapper userMapper;
@@ -52,7 +54,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(int id) {
-        return userMapper.selectByPrimaryKey(id);
+        User user = userMapper.selectByPrimaryKey(id);
+        if (user==null){
+            log.info("[UserServiceImpl]-,getUserById,学生信息不存在,userId:{}",id);
+            throw new TeachingException(USER_NOT_EXIST);
+        }
+        return user;
     }
 
     @Override
@@ -164,6 +171,10 @@ public class UserServiceImpl implements UserService {
             userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         }
         List<User> users = userMapper.selectByExample(userExample);
+        if (users==null||users.isEmpty()){
+            log.info("[UserServiceImpl]-,根据classId查询学生列表,学生信息不存在,classId:{}",classId);
+            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+        }
         List<UserDTO> userDTOS = users.stream().map(user -> {
             UserDTO userDTO = new UserDTO();
             BeanUtils.copyProperties(user, userDTO);

@@ -87,6 +87,6 @@ class  CourseServiceImplTest {
     @Test
     @Transactional
     void updateNumber(){
-        courseService.updateNumber(4);
+        courseService.updateNumber(100);
     }
 }
