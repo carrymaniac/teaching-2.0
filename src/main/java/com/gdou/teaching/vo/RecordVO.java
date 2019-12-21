@@ -14,22 +14,42 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecordVO {
-    //用户实验提交记录id
+    /**
+     * 用户实验提交记录id
+     */
     private Integer userExperimentId;
-    //用户id
+    /**
+     *  用户id
+     */
     private Integer userId;
-    //学生名称
+    /**
+     *  学生名称
+     */
     private String userName;
-    //学生学号
+    /**
+     *  学生学号
+     */
     private String userNumber;
-    //用户实验提交记录文本内容
+    /**
+     *  用户实验提交记录文本内容
+     */
+
     private String userExperimentText;
-    //用户实验提交记录文件内容
+    /**
+     * 用户实验提交记录文件内容
+     */
     private List<FileDTO> userExperimentFile;
-    //用户实验得分
+    /**
+     * 用户实验得分
+     */
     private Double experimentAchievement;
-    //老师评语
+    /**
+     * 老师评语
+     */
+
     private String teacherComment;
-    //实验提交状态
+    /**
+     *  实验提交状态
+     */
     private Integer status;
 }

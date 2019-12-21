@@ -13,10 +13,21 @@ import java.util.List;
  **/
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class ClazzVO {
+        /**
+         * 班级Id
+         */
         private Integer classId;
+        /**
+         *班级名称
+         */
         private String className;
+        /**
+         *班级状态
+         */
         private Integer classStatus;
+        /**
+         *学生列表
+         */
         private List<UserDTO> userList;
 }

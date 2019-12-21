@@ -120,10 +120,12 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public List<AchievementDTO> getAchievementByCourseId(Integer courseId) {
-
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andCourseIdEqualTo(courseId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
+        if (achievements==null||achievements.isEmpty()){
+            return null;
+        }
         //获取老师名字
         Integer teacherId = achievements.get(0).getTeacherId();
         String teacherName = userMapper.selectByPrimaryKey(teacherId).getNickname();
@@ -152,7 +154,6 @@ public class AchievementServiceImpl implements AchievementService {
             return achievementDTO;
         }).collect(Collectors.toList());
         return result;
-
     }
 
     @Override

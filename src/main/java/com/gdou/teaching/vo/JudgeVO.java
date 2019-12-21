@@ -12,18 +12,33 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JudgeVO {
-    //提交记录Id
+    /**
+     * 提交记录Id
+     */
+
     private Integer userExperimentId;
-    //班级Id
+    /**
+     *  班级Id
+     */
     private Integer classId;
-    //班级名称
+    /**
+     * 班级名称
+     */
     private String className;
-    //用户Id
+    /**
+     * 用户Id
+     */
     private Integer userId;
-    //学号
+    /**
+     * 学号
+     */
     private String userNumber;
-    //学生名称
+    /**
+     * 学生名称
+     */
     private String nickName;
-    //提交状态
-    private Integer status= RecordStatusEnum.NOT_FINISH.getCode();
+    /**
+     *  提交状态
+     */
+    private Integer status;
 }

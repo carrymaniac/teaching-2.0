@@ -18,24 +18,46 @@ import java.util.Date;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExperimentVO {
-    //实验ID
+    /**
+     * 实验Id
+     */
     private Integer experimentId;
-    //实验名称
+    /**
+     * 实验名
+     */
     private String experimentName;
-    //实验详情ID
+    /**
+     * 实验详情Id
+     */
+
     private Integer experimentDetailId;
-    //课程ID
+    /**
+     * 课程ID
+     */
     private Integer courseId;
-    //实验文本内容
+    /**
+     * 实验文本内容
+     */
     private String experiment_intro;
-    //实验文本内容
+    /**
+     * 实验文本内容
+     */
     private String experimentText;
-    //实验附件文档
+    /**
+     * 实验附件文档
+     */
     private String experimentDetailFile;
-    //提交状态
+    /**
+     * 提交状态
+     */
     private Integer recordStatus;
-    //提交人数
+    /**
+     *  提交人数
+     */
     private Integer experimentCommitNum;
+    /**
+     * 创建时间
+     */
     @JsonProperty("time")
     private Date createTime;
 }

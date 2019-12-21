@@ -11,9 +11,24 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AchievementVO {
+    /**
+     * 班级Id
+     */
     private Integer classId;
+    /**
+     * 用户Id
+     */
     private Integer userId;
+    /**
+     * 学号
+     */
     private String userNumber;
+    /**
+     *学生名称
+     */
     private String nickName;
+    /**
+     *成绩
+     */
     private Double courseAchievement;
 }

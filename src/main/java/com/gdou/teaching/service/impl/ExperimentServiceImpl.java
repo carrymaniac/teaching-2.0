@@ -135,7 +135,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
-            return null;
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         List<ExperimentDTO> experimentDTOList = experimentMasters.stream().map(experimentMaster -> {
             ExperimentDTO experimentDTO = new ExperimentDTO();
@@ -171,7 +171,8 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
-        if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.NORMAL.getCode()){
+        if (experimentMaster.getExperimentStatus().intValue()!=(ExperimentStatusEnum.NORMAL.getCode())
+                &&experimentMaster.getExperimentStatus().intValue()!=(ExperimentStatusEnum.LOCK.getCode())){
             log.error("完结实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }

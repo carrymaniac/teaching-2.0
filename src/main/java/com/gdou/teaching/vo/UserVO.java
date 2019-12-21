@@ -20,10 +20,28 @@ public class UserVO {
     private String userNumber;
     private String headUrl;
     private String userIdent;
-    private String mail; //电子邮箱
-    private String phone; //电话号码
-    private String college; //学院
-    private String series;  //系
-    private String major;   //专业
-    private String className;//班级
+    /**
+     * 电子邮箱
+     */
+    private String mail;
+    /**
+     * 电话号码
+     */
+    private String phone;
+    /**
+     * 学院
+     */
+    private String college;
+    /**
+     * 系
+     */
+    private String series;
+    /**
+     * 专业
+     */
+    private String major;
+    /**
+     * 班级
+     */
+    private String className;
 }

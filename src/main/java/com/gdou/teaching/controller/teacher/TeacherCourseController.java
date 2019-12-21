@@ -70,31 +70,33 @@ public class TeacherCourseController {
     @GetMapping("/list")
     public ResultVO list(){
         User user = hostHolder.getUser();
+        List<CourseDTO> list;
+        //通过ID获取到用户课程数据
         try{
-            //通过ID获取到用户课程数据
-            List<CourseDTO> list = courseService.listCourse(user.getUserId());
-            //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
-            //切割正常课程。
-            List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode()))
-                    .map(courseDTO -> {
-                        CourseVO courseVO = new CourseVO();
-                        BeanUtils.copyProperties(courseDTO, courseVO);
-                        return courseVO;
-                    }).collect(Collectors.toList());
-            //切割出过期课程
-            List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().intValue()==(CourseStatusEnum.END.getCode())).map(courseDTO -> {
-                CourseVO courseVO = new CourseVO();
-                BeanUtils.copyProperties(courseDTO, courseVO);
-                return courseVO;
-            }).collect(Collectors.toList());
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("normal", normal);
-            map.put("end", end);
-            return ResultVOUtil.success(map);
+            list = courseService.listCourse(user.getUserId());
         } catch (TeachingException e) {
             log.error("[TeacherCourseController]查询课程, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(e.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
+        //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
+        //切割正常课程。
+        List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode()))
+                .map(courseDTO -> {
+                    CourseVO courseVO = new CourseVO();
+                    BeanUtils.copyProperties(courseDTO, courseVO);
+                    return courseVO;
+                }).collect(Collectors.toList());
+        //切割出过期课程
+        List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().intValue()==(CourseStatusEnum.END.getCode())).map(courseDTO -> {
+            CourseVO courseVO = new CourseVO();
+            BeanUtils.copyProperties(courseDTO, courseVO);
+            return courseVO;
+        }).collect(Collectors.toList());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("normal", normal);
+        map.put("end", end);
+        return ResultVOUtil.success(map);
+
     }
 
 
@@ -209,8 +211,8 @@ public class TeacherCourseController {
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            log.error("参数不正确：{}" + form);
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
+            log.error("参数格式错误：{}" + form);
+            return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(form, courseDTO);
@@ -280,18 +282,18 @@ public class TeacherCourseController {
             courseService.invalid(courseId);
         } catch (TeachingException e) {
             log.error("注销课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{courseId}")
-    public ResultVO restore(@PathVariable("courseId") Integer courseId) {
+    public ResultVO unlock(@PathVariable("courseId") Integer courseId) {
         try {
             courseService.unlock(courseId);
         } catch (TeachingException e) {
             log.error("恢复课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
@@ -301,7 +303,7 @@ public class TeacherCourseController {
             courseService.lock(courseId);
         } catch (TeachingException e) {
             log.error("锁定课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
@@ -311,7 +313,7 @@ public class TeacherCourseController {
             courseService.end(courseId);
         } catch (TeachingException e) {
             log.error("完结课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }

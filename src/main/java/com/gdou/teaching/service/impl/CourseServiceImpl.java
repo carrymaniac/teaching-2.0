@@ -57,6 +57,9 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDTO info(Integer courseId) {
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
+        if(courseMaster==null){
+            throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
+        }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(courseMaster,courseDTO);
         return courseDTO;
@@ -237,7 +240,7 @@ public class CourseServiceImpl implements CourseService {
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
         }
         if (courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.NORMAL.getCode())
-                ||courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.LOCK.getCode())){
+                &&courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.LOCK.getCode())){
             log.error("完结课程,该课程状态异常");
             throw new TeachingException(ResultEnum.COURSE_STATUS_ERROR);
         }

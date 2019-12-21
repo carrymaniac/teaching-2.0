@@ -39,39 +39,36 @@ public class TeacherExperimentController {
     //实验列表
     @GetMapping(path = "/list/{courseId}")
     public ResultVO<CourseVO> list(@PathVariable(value = "courseId") Integer courseId) {
-        if (courseId == null) {
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
-        }
+        CourseDTO courseDTO;
+        List<ExperimentDTO> experimentDTOList;
         try {
             //查询课程基本信息
-            CourseDTO courseDTO = courseService.info(courseId);
-            courseDTO.setCourseName(null);
-            courseDTO.setCourseDetailId(null);
-            courseDTO.setCourseStatus(null);
-            courseDTO.setTeacherId(null);
-            CourseVO courseVO = new CourseVO();
-            BeanUtils.copyProperties(courseDTO, courseVO);
-
+            courseDTO= courseService.info(courseId);
             //查询实验列表信息
-            List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
-
-            List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
-                ExperimentVO experimentVO = new ExperimentVO();
-                BeanUtils.copyProperties(experimentDTO, experimentVO);
-                //设置不需要的字段为空
-                experimentVO.setCourseId(null);
-                experimentVO.setRecordStatus(null);
-                experimentVO.setExperimentText(null);
-                return experimentVO;
-            }).collect(Collectors.toList());
-            courseVO.setExperimentDTOList(ExperimentVOList);
-            return ResultVOUtil.success(courseVO);
+            experimentDTOList=experimentService.list(courseId);
         } catch (TeachingException e) {
             log.error("[StudentCourseController]查询课程详情, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(e.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
         }
-    }
+        courseDTO.setCourseName(null);
+        courseDTO.setCourseDetailId(null);
+        courseDTO.setCourseStatus(null);
+        courseDTO.setTeacherId(null);
+        CourseVO courseVO = new CourseVO();
+        BeanUtils.copyProperties(courseDTO, courseVO);
 
+        List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
+            ExperimentVO experimentVO = new ExperimentVO();
+            BeanUtils.copyProperties(experimentDTO, experimentVO);
+            //设置不需要的字段为空
+            experimentVO.setCourseId(null);
+            experimentVO.setRecordStatus(null);
+            experimentVO.setExperimentText(null);
+            return experimentVO;
+        }).collect(Collectors.toList());
+        courseVO.setExperimentDTOList(ExperimentVOList);
+        return ResultVOUtil.success(courseVO);
+    }
 
     //实验详情
     @GetMapping("/detail/{experimentId}")
@@ -83,16 +80,22 @@ public class TeacherExperimentController {
             experimentDTO.setExperimentIntro(null);
         } catch (TeachingException e) {
             log.error("查询实验详情, 查询异常" + e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success(experimentDTO);
     }
 
     @GetMapping("/index")
     public ResultVO<ExperimentDTO> index(@RequestParam(value = "experimentId", required = false) Integer experimentId) {
-        ExperimentDTO experimentDTO = null;
+        ExperimentDTO experimentDTO=null;
         //如果传入courseId不为空,为更新操作
-        if (!StringUtils.isEmpty(experimentId)) {
-            experimentDTO = experimentService.detail(experimentId);
+        if (!StringUtils.isEmpty(experimentId)){
+            try{
+                experimentDTO = experimentService.detail(experimentId);
+            }catch (TeachingException e) {
+                log.error("查询实验详情, 查询异常" + e.getMessage());
+                return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
+            }
         }
         return ResultVOUtil.success(experimentDTO);
     }
@@ -122,18 +125,18 @@ public class TeacherExperimentController {
             experimentService.invalid(experimentId);
         } catch (TeachingException e) {
             log.error("删除实验,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
 
     @GetMapping("/end/{experimentId}")
-    public ResultVO ban(@PathVariable("experimentId") Integer experimentId) {
+    public ResultVO end(@PathVariable("experimentId") Integer experimentId) {
         try {
             experimentService.end(experimentId);
         } catch (TeachingException e) {
             log.error("禁用实验,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
@@ -144,7 +147,7 @@ public class TeacherExperimentController {
             experimentService.lock(experimentId);
         } catch (TeachingException e) {
             log.error("锁定实验,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
@@ -155,7 +158,7 @@ public class TeacherExperimentController {
             experimentService.unlock(experimentId);
         } catch (TeachingException e) {
             log.error("解锁实验,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
         return ResultVOUtil.success();
     }
