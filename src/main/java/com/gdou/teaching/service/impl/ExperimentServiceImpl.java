@@ -185,7 +185,7 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
-        if (!experimentMaster.getExperimentStatus().equals(ExperimentStatusEnum.NORMAL.getCode())){
+        if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.NORMAL.getCode()){
             log.error("完结实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
@@ -208,7 +208,7 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
-        if (!experimentMaster.getExperimentStatus().equals(ExperimentStatusEnum.NORMAL.getCode())){
+        if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.NORMAL.getCode()){
             log.error("锁定实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
@@ -229,7 +229,7 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         //判断当前状态
-        if (!experimentMaster.getExperimentStatus().equals(ExperimentStatusEnum.LOCK.getCode())){
+        if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.LOCK.getCode()){
             log.error("解锁实验主表,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }

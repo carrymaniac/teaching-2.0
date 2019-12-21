@@ -191,7 +191,7 @@ public class CourseServiceImpl implements CourseService {
             log.error("解锁课程,该课程不存在");
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
         }
-        if (!courseMaster.getCourseStatus().equals(CourseStatusEnum.LOCK.getCode())){
+        if (courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.LOCK.getCode())){
             log.error("解锁课程,该课程状态异常");
             throw new TeachingException(ResultEnum.COURSE_STATUS_ERROR);
         }
@@ -214,14 +214,14 @@ public class CourseServiceImpl implements CourseService {
             log.error("锁定课程,该课程不存在");
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
         }
-        if (!courseMaster.getCourseStatus().equals(CourseStatusEnum.NORMAL.getCode())){
+        if (courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.NORMAL.getCode())){
             log.error("锁定课程,该课程状态异常");
             throw new TeachingException(ResultEnum.COURSE_STATUS_ERROR);
         }
         //更新
         courseMaster.setCourseStatus(CourseStatusEnum.LOCK.getCode().byteValue());
 
-        if (  courseMasterMapper.updateByPrimaryKeySelective(courseMaster)!=1){
+        if (courseMasterMapper.updateByPrimaryKeySelective(courseMaster)!=1){
             log.error("锁定课程,课程锁定失败");
             throw new TeachingException(ResultEnum.COURSE_RESTORE_ERROR);
         }
@@ -236,8 +236,8 @@ public class CourseServiceImpl implements CourseService {
             log.error("完结课程,该课程不存在");
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
         }
-        if (!(courseMaster.getCourseStatus().equals(CourseStatusEnum.NORMAL.getCode())
-                ||courseMaster.getCourseStatus().equals(CourseStatusEnum.LOCK.getCode()))){
+        if (courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.NORMAL.getCode())
+                ||courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.LOCK.getCode())){
             log.error("完结课程,该课程状态异常");
             throw new TeachingException(ResultEnum.COURSE_STATUS_ERROR);
         }
