@@ -82,33 +82,8 @@ public class UserController {
         }
     }
 
-
-//    /**
-//     * 注册操作，表单参数校验在controller完成
-//     *
-//     * @param form
-//     * @param bindingResult
-//     * @return
-//     */
-//    @ResponseBody
-//    @PostMapping("/register")
-//    public ResultVO register(@Valid UserRegisterForm form, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            log.error("用户注册参数不正确：{}" + form);
-//            throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
-//        }
-//        User user = UserRegisterForm2User.convert(form);
-//        try {
-//            userService.register(user);
-//            return ResultVOUtil.success();
-//        } catch (TeachingException e) {
-//            return ResultVOUtil.fail(e.getCode(), e.getMessage());
-//        }
-//    }
-
     /**
-     * 登出操作，重定向到首页
-     *
+     * 登出
      * @param request
      * @param response
      * @return
@@ -234,4 +209,28 @@ public class UserController {
         }
         hostHolder.clear();
     }
+
+
+//    /**
+//     * 注册操作，表单参数校验在controller完成
+//     *
+//     * @param form
+//     * @param bindingResult
+//     * @return
+//     */
+//    @ResponseBody
+//    @PostMapping("/register")
+//    public ResultVO register(@Valid UserRegisterForm form, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            log.error("用户注册参数不正确：{}" + form);
+//            throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
+//        }
+//        User user = UserRegisterForm2User.convert(form);
+//        try {
+//            userService.register(user);
+//            return ResultVOUtil.success();
+//        } catch (TeachingException e) {
+//            return ResultVOUtil.fail(e.getCode(), e.getMessage());
+//        }
+//    }
 }

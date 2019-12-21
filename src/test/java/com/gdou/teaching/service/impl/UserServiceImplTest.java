@@ -41,10 +41,10 @@ class UserServiceImplTest {
 //    @Transactional
     void register() {
         User user = new User();
-        user.setClassId(1);
-        user.setNickname("一学铭");
+        user.setClassId(0);
+        user.setNickname("涂涂超");
         user.setUserIdent(UserIdentEnum.TEACHER.getCode().byteValue());
-        user.setUserNumber("19987711090");
+        user.setUserNumber("8885867");
         user.setPassword("123456");
         Boolean register = userService.register(user);
 

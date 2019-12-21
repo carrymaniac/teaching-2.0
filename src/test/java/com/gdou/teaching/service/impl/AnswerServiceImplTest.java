@@ -37,8 +37,8 @@ class AnswerServiceImplTest {
     @Transactional
     void save() {
         AnswerDTO answerDTO = new AnswerDTO();
-        answerDTO.setExperimentAnswerContent("这是一个🌲的实验答案");
-        answerDTO.setExperimentId(1);
+        answerDTO.setExperimentAnswerContent("这是一个数组的实验答案");
+        answerDTO.setExperimentId(3);
         answerDTO.setExperimentAnswerStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
         AnswerDTO save = answerService.save(answerDTO);
         Assert.notNull(save.getExperimentAnswerId(),"error");

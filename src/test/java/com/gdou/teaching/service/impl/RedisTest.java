@@ -37,11 +37,11 @@ public class RedisTest {
 
     @Test
     public void RedisTestForCommnet(){
-        System.out.println(redisService.getOneComment((double) 95));
-        System.out.println(redisService.getOneComment((double) 95));
-        System.out.println(redisService.getOneComment((double) 95));
-        System.out.println(redisService.getOneComment((double) 95));
-        System.out.println(redisService.getOneComment((double) 95));
+        System.out.println(redisService.getOneComment((double)59));
+        System.out.println(redisService.getOneComment((double) 59));
+        System.out.println(redisService.getOneComment((double) 59));
+        System.out.println(redisService.getOneComment((double) 59));
+        System.out.println(redisService.getOneComment((double) 59));
 
     }
 }

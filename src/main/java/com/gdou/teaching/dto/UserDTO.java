@@ -16,7 +16,7 @@ public class UserDTO {
     private String userNumber;
     private String headUrl;
     private Integer classId;
-    private Integer userStatus;
+    private Byte userStatus;
     private Integer userIdent;
     private String mail;
     private String phone;

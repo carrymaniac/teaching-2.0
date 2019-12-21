@@ -39,7 +39,7 @@ class AchievementServiceImplTest {
     @Test
     @Transactional
     void addAchievementByStudentList() {
-        boolean b = achievementService.addAchievementByStudentList(1, Arrays.asList(1, 3));
+        boolean b = achievementService.addAchievementByStudentList(2, Arrays.asList(1, 3));
         Assert.isTrue(b,"error");
     }
 

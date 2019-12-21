@@ -31,7 +31,8 @@ class  CourseServiceImplTest {
     CourseServiceImpl courseService;
     @Test
     void info() {
-        CourseDTO info = courseService.info(4);
+        CourseDTO info = courseService.info(1);
+        log.info("info is {}",info);
         Assert.notNull(info,"error");
     }
 
@@ -39,14 +40,14 @@ class  CourseServiceImplTest {
     @Transactional
     void save() {
         CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setTeacherNickname("一学铭");
+        courseDTO.setTeacherNickname("涂涂超");
         //courseDTO.setCourseId(26);
         //courseDTO.setCourseDetailId(39);
-        courseDTO.setTeacherId(5);
-        courseDTO.setCourseName("数据结构与算法");
+        courseDTO.setTeacherId(15);
+        courseDTO.setCourseName("安卓与大数据");
         courseDTO.setCourseCredit(5.0);
-        courseDTO.setCourseIntroduction("这课程一般般");
-        courseDTO.setCourseCode("XSWL233");
+        courseDTO.setCourseIntroduction("这课程牛逼疯了");
+        courseDTO.setCourseCode("XSWL6666");
         courseDTO.setCourseNumber(60);
         courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
         CourseDTO save = courseService.save(courseDTO);
