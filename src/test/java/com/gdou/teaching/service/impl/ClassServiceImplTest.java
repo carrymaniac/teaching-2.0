@@ -58,12 +58,6 @@ class ClassServiceImplTest {
         Assert.isTrue(aBoolean,"update class is false");
     }
 
-
-    @Test
-    void getStudentCountByClazzId() {
-        Integer studentCountByClazzId = classService.getStudentCountByClazzId(1);
-        Assert.notNull(studentCountByClazzId,"error");
-    }
     @Test
     void getStudentByClazzId(){
         List<User> studentByClazzId = classService.getStudentByClazzId(1);

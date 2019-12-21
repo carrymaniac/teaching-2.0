@@ -33,8 +33,10 @@ public interface RecordService {
      */
     void updateExperimentCommitNumber(Integer experimentId);
 
+
     /**
      * 根据用户Id和课程Id,获取用户在这门课的所有实验的成绩
+     * ⚠️：该方法不带用户提交记录中的大文本
      * @param userId 用户ID
      * @param CourseId 课程ID
      * @return

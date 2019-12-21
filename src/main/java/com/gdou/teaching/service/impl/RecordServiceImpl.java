@@ -132,10 +132,13 @@ public class RecordServiceImpl implements RecordService {
 
     @Override
     public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer courseId) {
+        //查询课程下属的实验ID
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         List<Integer> experimentIds = experimentMasters.stream().map(ExperimentMaster::getExperimentId).collect(Collectors.toList());
+
+        //查询对应的实验提交记录（不带提交文本）
         UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
         userReExperimentExample.createCriteria().andExperimentIdIn(experimentIds).andUserIdEqualTo(userId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
@@ -144,6 +147,7 @@ public class RecordServiceImpl implements RecordService {
             BeanUtils.copyProperties(userReExperiment, recordDTO);
             return recordDTO;
         }).collect(Collectors.toList());
+
         return collect;
     }
 

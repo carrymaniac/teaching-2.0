@@ -14,16 +14,33 @@ import java.util.List;
  **/
 @Data
 public class RecordForm {
-    //用户实验提交记录
+    /**
+     * 用户提交记录ID
+     * - 为空时，说明时一次新增操作
+     * - 不为空时，说明是更新操作
+     */
     private Integer userExperimentId;
-    //实验ID
+    /**
+     * 实验ID
+     * - 不为空
+     */
     @NotNull(message = "实验id必填")
     private Integer experimentId;
-    //用户实验提交记录文本内容
+    /**
+     * 用户实验提交记录文本内容
+     * - 不为空
+     */
     @NotEmpty(message = "实验文本内容必填")
     private String userExperimentText;
-    //用户实验提交记录文件内容
+    /**
+     * 用户实验提交记录文件内容
+     * - 为空时表示此次提交无文件
+     * - 不为空时说明有文件需要提交
+     */
     private List<FileDTO> userExperimentFile;
-    //实验提交状态
+    /**
+     * 用户提交状态
+     *
+     */
     private Integer status;
 }

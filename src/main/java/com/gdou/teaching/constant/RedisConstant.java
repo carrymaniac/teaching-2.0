@@ -6,7 +6,11 @@ package com.gdou.teaching.constant;
  **/
 public interface RedisConstant {
     String TOKEN_PREFIX = "token_%s";
-    Integer EXPIRE = 7200; //2小时
+    /**
+     * Token有效时间
+     * 2小时
+     */
+    Integer EXPIRE = 7200;
     String SPLIT = ":";
     String BIZ_LIKE = "LIKE";
     String BIZ_DISLIKE = "DISLIKE";
@@ -15,18 +19,6 @@ public interface RedisConstant {
     //实验的提交人数前缀头 需使用format方法
     String BIZ_COMMIT_NUM = "EXPERIMENT_%d_NUM";
 
+    String BIZ_CHECK_ANSWER = "EXPERIMENT_CHECK_ID_%d";
 
-    static String getLikeKey(int entityType, int entityId){
-        return BIZ_LIKE + SPLIT + String.valueOf(entityType) + SPLIT + String.valueOf(entityId);
-    };
-    static String getDisLikeKey(int entityType, int entityId) {
-        return BIZ_DISLIKE + SPLIT + String.valueOf(entityType) + SPLIT + String.valueOf(entityId);
-    }
-    static String getEventQueueKey() {
-        return BIZ_EVENTQUEUE;
-    }
-
-    static String getBizCommitNumKey(int experimentId){
-        return String.format(BIZ_COMMIT_NUM,experimentId);
-    }
 }

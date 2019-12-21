@@ -1,7 +1,9 @@
 package com.gdou.teaching.controller.student;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
+import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.mbg.model.User;
@@ -12,6 +14,7 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +44,8 @@ public class StudentExperimentController {
     HostHolder hostHolder;
     @Autowired
     AnswerService answerService;
+    @Autowired
+    StringRedisTemplate redisTemplate;
 
     /**
      * 获取实验信息
@@ -73,12 +78,23 @@ public class StudentExperimentController {
     /**
      * 通过实验ID获取实验的标准答案
      * @param experimentId
+     * 如果查询不为空，在Redis中将对应的查看答案标记将用户设置上去
+     * 如果查询结果为空的话返回为空
      * @return
      */
     @GetMapping("/answer/{experimentId}")
     @ResponseBody
     public ResultVO answer(@PathVariable("experimentId")Integer experimentId){
+        User user = hostHolder.getUser();
+        AnswerDTO detail = answerService.detail(experimentId);
+        if(detail!=null){
+            //将用户ID和实验ID在Redis中进行一次标记，之后在Record的时候进行查看答案标记
+            String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, experimentId);
+            redisTemplate.opsForSet().add(key,user.getUserId().toString());
+            return ResultVOUtil.success(detail);
+        }else {
+            return ResultVOUtil.success();
+        }
 
-        return ResultVOUtil.success(answerService.detail(experimentId));
     }
 }

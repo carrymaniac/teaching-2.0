@@ -47,11 +47,16 @@ public class StudentCourseController {
     private FileService fileService;
 
 
-    //课程详情
+    /**
+     * 课程主页
+     * @param courseId 课程ID
+     * 通过课程ID查询下属的实验列表，然后通过UserId和ExperimentID查询用户的完成情况。返回给前端
+     * @return
+     */
     @GetMapping(path = "/info/{courseId}")
      public ResultVO<CourseVO> info(@PathVariable(value = "courseId") Integer courseId) {
         if (courseId == null) {
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+            return ResultVOUtil.fail(ResultEnum.PARAM_NULL);
         }
         User user = hostHolder.getUser();
         try {
@@ -59,33 +64,34 @@ public class StudentCourseController {
             CourseDTO courseDTO = courseService.info(courseId);
             CourseVO courseVO = new CourseVO();
             BeanUtils.copyProperties(courseDTO, courseVO);
-
             //查询实验列表信息
             List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
 
+            //结合用户提交记录，将DTO转为VO
             List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
                 ExperimentVO experimentVO = new ExperimentVO();
                 BeanUtils.copyProperties(experimentDTO, experimentVO);
                 //设置不需要的字段为空
                 experimentVO.setCourseId(null);
                 //设置状态
-                RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
-                if (recordDTO != null) {
-                    experimentVO.setRecordStatus(recordDTO.getStatus().intValue());
-                } else {
-                    if (experimentDTO.getExperimentStatus().equals(ExperimentStatusEnum.LOCK.getCode())) {
-                        experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
-                    } else {
+                if(ExperimentStatusEnum.LOCK.getCode().byteValue()==experimentDTO.getExperimentStatus()){
+                    experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
+                }else{
+                    RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
+                    if(recordDTO!=null){
+                        experimentVO.setRecordStatus(recordDTO.getStatus().intValue());
+                    }else{
                         experimentVO.setRecordStatus(RecordStatusEnum.NOT_FINISH.getCode());
                     }
                 }
                 return experimentVO;
             }).collect(Collectors.toList());
+
             courseVO.setExperimentDTOList(ExperimentVOList);
             return ResultVOUtil.success(courseVO);
         } catch (TeachingException e) {
-            log.error("[StudentCourseController]查询课程详情, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(e.getCode(), e.getMessage());
+            log.info("[StudentCourseController]查询课程主页, 查询异常:{}", e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
     }
 
@@ -98,13 +104,15 @@ public class StudentCourseController {
     public ResultVO detail(@PathVariable(value = "courseId") Integer courseId) {
         CourseDTO detail = courseService.detail(courseId);
         if(detail==null){
-            return ResultVOUtil.fail(ResultEnum.COURSE_NOT_EXIST);
+            log.info("[StudentCourseController]查询课程详情信息, 查询异常，courseId={}",courseId);
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
         return ResultVOUtil.success(detail);
     }
 
     /**
      * 不分页版本-获取课程列表
+     * 通过用户ID获取课程列表，并将其分割为结束和未结束两部分
      * @return
      */
     @GetMapping("/listForNoPage")
@@ -132,7 +140,7 @@ public class StudentCourseController {
             map.put("end", end);
             return ResultVOUtil.success(map);
         } catch (TeachingException e) {
-            log.error("[StudentCourseController]查询课程, 查询异常" + e.getMessage());
+            log.info("[StudentCourseController]查询课程, 查询异常" + e.getMessage());
             return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
         }
 
@@ -177,6 +185,5 @@ public class StudentCourseController {
                     fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword)
             );
         }
-
     }
 }
