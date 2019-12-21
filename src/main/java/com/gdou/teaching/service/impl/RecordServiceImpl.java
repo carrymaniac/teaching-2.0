@@ -56,6 +56,7 @@ public class RecordServiceImpl implements RecordService {
             log.error("保存纪录,保存实验记录失败,当前实验不可提交,ExperimentStatus={}",experiment.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
+        recordDTO.setExperimentName(experiment.getExperimentName());
         //准备变量
         List<FileDTO> fileDTOList = recordDTO.getUserExperimentFile();
         UserReExperiment userReExperiment = new UserReExperiment();
@@ -115,7 +116,7 @@ public class RecordServiceImpl implements RecordService {
         RecordDTO recordDTO = new RecordDTO();
         //查询用户提交时提交的文件记录
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId());
-        if(!fileDTOList.isEmpty()){
+        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
             recordDTO.setUserExperimentFile(fileDTOList);
         }
         BeanUtils.copyProperties(userReExperiment,recordDTO);

@@ -72,6 +72,7 @@ public class AchievementServiceImpl implements AchievementService {
         }
 
         UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserIdIn(studentIdList).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         List<User> users = userMapper.selectByExample(userExample);
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if(courseMaster==null){

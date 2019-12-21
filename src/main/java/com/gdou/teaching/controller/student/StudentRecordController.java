@@ -7,6 +7,7 @@ import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.RecordForm;
 import com.gdou.teaching.mbg.model.User;
+import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.service.RecordService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
@@ -38,6 +39,14 @@ public class StudentRecordController {
     @Autowired
     StringRedisTemplate redisTemplate;
 
+    @Autowired
+    ExperimentService experimentService;
+    /**
+     * 第一次提交完之后需要更新目前已提交的数字
+     * @param form
+     * @param bindingResult
+     * @return
+     */
     @PostMapping("/save")
     public ResultVO save(@RequestBody @Valid RecordForm form,
                          BindingResult bindingResult) {
@@ -49,6 +58,7 @@ public class StudentRecordController {
         RecordDTO recordDTO = new RecordDTO();
         BeanUtils.copyProperties(form, recordDTO);
         recordDTO.setUserId(user.getUserId());
+        recordDTO.setClassId(user.getClassId());
         if(form.getUserExperimentId()==null){
             //第一次提交，查询是否查看过答案
             String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, form.getExperimentId());
@@ -57,6 +67,10 @@ public class StudentRecordController {
         }
         try {
             recordService.save(recordDTO);
+            if(form.getUserExperimentId()==null){
+                //更新提交人数
+                experimentService.updateCommitNumber(form.getExperimentId());
+            }
         } catch (TeachingException e) {
             log.error("保存记录,发生异常:{}", e);
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());

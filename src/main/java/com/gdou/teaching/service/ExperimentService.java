@@ -65,4 +65,10 @@ public interface ExperimentService {
      * @return
      */
     boolean unlock(Integer experimentId);
+
+    /**
+     * 根据experimentId更新实验提交人数
+     * @param experimentId
+     */
+    void updateCommitNumber(Integer experimentId);
 }

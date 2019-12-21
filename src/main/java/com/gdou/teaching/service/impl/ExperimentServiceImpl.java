@@ -44,6 +44,8 @@ public class ExperimentServiceImpl implements ExperimentService {
     CourseMasterMapper courseMasterMapper;
     @Autowired
     ExperimentAnswerMapper answerMapper;
+    @Autowired
+    UserReExperimentMapper userReExperimentMapper;
     @Override
     public ExperimentDTO detail(Integer experimentId) {
         //需要查询的数据有：
@@ -223,5 +225,16 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
         return true;
+    }
+
+    @Override
+    public void updateCommitNumber(Integer experimentId) {
+        UserReExperimentExample example = new UserReExperimentExample();
+        example.createCriteria().andExperimentIdEqualTo(experimentId);
+        int i = userReExperimentMapper.countByExample(example);
+        ExperimentMaster experimentMaster = new ExperimentMaster();
+        experimentMaster.setExperimentId(experimentId);
+        experimentMaster.setExperimentCommitNum(i);
+        experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
     }
 }

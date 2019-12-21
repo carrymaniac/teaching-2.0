@@ -123,14 +123,14 @@ public class StudentCourseController {
             List<CourseDTO> list = courseService.list(user.getUserId());
             //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
             //切割正常课程。
-            List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.NORMAL.getCode()))
+            List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.NORMAL.getCode().byteValue()))
                     .map(courseDTO -> {
                 CourseVO courseVO = new CourseVO();
                 BeanUtils.copyProperties(courseDTO, courseVO);
                 return courseVO;
             }).collect(Collectors.toList());
             //切割出过期课程
-            List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.END.getCode())).map(courseDTO -> {
+            List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.END.getCode().byteValue())).map(courseDTO -> {
                 CourseVO courseVO = new CourseVO();
                 BeanUtils.copyProperties(courseDTO, courseVO);
                 return courseVO;
