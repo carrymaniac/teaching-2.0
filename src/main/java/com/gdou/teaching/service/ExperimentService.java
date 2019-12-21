@@ -29,7 +29,8 @@ public interface ExperimentService {
     ExperimentDTO detail(Integer experimentId);
 
     /**
-     * 新增或更新实验主表记录
+     * 新增或更新实验主表和info表记录
+     * 需要主动调用AnswerService的Save方法保存答案
      * @param experimentDTO
      * @return
      */

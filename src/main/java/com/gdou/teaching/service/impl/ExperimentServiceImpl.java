@@ -103,21 +103,6 @@ public class ExperimentServiceImpl implements ExperimentService {
         //回填ExperimentDetailId
         experimentDTO.setExperimentDetailId(experimentDetail.getExperimentDetailId());
 
-
-        //如果有答案 插入到答案表
-        if(experimentDTO.getExperimentAnswerContent()!=null){
-            ExperimentAnswer answer = new ExperimentAnswer();
-            answer.setExperimentAnswerContent(experimentDTO.getExperimentAnswerContent());
-            answerMapper.insert(answer);
-            //如果有答案文件 需要插入到文件表
-            List<FileDTO> experimentAnswerFile = experimentDTO.getExperimentAnswerFile();
-            if(experimentAnswerFile!=null&&!experimentAnswerFile.isEmpty()){
-                fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),answer.getExperimentAnswerId(),experimentAnswerFile);
-            }
-            experimentDTO.setExperimentAnswerId(answer.getExperimentAnswerId());
-        }
-
-
         BeanUtils.copyProperties(experimentDTO,experimentMaster);
         if (experimentMaster.getExperimentId()==null){
             Integer i = experimentMasterMapper.insert(experimentMaster);
@@ -134,7 +119,6 @@ public class ExperimentServiceImpl implements ExperimentService {
         }
         //回填ExperimentId
         experimentDTO.setExperimentId(experimentMaster.getExperimentId());
-
         //新增实验的文件：
         List<FileDTO> experimentDetailFile = experimentDTO.getExperimentDetailFile();
         if(experimentDetailFile!=null&&!experimentDetailFile.isEmpty()){

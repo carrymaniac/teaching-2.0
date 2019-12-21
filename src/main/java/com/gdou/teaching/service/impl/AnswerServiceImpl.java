@@ -6,14 +6,17 @@ import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.ExperimentAnswerMapper;
+import com.gdou.teaching.mbg.mapper.ExperimentMasterMapper;
 import com.gdou.teaching.mbg.mapper.FileMapper;
 import com.gdou.teaching.mbg.model.ExperimentAnswer;
+import com.gdou.teaching.mbg.model.ExperimentMaster;
 import com.gdou.teaching.service.AnswerService;
 import com.gdou.teaching.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,6 +34,8 @@ public class AnswerServiceImpl implements AnswerService {
     FileService fileService;
     @Autowired
     FileMapper fileMapper;
+    @Autowired
+    ExperimentMasterMapper experimentMasterMapper;
     @Override
     public AnswerDTO detail(Integer experimentAnswerId) {
         ExperimentAnswer experimentAnswer = answerMapper.selectByPrimaryKey(experimentAnswerId);
@@ -45,6 +50,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    @Transactional
     public AnswerDTO save(AnswerDTO answerDTO) {
         ExperimentAnswer experimentAnswer=new ExperimentAnswer();
         BeanUtils.copyProperties(answerDTO,experimentAnswer);
@@ -55,6 +61,13 @@ public class AnswerServiceImpl implements AnswerService {
                 log.error("保存实验答案,新增实验答案失败,experimentAnswer={}",experimentAnswer);
                 throw new TeachingException(ResultEnum.PARAM_ERROR);
             }
+
+            //需要对experiemnt主表进行更新AnswerID操作
+            ExperimentMaster experimentMaster = new ExperimentMaster();
+            experimentMaster.setExperimentId(answerDTO.getExperimentId());
+            experimentMaster.setExperimentAnswerId(experimentAnswer.getExperimentAnswerId());
+            experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
+
             //新增答案文件
             if(answerDTO.getExperimentAnswerFileList()!=null&&!answerDTO.getExperimentAnswerFileList().isEmpty()){
                 fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),answerDTO.getExperimentAnswerFileList());

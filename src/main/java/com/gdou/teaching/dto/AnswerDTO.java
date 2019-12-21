@@ -13,14 +13,24 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnswerDTO {
-    //实验答案ID
+    /**
+     * 实验答案ID
+     */
     private Integer experimentAnswerId;
-    //实验答案内容
+    /**
+     * 实验答案内容
+     */
     private String experimentAnswerContent;
-    //实验答案文件路径
+    /**
+     * 实验答案文件路径
+     */
     private List<FileDTO> experimentAnswerFileList;
-    //实验ID
+    /**
+     * 实验ID
+     */
     private Integer experimentId;
-    //实验答案状态，可以用于删除，0表示正常，1表示删除
+    /**
+     * 实验答案状态，可以用于删除，0表示正常，1表示删除
+     */
     private Byte experimentAnswerStatus;
 }

@@ -290,9 +290,10 @@ public class CourseServiceImpl implements CourseService {
             List<User> teacher = teacherList.stream().filter(userDTO -> userDTO.getUserId().equals(courseMaster.getTeacherId())).collect(Collectors.toList());
             if (teacher.size()>0) {
                 courseDTO.setTeacherNickname(teacher.get(0).getNickname());
-                courseDTO.setCourseName(courseMaster.getCourseName());
-                courseDTO.setCourseId(courseMaster.getCourseId());
             }
+            courseDTO.setCourseName(courseMaster.getCourseName());
+            courseDTO.setCourseId(courseMaster.getCourseId());
+            courseDTO.setCourseStatus(courseMaster.getCourseStatus());
             return courseDTO;
         }).collect(Collectors.toList());
         return result;
