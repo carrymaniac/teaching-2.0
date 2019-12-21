@@ -159,9 +159,9 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getStudentListByClassId(Integer classId) {
         UserExample userExample = new UserExample();
         if(classId!=0){
-            userExample.createCriteria().andClassIdEqualTo(classId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
+            userExample.createCriteria().andClassIdEqualTo(classId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         }else {
-            userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
+            userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         }
         List<User> users = userMapper.selectByExample(userExample);
         List<UserDTO> userDTOS = users.stream().map(user -> {

@@ -1,6 +1,7 @@
 package com.gdou.teaching.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gdou.teaching.vo.ClazzVO;
 import lombok.Data;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class CourseDTO {
     /**
      * 课程状态 默认为正常状态
      */
-    private Byte courseStatus = 0;
+    private Byte courseStatus;
 
     /**
      * 学分
@@ -55,6 +56,9 @@ public class CourseDTO {
      */
     private String courseCode;
 
-//    //课程班级列表
-//    private List<ClazzVO> clazzList;
+    /**
+     *  课程班级列表
+     */
+
+    private List<ClazzVO> clazzList;
 }

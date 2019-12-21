@@ -9,10 +9,10 @@ import lombok.Getter;
  **/
 @Getter
 public enum ExperimentStatusEnum implements CodeEnum {
-    LOCK(0,"锁定"),
-    NORMAL(1,"正常"),
-    BAN(2,"不可提交"),
-    INVALID(3,"注销"),
+    NORMAL(0,"正常"),
+    LOCK(1,"锁定"),
+    INVALID(2,"删除"),
+    END(3,"已结束"),
     ;
 
     private final Integer code;

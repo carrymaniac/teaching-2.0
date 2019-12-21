@@ -160,30 +160,84 @@ public class ExperimentServiceImpl implements ExperimentService {
 
     }
 
-
-
     @Override
     public boolean invalid(Integer experimentId) {
-        return false;
+        ExperimentMaster experimentMaster =
+                experimentMasterMapper.selectByPrimaryKey(experimentId);
+        if (experimentMaster == null) {
+            log.error("删除实验,该实验不存在或已被删除");
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
+        experimentMaster.setExperimentStatus(ExperimentStatusEnum.INVALID.getCode().byteValue());
+        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
+            log.error("删除实验,实验删除失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_INVALID_ERROR);
+        }
+        return true;
     }
 
     @Override
-    public ExperimentMaster ban(Integer experimentId) {
-        return null;
+    public boolean end(Integer experimentId) {
+        ExperimentMaster experimentMaster =
+                experimentMasterMapper.selectByPrimaryKey(experimentId);
+        if (experimentMaster == null) {
+            log.error("完结实验,该实验不存在或已被删除");
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
+        //判断当前状态
+        if (!experimentMaster.getExperimentStatus().equals(ExperimentStatusEnum.NORMAL.getCode())){
+            log.error("完结实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
+        }
+        experimentMaster.setExperimentStatus(ExperimentStatusEnum.END.getCode().byteValue());
+        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
+            log.error("完结实验,实验完结失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
+        }
+        return true;
+    }
+
+
+
+    @Override
+    public boolean lock(Integer experimentId) {
+        ExperimentMaster experimentMaster =
+                experimentMasterMapper.selectByPrimaryKey(experimentId);
+        if (experimentMaster == null) {
+            log.error("锁定实验,该实验不存在或已被删除");
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
+        //判断当前状态
+        if (!experimentMaster.getExperimentStatus().equals(ExperimentStatusEnum.NORMAL.getCode())){
+            log.error("锁定实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
+        }
+        experimentMaster.setExperimentStatus(ExperimentStatusEnum.END.getCode().byteValue());
+        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
+            log.error("锁定实验,实验锁定失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
+        }
+        return true;
     }
 
     @Override
-    public ExperimentMaster restore(Integer experimentId) {
-        return null;
-    }
-
-    @Override
-    public ExperimentMaster lock(Integer experimentId) {
-        return null;
-    }
-
-    @Override
-    public ExperimentMaster unlock(Integer experimentId) {
-        return null;
+    public boolean unlock(Integer experimentId) {
+        ExperimentMaster experimentMaster =
+                experimentMasterMapper.selectByPrimaryKey(experimentId);
+        if (experimentMaster == null) {
+            log.error("解锁实验,该实验不存在或已被删除");
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
+        //判断当前状态
+        if (!experimentMaster.getExperimentStatus().equals(ExperimentStatusEnum.LOCK.getCode())){
+            log.error("解锁实验主表,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
+        }
+        experimentMaster.setExperimentStatus(ExperimentStatusEnum.NORMAL.getCode().byteValue());
+        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
+            log.error("解锁实验,实验解锁失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
+        }
+        return true;
     }
 }

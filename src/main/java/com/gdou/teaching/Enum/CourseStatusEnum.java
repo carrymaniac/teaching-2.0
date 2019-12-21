@@ -10,9 +10,9 @@ import lombok.Getter;
 @Getter
 public enum CourseStatusEnum implements CodeEnum {
     NORMAL(0,"正常"),
-    BAN(1,"被禁用"),
-    END(3,"已结束"),
+    LOCK(1,"锁定"),
     INVALID(2,"删除"),
+    END(3,"已结束"),
     ;
 
     private final Integer code;

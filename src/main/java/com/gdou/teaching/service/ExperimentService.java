@@ -43,28 +43,25 @@ public interface ExperimentService {
     boolean invalid(Integer experimentId);
 
     /**
-     * 实验停止提交
-     * 根据experimentId设置实验为不可提交状态
-     * @param experimentId 实验ID
+     * 截止上交作业
+     * 根据experimentId设置实验为end状态
+     * @param experimentId
      * @return
      */
-    ExperimentMaster ban(Integer experimentId);
+    boolean end(Integer experimentId);
+
 
     /**
-     * 实验恢复提交
+     *根据experimentId设置实验为锁定状态
+     * @param experimentId
+     * @return
+     */
+    boolean lock(Integer experimentId);
+
+    /**
      * 根据experimentId设置实验为正常状态
      * @param experimentId
      * @return
      */
-    ExperimentMaster restore(Integer experimentId);
-
-    /**
-     * 根据experimentId设置实验为锁定状态
-     */
-    ExperimentMaster lock(Integer experimentId);
-
-    /**
-     * 根据experimentId设置实验为正常状态
-     */
-    ExperimentMaster unlock(Integer experimentId);
+    boolean unlock(Integer experimentId);
 }

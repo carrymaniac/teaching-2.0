@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,7 +67,7 @@ class ClassServiceImplTest {
 
     @Test
     void getAllClazzList() {
-        List<Class> allClazzList = classService.getAllClazzList();
+        List<TreeMap> allClazzList = classService.getAllClazzList();
         Assert.notNull(allClazzList,"getAllClazzList is null");
         log.info("getAllClazzList result: {}",allClazzList);
     }

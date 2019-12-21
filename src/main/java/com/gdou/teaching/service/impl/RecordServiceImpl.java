@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,6 +123,22 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
+    public RecordDTO selectOne(Integer userExperimentId) {
+        UserReExperiment userReExperiment = userReExperimentMapper.selectByPrimaryKey(userExperimentId);
+        if(userReExperiment==null){
+            return null;
+        }
+        RecordDTO recordDTO = new RecordDTO();
+        //查询用户提交时提交的文件记录
+        List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId());
+        if(!fileDTOList.isEmpty()){
+            recordDTO.setUserExperimentFile(fileDTOList);
+        }
+        BeanUtils.copyProperties(userReExperiment,recordDTO);
+        return recordDTO;
+    }
+
+    @Override
     public void updateExperimentCommitNumber(Integer experimentId) {
         Integer countByExperimentId = userReExperimentDao.getCountByExperimentId(experimentId);
         ExperimentMaster experimentMaster = new ExperimentMaster();
@@ -149,6 +166,19 @@ public class RecordServiceImpl implements RecordService {
         }).collect(Collectors.toList());
 
         return collect;
+    }
+
+    @Override
+    public List<RecordDTO> getRecordListByExperimentId(Integer experimentId) {
+        UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
+        userReExperimentExample.createCriteria().andExperimentIdEqualTo(experimentId);
+        List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+        List<RecordDTO> recordDTOList = userReExperiments.stream().map(record -> {
+            RecordDTO recordDTO = new RecordDTO();
+            BeanUtils.copyProperties(record, recordDTO);
+            return recordDTO;
+        }).collect(Collectors.toList());
+        return recordDTOList;
     }
 
     @Override

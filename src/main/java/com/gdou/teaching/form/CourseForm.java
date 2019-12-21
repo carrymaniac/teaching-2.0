@@ -36,10 +36,8 @@ public class CourseForm {
     @NotEmpty(message = "课程介绍必填")
     private String courseIntroduction;
 
-    //增加上课班级列表
-    private List<Integer> addClazzIdList;
 
-    //增加上课学生列表(学号)
-    private List<String> addStudentIdList;
 
+    //增加上课学生id列表
+    private List<Integer> addStudentIdList;
 }

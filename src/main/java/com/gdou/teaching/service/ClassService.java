@@ -41,7 +41,7 @@ public interface ClassService {
     /**
      * 获取班级列表
      */
-    List<Class> getAllClazzList();
+    List<TreeMap> getAllClazzList();
 
     /**
      * 根据clazzId 获取学生列表

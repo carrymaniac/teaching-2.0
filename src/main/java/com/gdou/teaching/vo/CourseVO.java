@@ -31,7 +31,7 @@ public class CourseVO {
     //学分
     private Double courseCredit;
     //课程状态 默认为正常状态
-    private Integer courseStatus = 0;
+    private Byte courseStatus;
     //课程介绍
     private String courseIntroduction;
     //课程班级列表

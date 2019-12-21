@@ -55,6 +55,13 @@ public interface CourseService {
      */
     List<CourseDTO> list(Integer userId);
 
+    /**
+     * 展示所有的课程主表记录(教师端)
+     * @param userId
+     * @return
+     */
+    List<CourseDTO> listCourse(Integer userId);
+
 
     /**
      * 根据课程ID注销课程
@@ -65,12 +72,26 @@ public interface CourseService {
 
 
     /**
-     * 根据课程ID恢复课程
+     * 根据课程ID解锁课程
      * @param courseId
      * @return
      */
-    boolean restore(Integer courseId);
+    boolean unlock(Integer courseId);
 
+    /**
+     *根据courseId设置实验为锁定状态
+     * @param courseId
+     * @return
+     */
+    boolean lock(Integer courseId);
+
+    /**
+     *
+     * 根据courseId设置课程为end状态
+     * @param courseId
+     * @return
+     */
+    boolean end(Integer courseId);
 
     /**
      * 更新 课程及其下属实验的上课人数

@@ -28,6 +28,8 @@ public class ExperimentVO {
     private Integer courseId;
     //实验文本内容
     private String experiment_intro;
+    //实验文本内容
+    private String experimentText;
     //实验附件文档
     private String experimentDetailFile;
     //提交状态

@@ -27,6 +27,13 @@ public interface RecordService {
     RecordDTO selectOne(Integer experimentId, Integer userId);
 
     /**
+     * 通过userExperimentId获取用户的实验提交记录
+     * @param userExperimentId
+     * @return
+     */
+    RecordDTO selectOne(Integer userExperimentId);
+
+    /**
      * 更新experiment的提交人数
      * 对redis进行更新，同时进行阈值判断，如果到达了解锁条件，调用解锁条件进行解锁。
      * @param experimentId
@@ -43,6 +50,13 @@ public interface RecordService {
      */
     List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer CourseId);
 
+
+    /**
+     * 根据实验Id查询提交记录列表
+     * @param experimentId
+     * @return
+     */
+    List<RecordDTO> getRecordListByExperimentId(Integer experimentId);
 
     /**
      * 教师评改

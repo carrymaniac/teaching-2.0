@@ -16,10 +16,10 @@ public class CourseUpdateStuForm {
     //课程编号
     private Integer courseId;
 
-    //增加上课学生列表(学号)
-    private List<String> addStudentIdList;
+    //增加上课学生列表(userId)
+    private List<Integer> addStudentIdList;
 
-    //删除上课学生列表(学号)
-    private List<String> deleteStudentIdList;
+    //删除上课学生列表(userId)
+    private List<Integer> deleteStudentIdList;
 
 }

@@ -18,8 +18,8 @@ import org.apache.ibatis.javassist.ClassMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.text.Collator;
+import java.util.*;
 
 /**
  * @ProjectName: teaching-2.0
@@ -75,11 +75,20 @@ public class ClassServiceImpl implements ClassService {
 
 
     @Override
-    public List<Class> getAllClazzList() {
+    public List<TreeMap> getAllClazzList() {
+        List<TreeMap> list = new ArrayList<>();
         ClassExample classExample = new ClassExample();
         classExample.createCriteria().andClassStatusEqualTo(ClazzStatusEnum.NORMAL.getCode().byteValue());
         List<Class> classes = classMapper.selectByExample(classExample);
-        return classes;
+
+        classes.forEach(clazze -> {
+            TreeMap<String,Object> map = new TreeMap<>();
+            map.put("classId",clazze.getClassId());
+            map.put("className",clazze.getClassName());
+            list.add(map);
+        });
+        Collections.sort(list, (o1, o2) -> Collator.getInstance(Locale.CHINESE).compare(o1.get("className"),o2.get("className")));
+        return list;
     }
 
     @Override

@@ -1,5 +1,6 @@
-package com.gdou.teaching.util;
+package com.gdou.teaching.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
@@ -12,6 +13,7 @@ import lombok.Data;
  * @Version:
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserVO {
     private Integer userId;
     private String nickname;

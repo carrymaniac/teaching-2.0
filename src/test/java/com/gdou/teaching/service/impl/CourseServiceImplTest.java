@@ -74,12 +74,6 @@ class  CourseServiceImplTest {
         Assert.isTrue(invalid,"invalid is error");
     }
 
-    @Test
-    @Transactional
-    void restore() {
-        boolean restore = courseService.restore(4);
-        Assert.isTrue(restore,"restore is error");
-    }
 
 
     @Test
