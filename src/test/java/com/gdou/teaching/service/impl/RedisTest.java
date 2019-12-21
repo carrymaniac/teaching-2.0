@@ -21,6 +21,8 @@ public class RedisTest {
 
     @Autowired
     StringRedisTemplate redisTemplate;
+    @Autowired
+    RedisServiceImpl redisService;
     @Test
     public void RedisTest(){
         String format = String.format(RedisConstant.BIZ_CHECK_ANSWER, 1);
@@ -31,5 +33,15 @@ public class RedisTest {
         System.out.println(member);
         System.out.println(member1);
         System.out.println(member2);
+    }
+
+    @Test
+    public void RedisTestForCommnet(){
+        System.out.println(redisService.getOneComment((double) 95));
+        System.out.println(redisService.getOneComment((double) 95));
+        System.out.println(redisService.getOneComment((double) 95));
+        System.out.println(redisService.getOneComment((double) 95));
+        System.out.println(redisService.getOneComment((double) 95));
+
     }
 }

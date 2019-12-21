@@ -16,9 +16,11 @@ public interface RedisConstant {
     String BIZ_DISLIKE = "DISLIKE";
     //事件队列的前缀头
     String BIZ_EVENTQUEUE = "EVENT_QUEUE";
-    //实验的提交人数前缀头 需使用format方法
-    String BIZ_COMMIT_NUM = "EXPERIMENT_%d_NUM";
 
+    String BIZ_SCORE_COMMENT_FOR_A = "SCORE_COMMENT_FOR_A";
+    String BIZ_SCORE_COMMENT_FOR_B = "SCORE_COMMENT_FOR_B";
+    String BIZ_SCORE_COMMENT_FOR_C = "SCORE_COMMENT_FOR_C";
+    String BIZ_SCORE_COMMENT_FOR_D = "SCORE_COMMENT_FOR_D";
     String BIZ_CHECK_ANSWER = "EXPERIMENT_CHECK_ID_%d";
 
 }
