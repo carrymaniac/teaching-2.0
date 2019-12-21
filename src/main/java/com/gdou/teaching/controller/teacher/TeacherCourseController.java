@@ -280,7 +280,7 @@ public class TeacherCourseController {
             courseService.invalid(courseId);
         } catch (TeachingException e) {
             log.error("注销课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.COURSE_INVALID_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
         }
         return ResultVOUtil.success();
     }
@@ -291,7 +291,7 @@ public class TeacherCourseController {
             courseService.unlock(courseId);
         } catch (TeachingException e) {
             log.error("恢复课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.COURSE_INVALID_ERROR.getCode(), e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
         }
         return ResultVOUtil.success();
     }
@@ -300,8 +300,8 @@ public class TeacherCourseController {
         try {
             courseService.lock(courseId);
         } catch (TeachingException e) {
-            log.error("恢复课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.COURSE_INVALID_ERROR.getCode(), e.getMessage());
+            log.error("锁定课程,发生异常");
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), e.getMessage());
         }
         return ResultVOUtil.success();
     }
@@ -311,7 +311,7 @@ public class TeacherCourseController {
             courseService.end(courseId);
         } catch (TeachingException e) {
             log.error("完结课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.COURSE_INVALID_ERROR.getCode(),e.getMessage());
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
         }
         return ResultVOUtil.success();
     }
