@@ -101,7 +101,7 @@ public class CourseServiceImpl implements CourseService {
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }else{
-            int i = courseMasterMapper.updateByPrimaryKey(courseMaster);
+            int i = courseMasterMapper.updateByPrimaryKeySelective(courseMaster);
             if (i<=0){
                 log.error("[CourseServiceImpl]-保存课表,保存课程主表失败,courseMaster={}",courseMaster);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);

@@ -23,10 +23,7 @@ public class CourseForm {
     private String courseName;
     //授课老师工号
     @NotNull(message = "授课老师Id必填")
-    private Integer userId;
-    //上课时间
-    @NotEmpty(message = "上课时间必填")
-    private String showTime;
+    private Integer teacherId;
     //课程详情Id
     private Integer courseDetailId;
     //学分
@@ -35,8 +32,14 @@ public class CourseForm {
     //课程介绍
     @NotEmpty(message = "课程介绍必填")
     private String courseIntroduction;
-
-
+    /**
+     * 课程状态
+     */
+    private Byte courseStatus;
+    /**
+     * 课程人数
+     */
+    private Integer courseNumber;
 
     //增加上课学生id列表
     private List<Integer> addStudentIdList;

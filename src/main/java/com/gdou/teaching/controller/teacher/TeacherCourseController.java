@@ -237,6 +237,10 @@ public class TeacherCourseController {
         }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(form, courseDTO);
+        if(form.getCourseId()==null){
+            courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
+            courseDTO.setCourseNumber(0);
+        }
         try {
             courseService.save(courseDTO);
         } catch (TeachingException e) {
@@ -269,8 +273,12 @@ public class TeacherCourseController {
         }
         try {
             //修改
-            achievementService.addAchievementByStudentList(form.getCourseId(), form.getAddStudentIdList());
-            achievementService.deleteAchievementByStudentList(form.getCourseId(), form.getDeleteStudentIdList());
+            if (form.getAddStudentIdList()!=null && !form.getAddStudentIdList().isEmpty()){
+                achievementService.addAchievementByStudentList(form.getCourseId(), form.getAddStudentIdList());
+            }
+            if (form.getDeleteStudentIdList()!=null &&!form.getDeleteStudentIdList().isEmpty()){
+                achievementService.deleteAchievementByStudentList(form.getCourseId(), form.getDeleteStudentIdList());
+            }
             //todo  更新上课及其下属实验的人数
             courseService.updateNumber(form.getCourseId());
         } catch (TeachingException e) {

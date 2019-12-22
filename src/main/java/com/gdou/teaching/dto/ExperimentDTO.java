@@ -108,7 +108,7 @@ public class ExperimentDTO {
      */
     private String experimentAnswerContent;
     /**
-     * 实验附件文档
+     * 实验答案文档
      */
     private List<FileDTO> experimentAnswerFile;
 

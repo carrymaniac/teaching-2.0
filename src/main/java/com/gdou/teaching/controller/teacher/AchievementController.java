@@ -334,7 +334,7 @@ public class AchievementController {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
         }
 
-        List<RecordDTO> recordList= recordDTOList.stream().filter(c->c.getStatus().equals(RecordStatusEnum.REVIEWING.getCode())).collect(Collectors.toList());
+        List<RecordDTO> recordList= recordDTOList.stream().filter(c->c.getStatus().intValue()==RecordStatusEnum.REVIEWING.getCode()).collect(Collectors.toList());
         //获取班级列表
         Set<Integer> classIdSet = recordList.stream().map(c -> c.getClassId()).collect(Collectors.toSet());
         List<HashMap> classList=new ArrayList<>();

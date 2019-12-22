@@ -39,7 +39,7 @@ public class CourseDTO {
      */
     private Integer courseDetailId;
     /**
-     * 课程状态 默认为正常状态
+     * 课程状态
      */
     private Byte courseStatus;
 
