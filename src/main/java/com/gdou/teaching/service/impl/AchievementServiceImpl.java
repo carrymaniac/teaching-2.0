@@ -6,11 +6,15 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.AchievementDao;
 import com.gdou.teaching.dto.AchievementDTO;
+import com.gdou.teaching.dto.CourseDTO;
+import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.service.AchievementService;
+import com.gdou.teaching.service.CourseService;
+import com.gdou.teaching.service.ExperimentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,8 @@ public class AchievementServiceImpl implements AchievementService {
     ExperimentMasterMapper experimentMasterMapper;
     @Autowired
     UserReExperimentMapper userReExperimentMapper;
+    @Autowired
+    ExperimentService experimentService;
     @Override
     public boolean addAchievementByClazzId(Integer courseId, Integer clazzId) {
         return false;
@@ -218,5 +224,46 @@ public class AchievementServiceImpl implements AchievementService {
             achievement.setCourseAchievement(0.0);
         }
         achievementMapper.updateByExampleSelective(achievement,achievementExample);
+    }
+
+
+    @Override
+    //todo 未对该方法做异常处理
+    public List<List<String>> exportAchievement(CourseDTO courseDTO) {
+        List<AchievementDTO> achievementList = getAchievementByCourseId(courseDTO.getCourseId());
+        List<ExperimentDTO> experimentDTOList = experimentService.list(courseDTO.getCourseId());
+        List<Integer> experimentIdList=experimentDTOList.stream().map(experimentDTO -> {
+            return experimentDTO.getExperimentId();
+        }).collect(Collectors.toList());
+        HashMap<Integer,String> classMap=new HashMap<>();
+        List<List<String>> collect=achievementList.stream().map(achievement -> {
+            List<String> list = new ArrayList<>();
+            Integer classId = achievement.getClassId();
+            if (classMap.containsKey(classId)){
+                list.add(classMap.get(classId));
+            }else{
+                Class aClass = classMapper.selectByPrimaryKey(classId);
+                classMap.put(classId,aClass.getClassName());
+                list.add(aClass.getClassName());
+            }
+            User user = userMapper.selectByPrimaryKey(achievement.getUserId());
+            list.add(user.getUserNumber());
+            list.add(user.getNickname());
+            list.add(achievement.getCourseAchievement().toString());
+            UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
+            for (int experimentId:experimentIdList){
+                userReExperimentExample.clear();
+                userReExperimentExample.createCriteria().andExperimentIdEqualTo(experimentId).andUserIdEqualTo(user.getUserId());
+                List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
+                if (userReExperiments==null||userReExperiments.isEmpty()){
+                    list.add("0");
+                }else{
+                    list.add(userReExperiments.get(0).getExperimentAchievement().toString());
+                }
+            }
+
+            return list;
+        }).collect(Collectors.toList());
+        return collect;
     }
 }

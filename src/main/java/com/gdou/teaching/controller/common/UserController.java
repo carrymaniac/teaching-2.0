@@ -58,7 +58,7 @@ public class UserController {
      * @param response
      * @return
      */
-    @PostMapping("/loginForTest")
+    @GetMapping("/loginForTest")
     @ResponseBody
     public ResultVO Login(@RequestParam("userNumber") String userNumber,
                           @RequestParam("password") String password,

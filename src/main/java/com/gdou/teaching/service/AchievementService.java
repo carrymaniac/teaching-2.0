@@ -2,6 +2,7 @@ package com.gdou.teaching.service;
 
 
 import com.gdou.teaching.dto.AchievementDTO;
+import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.vo.ClazzVO;
 
@@ -66,4 +67,11 @@ public interface AchievementService {
      * @param userId
      */
     void updateAchievement(Integer courseId,Integer userId);
+
+    /**
+     * 根据CourseDTO导出课程成绩
+     * @param courseDTO
+     * @return
+     */
+    List<List<String>> exportAchievement(CourseDTO courseDTO);
 }

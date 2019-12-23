@@ -15,17 +15,22 @@ import com.gdou.teaching.form.JudgeForm;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.service.*;
+import com.gdou.teaching.util.PoiUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +54,10 @@ public class AchievementController {
     UserService userService;
     @Autowired
     ExperimentService experimentService;
+    @Autowired
+    CourseService courseService;
+    @Autowired
+    PoiUtil poiUtil;
 
     //todo  根据classId进行筛选,待完成
     @GetMapping("/list/{courseId}")
@@ -426,5 +435,35 @@ public class AchievementController {
             return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
         }
         return ResultVOUtil.success();
+    }
+
+    /**
+     * 导出学生成绩
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/export/{courseId}")
+    public String export(HttpServletResponse response,@PathVariable(value = "courseId") Integer courseId) throws IOException {
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        CourseDTO detail = courseService.detail(courseId);
+        response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(detail.getCourseName()+"成绩表.xls","UTF-8"));
+        OutputStream outputStream = response.getOutputStream();
+        List<List<String>> collect = achievementService.exportAchievement(detail);
+        List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
+        List<String> experimentNameList =  experimentDTOList.stream().map(experimentDTO -> {
+            return experimentDTO.getExperimentName();
+        }).collect(Collectors.toList());
+        List<String> colunNames=new ArrayList<>();
+        colunNames.add("班级");
+        colunNames.add("学号");
+        colunNames.add("姓名");
+        colunNames.add("总成绩");
+        colunNames.addAll(experimentNameList);
+        Workbook sheet = poiUtil.createSheet(detail.getCourseName()+"成绩表",colunNames,collect);
+        sheet.write(outputStream);
+        System.out.println("success");
+        return null;
     }
 }
