@@ -65,13 +65,7 @@ public class AchievementController {
                                   @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
         //根据courseId查出所有AchievementDTO
-        List<AchievementDTO> achievementDTOList;
-        try{
-            achievementDTOList= achievementService.getAchievementByCourseId(courseId);
-        }catch (TeachingException e){
-            log.error("查询成绩列表,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
         //班级列表
         Set<Integer> classIdSet=new HashSet<>();
         for(AchievementDTO achievementDTO:achievementDTOList){
@@ -79,13 +73,7 @@ public class AchievementController {
         }
         List<HashMap> classList=new ArrayList<>();
         for(Integer clazzId:classIdSet){
-            Class classByClazzId;
-            try{
-                classByClazzId = classService.getClassByClazzId(clazzId);
-            }catch (TeachingException e){
-                log.error("查询成绩列表,发生异常",e.getMessage());
-                return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
-            }
+            Class classByClazzId = classService.getClassByClazzId(clazzId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
@@ -93,22 +81,17 @@ public class AchievementController {
         }
         map.put("classList",classList);
         //获取课程下全部的AchievementVO
-        List<AchievementVO> achievementVOList;
-        try{
-            achievementVOList=achievementDTOList.stream().map(achievementDTO -> {
-                AchievementVO achievementVO = new AchievementVO();
-                achievementVO.setCourseAchievement(achievementDTO.getCourseAchievement());
-                User userById = userService.getUserById(achievementDTO.getUserId());
-                achievementVO.setUserId(userById.getUserId());
-                achievementVO.setUserNumber(userById.getUserNumber());
-                achievementVO.setNickName(userById.getNickname());
-                achievementVO.setClassId(achievementDTO.getClassId());
-                return achievementVO;
-            }).collect(Collectors.toList());
-        }catch (TeachingException e){
-            log.error("查询成绩列表,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
-        }
+        List<AchievementVO> achievementVOList =achievementDTOList.stream().map(achievementDTO -> {
+            AchievementVO achievementVO = new AchievementVO();
+            achievementVO.setCourseAchievement(achievementDTO.getCourseAchievement());
+            User userById = userService.getUserById(achievementDTO.getUserId());
+            achievementVO.setUserId(userById.getUserId());
+            achievementVO.setUserNumber(userById.getUserNumber());
+            achievementVO.setNickName(userById.getNickname());
+            achievementVO.setClassId(achievementDTO.getClassId());
+            return achievementVO;
+        }).collect(Collectors.toList());
+
         //按班级分割AchievementVO
         for(int i=0;i<classList.size();i++){
             HashMap<String,Object> clazzMap=new HashMap<>();
@@ -131,22 +114,10 @@ public class AchievementController {
     @GetMapping("/score/{courseId}")
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId,
                               @RequestParam(value = "userId") Integer userId){
-        Achievement achievement;
-        try{
-            achievement = achievementService.getAchievementByUserIdAndCourseId(userId, courseId);
-        }catch (TeachingException e){
-            log.error("查询实验成绩列表,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        Achievement achievement = achievementService.getAchievementByUserIdAndCourseId(userId, courseId);
         Double score = achievement.getCourseAchievement();
         //通过课程ID和用户ID获取提交记录列表
-        List<RecordDTO> recordByUserIdAndCourseId ;
-        try{
-            recordByUserIdAndCourseId=recordService.getRecordByUserIdAndCourseId(userId, courseId);
-        } catch (TeachingException e){
-            log.error("查询实验成绩列表,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        List<RecordDTO> recordByUserIdAndCourseId=recordService.getRecordByUserIdAndCourseId(userId, courseId);
         //提取所需要的字段（实验名-实验ID-实验得分）返回
         List<HashMap<String, String>> experiments = recordByUserIdAndCourseId.stream().map(r -> {
             HashMap<String, String> ex = new HashMap<>(3);
@@ -168,13 +139,7 @@ public class AchievementController {
                                    @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
         //根据课程id  获取实验列表
-        List<ExperimentDTO> experimentDTOList;
-        try{
-            experimentDTOList= experimentService.list(courseId);
-        }catch(TeachingException e){
-            log.error("查询批改信息,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        List<ExperimentDTO> experimentDTOList= experimentService.list(courseId);
         //获取实验列表
         List<HashMap> experimentList=new ArrayList<>();
         for(ExperimentDTO experimentDTO:experimentDTOList){
@@ -188,43 +153,26 @@ public class AchievementController {
         if (experimentId==null&&!experimentList.isEmpty()){
             experimentId=(Integer) experimentList.get(0).get("experimentId");
         }
-        List<RecordDTO> recordDTOS;
-        try{
-            recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
-        }catch (TeachingException e){
-            log.error("查询批改信息,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
         //班级列表
         Set<Integer> classIdSet=recordDTOS.stream().map(recordDTO -> recordDTO.getClassId()).collect(Collectors.toSet());
         //获取学生列表
-        List<JudgeVO> judgeVOList;
-        try{
-            judgeVOList = recordDTOS.stream().map(recordDTO -> {
-                JudgeVO judgeVO=new JudgeVO();
-                User user = userService.getUserById(recordDTO.getUserId());
-                judgeVO.setClassId(user.getClassId());
-                judgeVO.setUserId(user.getUserId());
-                judgeVO.setUserNumber(user.getUserNumber());
-                judgeVO.setNickName(user.getNickname());
-                judgeVO.setUserExperimentId(recordDTO.getUserExperimentId());
-                judgeVO.setStatus(recordDTO.getStatus().intValue());
-                return judgeVO;
-            }).collect(Collectors.toList());
-        }catch (TeachingException e){
-            log.error("查询批改信息,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
-        }
+        List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
+            JudgeVO judgeVO=new JudgeVO();
+            User user = userService.getUserById(recordDTO.getUserId());
+            judgeVO.setClassId(user.getClassId());
+            judgeVO.setUserId(user.getUserId());
+            judgeVO.setUserNumber(user.getUserNumber());
+            judgeVO.setNickName(user.getNickname());
+            judgeVO.setUserExperimentId(recordDTO.getUserExperimentId());
+            judgeVO.setStatus(recordDTO.getStatus().intValue());
+            return judgeVO;
+        }).collect(Collectors.toList());
+
         //获取班级列表
         List<HashMap> classList=new ArrayList<>();
         for(Integer clazzId:classIdSet){
-            Class classByClazzId;
-            try{
-                classByClazzId  = classService.getClassByClazzId(clazzId);
-            }catch (TeachingException e){
-                log.error("查询批改信息,发生异常",e.getMessage());
-                return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
-            }
+            Class classByClazzId = classService.getClassByClazzId(clazzId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
@@ -262,16 +210,12 @@ public class AchievementController {
     public ResultVO<RecordVO> detail(@PathVariable(value = "experimentId") Integer experimentId,
                                      @RequestParam(value = "userId") Integer userId) {
         RecordVO recordVO=new RecordVO();
-        try{
-            RecordDTO recordDTO = recordService.selectOne(experimentId, userId);
-            BeanUtils.copyProperties(recordDTO,recordVO);
-            User user = userService.getUserById(recordVO.getUserId());
-            recordVO.setUserName(user.getNickname());
-            recordVO.setUserNumber(user.getUserNumber());
-        }catch (TeachingException e){
-            log.error("[AchievementController]查询课程, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        RecordDTO recordDTO = recordService.selectOne(experimentId, userId);
+        BeanUtils.copyProperties(recordDTO,recordVO);
+        User user = userService.getUserById(recordVO.getUserId());
+        recordVO.setUserName(user.getNickname());
+        recordVO.setUserNumber(user.getUserNumber());
+
         return ResultVOUtil.success(recordVO);
     }
 
@@ -282,13 +226,7 @@ public class AchievementController {
             log.error("参数格式错误：{}" + form);
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        RecordDTO recordDTO;
-        try{
-            recordDTO = recordService.selectOne(form.getUserExperimentId());
-        }catch (TeachingException e){
-            log.error("保存批改信息失败：{}" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
-        }
+        RecordDTO recordDTO = recordService.selectOne(form.getUserExperimentId());
         //判断是否通过审核
         if (form.getStatus().equals(RecordStatusEnum.PASS.getCode())){
             recordDTO.setStatus(RecordStatusEnum.PASS.getCode().byteValue());
@@ -298,15 +236,11 @@ public class AchievementController {
             recordDTO.setExperimentAchievement(0d);
         }
         recordDTO.setTeacherComment(form.getTeacherComment());
-        try{
-            recordService.judge(recordDTO);
-            //更新Achievement总成绩
-            ExperimentDTO detail = experimentService.detail(recordDTO.getExperimentId());
-            achievementService.updateAchievement(detail.getCourseId(),recordDTO.getUserId());
-        }catch (TeachingException e){
-            log.error("保存批改信息,发生异常:{}",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),ResultEnum.SERVER_ERROR.getMsg());
-        }
+
+        recordService.judge(recordDTO);
+        //更新Achievement总成绩
+        ExperimentDTO detail = experimentService.detail(recordDTO.getExperimentId());
+        achievementService.updateAchievement(detail.getCourseId(),recordDTO.getUserId());
         return ResultVOUtil.success();
     }
 
@@ -322,39 +256,19 @@ public class AchievementController {
         HashMap<String,Object> map=new HashMap<>();
 
         //获取实验信息
-        ExperimentDTO experimentDTO;
-        try{
-            experimentDTO  = experimentService.detail(experimentId);
-        }catch (TeachingException e){
-            log.error("获取批量批改信息,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
-
+        ExperimentDTO experimentDTO  = experimentService.detail(experimentId);
         map.put("experimentId",experimentDTO.getExperimentId());
         map.put("experimentName",experimentDTO.getExperimentName());
         map.put("time",experimentDTO.getCreateTime());
         map.put("commitNum",experimentDTO.getExperimentCommitNum());
 
-        List<RecordDTO> recordDTOList;
-        try{
-            recordDTOList = recordService.getRecordListByExperimentId(experimentDTO.getExperimentId());
-        }catch (TeachingException e){
-            log.error("获取批量批改信息,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
-
+        List<RecordDTO> recordDTOList = recordService.getRecordListByExperimentId(experimentDTO.getExperimentId());
         List<RecordDTO> recordList= recordDTOList.stream().filter(c->c.getStatus().intValue()==RecordStatusEnum.REVIEWING.getCode()).collect(Collectors.toList());
         //获取班级列表
         Set<Integer> classIdSet = recordList.stream().map(c -> c.getClassId()).collect(Collectors.toSet());
         List<HashMap> classList=new ArrayList<>();
         for(Integer clazzId:classIdSet){
-            Class classByClazzId;
-            try{
-                classByClazzId = classService.getClassByClazzId(clazzId);
-            }catch (TeachingException e){
-                log.error("查询成绩列表,发生异常",e.getMessage());
-                return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
-            }
+            Class classByClazzId = classService.getClassByClazzId(clazzId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
@@ -363,22 +277,18 @@ public class AchievementController {
         map.put("classList",classList);
         //获取学生列表
         List<JudgeVO> judgeVOList;
-        try{
-            judgeVOList = recordList.stream().map(record -> {
-                JudgeVO judgeVO=new JudgeVO();
-                User user = userService.getUserById(record.getUserId());
-                judgeVO.setClassId(user.getClassId());
-                judgeVO.setUserId(user.getUserId());
-                judgeVO.setUserNumber(user.getUserNumber());
-                judgeVO.setNickName(user.getNickname());
-                judgeVO.setStatus(record.getStatus().intValue());
-                judgeVO.setUserExperimentId(record.getUserExperimentId());
-                return judgeVO;
-            }).collect(Collectors.toList());
-        }catch (TeachingException e){
-            log.error("查询成绩列表,发生异常",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
-        }
+
+        judgeVOList = recordList.stream().map(record -> {
+            JudgeVO judgeVO=new JudgeVO();
+            User user = userService.getUserById(record.getUserId());
+            judgeVO.setClassId(user.getClassId());
+            judgeVO.setUserId(user.getUserId());
+            judgeVO.setUserNumber(user.getUserNumber());
+            judgeVO.setNickName(user.getNickname());
+            judgeVO.setStatus(record.getStatus().intValue());
+            judgeVO.setUserExperimentId(record.getUserExperimentId());
+            return judgeVO;
+        }).collect(Collectors.toList());
         //按班级分割
         for(int i=0;i<classList.size();i++){
             //根据班级id筛选结果
@@ -405,34 +315,25 @@ public class AchievementController {
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
         List<RecordDTO> recordDTOList;
-        try {
-            recordDTOList = form.getUserExperimentIdList().stream().map(userExperimentId -> {
-                RecordDTO recordDTO = recordService.selectOne(userExperimentId);
-                //判断是否通过审核
-                if (form.getStatus().equals(RecordStatusEnum.PASS.getCode())) {
-                    recordDTO.setStatus(RecordStatusEnum.PASS.getCode().byteValue());
-                    recordDTO.setExperimentAchievement(form.getExperimentAchievement());
-                } else {
-                    recordDTO.setStatus(RecordStatusEnum.NOT_PASS.getCode().byteValue());
-                    recordDTO.setExperimentAchievement(0d);
-                }
-                recordDTO.setTeacherComment(form.getTeacherComment());
-                return recordDTO;
-            }).collect(Collectors.toList());
-        }catch(TeachingException e){
-            log.error("保存批量批改记录,发生异常:{}",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
-        try{
-            recordService.batchJudge(recordDTOList);
-            //todo 异步更新Achievement总成绩
-            for(RecordDTO recordDTO:recordDTOList){
-                ExperimentDTO detail = experimentService.detail(recordDTO.getExperimentId());
-                achievementService.updateAchievement(detail.getCourseId(),recordDTO.getUserId());
+        recordDTOList = form.getUserExperimentIdList().stream().map(userExperimentId -> {
+            RecordDTO recordDTO = recordService.selectOne(userExperimentId);
+            //判断是否通过审核
+            if (form.getStatus().equals(RecordStatusEnum.PASS.getCode())) {
+                recordDTO.setStatus(RecordStatusEnum.PASS.getCode().byteValue());
+                recordDTO.setExperimentAchievement(form.getExperimentAchievement());
+            } else {
+                recordDTO.setStatus(RecordStatusEnum.NOT_PASS.getCode().byteValue());
+                recordDTO.setExperimentAchievement(0d);
             }
-        }catch (TeachingException e){
-            log.error("保存批量批改记录,发生异常:{}",e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),e.getMessage());
+            recordDTO.setTeacherComment(form.getTeacherComment());
+            return recordDTO;
+        }).collect(Collectors.toList());
+
+        recordService.batchJudge(recordDTOList);
+        //todo 异步更新Achievement总成绩
+        for(RecordDTO recordDTO:recordDTOList){
+            ExperimentDTO detail = experimentService.detail(recordDTO.getExperimentId());
+            achievementService.updateAchievement(detail.getCourseId(),recordDTO.getUserId());
         }
         return ResultVOUtil.success();
     }

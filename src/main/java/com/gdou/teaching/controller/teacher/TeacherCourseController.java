@@ -70,14 +70,8 @@ public class TeacherCourseController {
     @GetMapping("/list")
     public ResultVO list(){
         User user = hostHolder.getUser();
-        List<CourseDTO> list;
         //通过ID获取到用户课程数据
-        try{
-            list = courseService.listCourse(user.getUserId());
-        } catch (TeachingException e) {
-            log.error("[TeacherCourseController]查询课程, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        List<CourseDTO> list = courseService.listCourse(user.getUserId());
         //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
         //切割正常课程。
         List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode()))
@@ -108,18 +102,9 @@ public class TeacherCourseController {
     @GetMapping("/addCourse")
     public ResultVO addCourse() {
         HashMap<String, Object> map = new HashMap<>();
-        List<TreeMap> clazzList;
-        List<UserDTO> studentList;
-        try{
-            clazzList = classService.getAllClazzList();
-            studentList= userService.getStudentListByClassId(0);
-        }catch (TeachingException e){
-            log.error("[TeacherCourseController]查询班级列表, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),ResultEnum.SERVER_ERROR.getMsg());
-        }
-
+        List<TreeMap> clazzList =classService.getAllClazzList();
+        List<UserDTO> studentList = userService.getStudentListByClassId(0);
         HashMap<String,Object> studentForSelect=new HashMap<>();
-
         for(int i=0;i<clazzList.size();i++){
             TreeMap treeMap = clazzList.get(i);
             HashMap<String,Object> clazzMap=new HashMap<>();
@@ -146,22 +131,9 @@ public class TeacherCourseController {
     @GetMapping("/manage/{courseId}")
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String, Object> map = new HashMap<>();
-        List<TreeMap> clazzList;
-        List<UserDTO> studentList;
-        List<AchievementDTO> achievementList;
-        try{
-            clazzList = classService.getAllClazzList();
-            studentList= userService.getStudentListByClassId(0);
-        }catch (TeachingException e){
-            log.error("[TeacherCourseController]查询班级列表, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(),ResultEnum.SERVER_ERROR.getMsg());
-        }
-        try{
-            achievementList= achievementService.getAchievementByCourseId(courseId);
-        }catch (TeachingException e){
-            log.error("[TeacherCourseController]查询班级列表, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        List<TreeMap> clazzList = classService.getAllClazzList();
+        List<UserDTO> studentList= userService.getStudentListByClassId(0);
+        List<AchievementDTO> achievementList = achievementService.getAchievementByCourseId(courseId);
         //获取已选课程的学生id列表
         Set<Integer> hadStudentIdSet = achievementList.stream().map(achievementDTO->achievementDTO.getUserId()).collect(Collectors.toSet());
         // 已选学生列表
@@ -241,24 +213,14 @@ public class TeacherCourseController {
             courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
             courseDTO.setCourseNumber(0);
         }
-        try {
-            courseService.save(courseDTO);
-        } catch (TeachingException e) {
-            log.error("保存课程,发生异常:{}", e);
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR.getCode(), ResultEnum.SERVER_ERROR.getMsg());
-        }
+        courseService.save(courseDTO);
          // 新增课程课程时执行
         if (form.getCourseId()==null){
             //  todo 异步更新成绩表 addAchievementByClazzId
             List<Integer> studentIdList = form.getAddStudentIdList();
-            try{
-                achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
-                // 异步更新课程及其下属实验的上课人数
-                courseService.updateNumber(courseDTO.getCourseId());
-            }catch (TeachingException e){
-                log.error("更新成绩表,发生异常:{}", e);
-                return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
-            }
+            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+            // 异步更新课程及其下属实验的上课人数
+            courseService.updateNumber(courseDTO.getCourseId());
         }
         return ResultVOUtil.success();
     }
@@ -271,20 +233,15 @@ public class TeacherCourseController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
         }
-        try {
-            //修改
-            if (form.getAddStudentIdList()!=null && !form.getAddStudentIdList().isEmpty()){
-                achievementService.addAchievementByStudentList(form.getCourseId(), form.getAddStudentIdList());
-            }
-            if (form.getDeleteStudentIdList()!=null &&!form.getDeleteStudentIdList().isEmpty()){
-                achievementService.deleteAchievementByStudentList(form.getCourseId(), form.getDeleteStudentIdList());
-            }
-            //todo  更新上课及其下属实验的人数
-            courseService.updateNumber(form.getCourseId());
-        } catch (TeachingException e) {
-            log.error("更新课程人数,发生异常:{}", e);
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),e.getMessage());
+        //修改
+        if (form.getAddStudentIdList()!=null && !form.getAddStudentIdList().isEmpty()){
+            achievementService.addAchievementByStudentList(form.getCourseId(), form.getAddStudentIdList());
         }
+        if (form.getDeleteStudentIdList()!=null &&!form.getDeleteStudentIdList().isEmpty()){
+            achievementService.deleteAchievementByStudentList(form.getCourseId(), form.getDeleteStudentIdList());
+        }
+        //todo  更新上课及其下属实验的人数
+        courseService.updateNumber(form.getCourseId());
         return ResultVOUtil.success();
     }
 
@@ -318,43 +275,23 @@ public class TeacherCourseController {
 
     @GetMapping("/invalid/{courseId}")
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
-        try {
-            courseService.invalid(courseId);
-        } catch (TeachingException e) {
-            log.error("注销课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        courseService.invalid(courseId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{courseId}")
     public ResultVO unlock(@PathVariable("courseId") Integer courseId) {
-        try {
-            courseService.unlock(courseId);
-        } catch (TeachingException e) {
-            log.error("恢复课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        courseService.unlock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/lock/{courseId}")
     public ResultVO lock(@PathVariable("courseId") Integer courseId) {
-        try {
-            courseService.lock(courseId);
-        } catch (TeachingException e) {
-            log.error("锁定课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        courseService.lock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/end/{courseId}")
     public ResultVO end(@PathVariable("courseId") Integer courseId) {
-        try {
-            courseService.end(courseId);
-        } catch (TeachingException e) {
-            log.error("完结课程,发生异常");
-            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),ResultEnum.PARAM_ERROR.getMsg());
-        }
+        courseService.end(courseId);
         return ResultVOUtil.success();
     }
 }

@@ -74,42 +74,27 @@ public class ExperimentServiceImpl implements ExperimentService {
 
     @Override
     @Transactional
-    //todo 增加了实验的答案的新增/更新,未对答案附件进行添加. 方法体量较大,待分离
-    public ExperimentDTO save(ExperimentDTO experimentDTO) {
+    public ExperimentDTO add(ExperimentDTO experimentDTO) {
         ExperimentAnswer experimentAnswer=new ExperimentAnswer();
         ExperimentMaster experimentMaster=new ExperimentMaster();
         ExperimentDetail experimentDetail=new ExperimentDetail();
-
-        //对experimentAnswer进行新增/更新
+        //对experimentAnswer进行新增
         BeanUtils.copyProperties(experimentDTO,experimentAnswer);
         experimentAnswer.setExperimentAnswerStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
-        if(experimentAnswer.getExperimentAnswerId()==null){
-            Integer i=experimentAnswerMapper.insert(experimentAnswer);
-            if (i<=0){
-                log.error("保存实验,保存实验答案失败,ExperimentAnswer={}",experimentAnswer);
-                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-            }
-        }else{
-            int i = experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer);
-            if (i<=0){
-                log.error("保存实验,保存实验答案失败,ExperimentAnswer={}",experimentAnswer);
-                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-            }
+        if (experimentAnswerMapper.insert(experimentAnswer)<=0){
+            log.error("保存实验,保存实验答案失败,ExperimentAnswer={}",experimentAnswer);
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
-        // 先对experimentDetail进行新增/更新
+        //新增实验答案的文件：
+        List<FileDTO> experimentAnswerFile = experimentDTO.getExperimentAnswerFile();
+        if(experimentAnswerFile!=null&&!experimentAnswerFile.isEmpty()){
+            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),experimentAnswerFile);
+        }
+        // 先对experimentDetail进行新增
         BeanUtils.copyProperties(experimentDTO,experimentDetail);
-        if (experimentDetail.getExperimentDetailId()==null){
-            int insert = experimentDetailMapper.insert(experimentDetail);
-            if(insert<=0){
-                log.error("[ExperimentServiceImpl]-保存实验,新增实验详情表失败,experimentDetail={}",experimentDetail);
-                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-            }
-        }else{
-            int i = experimentDetailMapper.updateByPrimaryKeySelective(experimentDetail);
-            if(i<=0){
-                log.error("[ExperimentServiceImpl]-保存实验,更新实验详情表失败,experimentDetail={}",experimentDetail);
-                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-            }
+        if( experimentDetailMapper.insert(experimentDetail)<=0){
+            log.error("[ExperimentServiceImpl]-保存实验,新增实验详情表失败,experimentDetail={}",experimentDetail);
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
         //回填ExperimentDetailId,ExperimentAnswerId
         experimentDTO.setExperimentDetailId(experimentDetail.getExperimentDetailId());
@@ -137,21 +122,11 @@ public class ExperimentServiceImpl implements ExperimentService {
                 experimentDTO.setExperimentIntro(text);
             }
         }
+        experimentDTO.setExperimentCommitNum(0);
         BeanUtils.copyProperties(experimentDTO,experimentMaster);
-        if (experimentMaster.getExperimentId()==null){
-            experimentDTO.setExperimentCommitNum(0);
-            experimentDTO.setExperimentStatus(ExperimentStatusEnum.NORMAL.getCode().byteValue());
-            Integer i = experimentMasterMapper.insert(experimentMaster);
-            if (i<=0){
-                log.error("[ExperimentServiceImpl]-保存实验,新增实验主表失败,experimentMaster={}",experimentMaster);
-                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-            }
-        }else{
-            int i = experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
-            if (i<=0){
-                log.error("[ExperimentServiceImpl]-保存实验,更新实验主表失败,experimentMaster={}",experimentMaster);
-                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-            }
+        if (experimentMasterMapper.insert(experimentMaster)<=0){
+            log.error("[ExperimentServiceImpl]-保存实验,新增实验主表失败,experimentMaster={}",experimentMaster);
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
         }
         //回填ExperimentId
         experimentDTO.setExperimentId(experimentMaster.getExperimentId());
@@ -162,6 +137,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         }
         return experimentDTO;
     }
+
 
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
@@ -195,6 +171,31 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new TeachingException(ResultEnum.EXPERIMENT_INVALID_ERROR);
         }
         return true;
+    }
+
+    @Override
+    public ExperimentDTO updateExperimentInfo(ExperimentDTO experimentDTO) {
+        return null;
+    }
+
+    @Override
+    public ExperimentDTO updateExperimentDetail(ExperimentDTO experimentDTO) {
+        return null;
+    }
+
+    @Override
+    public ExperimentDTO updateExperimentFile(ExperimentDTO experimentDTO) {
+        return null;
+    }
+
+    @Override
+    public ExperimentDTO updateExperimentAnswer(ExperimentDTO experimentDTO) {
+        return null;
+    }
+
+    @Override
+    public ExperimentDTO updateExperimentAnswerFile(ExperimentDTO experimentDTO) {
+        return null;
     }
 
     @Override

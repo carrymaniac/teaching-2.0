@@ -10,10 +10,10 @@ import com.gdou.teaching.dto.AnswerDTO;
 public interface AnswerService {
     /**
      * 查询实验答案的详情
-     * @param experimentId
+     * @param experimentAnswerId
      * @return
      */
-    AnswerDTO detail(Integer experimentId);
+    AnswerDTO detail(Integer experimentAnswerId);
 
     /**
      * 新增或修改实验答案

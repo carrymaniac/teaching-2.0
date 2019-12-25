@@ -1,5 +1,7 @@
 package com.gdou.teaching.mbg.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
