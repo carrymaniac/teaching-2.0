@@ -93,7 +93,7 @@ public class StudentExperimentController {
             redisTemplate.opsForSet().add(key,user.getUserId().toString());
             return ResultVOUtil.success(detail);
         }else {
-            return ResultVOUtil.success();
+            return ResultVOUtil.success(new AnswerDTO());
         }
 
     }

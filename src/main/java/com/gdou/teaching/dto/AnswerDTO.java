@@ -11,7 +11,7 @@ import java.util.List;
  * @description
  **/
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnswerDTO {
     /**
      * 实验答案ID
