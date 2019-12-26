@@ -256,7 +256,7 @@ public class CourseServiceImpl implements CourseService {
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andUserIdEqualTo(userId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
-        if(achievements.size()==0){
+        if(achievements==null||achievements.isEmpty()){
             //说明该学生无报任何班级
             return null;
         }
@@ -301,7 +301,7 @@ public class CourseServiceImpl implements CourseService {
         CourseMasterExample courseMasterExample = new CourseMasterExample();
         courseMasterExample.createCriteria().andTeacherIdEqualTo(userId);
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
-        if(courseMasters.size()==0){
+        if(courseMasters==null||courseMasters.isEmpty()){
             //说明该教师暂无授课
             return null;
         }

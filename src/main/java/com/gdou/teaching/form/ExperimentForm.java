@@ -38,7 +38,7 @@ public class ExperimentForm {
     @NotEmpty(message = "实验内容必填")
     private String experimentText;
     //实验状态
-    private Integer experimentStatus;
+    private Byte experimentStatus;
 
     //实验答案Id
     private Integer experimentAnswerId;

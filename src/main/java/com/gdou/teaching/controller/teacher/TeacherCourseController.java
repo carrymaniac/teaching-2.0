@@ -218,9 +218,11 @@ public class TeacherCourseController {
         if (form.getCourseId()==null){
             //  todo 异步更新成绩表 addAchievementByClazzId
             List<Integer> studentIdList = form.getAddStudentIdList();
-            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
-            // 异步更新课程及其下属实验的上课人数
-            courseService.updateNumber(courseDTO.getCourseId());
+            if(studentIdList!=null&&!studentIdList.isEmpty()){
+                achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+                // 异步更新课程及其下属实验的上课人数
+                courseService.updateNumber(courseDTO.getCourseId());
+            }
         }
         return ResultVOUtil.success();
     }
