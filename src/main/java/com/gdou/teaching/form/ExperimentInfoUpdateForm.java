@@ -13,7 +13,7 @@ import java.util.List;
  * @description
  **/
 @Data
-public class ExperimentInfoUpdateForm {
+public class  ExperimentInfoUpdateForm {
     //实验编号
     @NotNull(message = "实验Id必填")
     private Integer experimentId;

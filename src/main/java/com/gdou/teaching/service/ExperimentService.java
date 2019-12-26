@@ -41,31 +41,31 @@ public interface ExperimentService {
      * @param experimentDTO
      * @return
      */
-    ExperimentDTO updateExperimentInfo(ExperimentDTO experimentDTO);
+    boolean updateExperimentInfo(ExperimentDTO experimentDTO);
     /**
      * 更新实验详情表信息
      * @param experimentDTO
      * @return
      */
-    ExperimentDTO updateExperimentDetail(ExperimentDTO experimentDTO);
+    boolean updateExperimentDetail(ExperimentDTO experimentDTO);
     /**
      * 更新实验文件
      * @param experimentDTO
      * @return
      */
-    ExperimentDTO updateExperimentFile(ExperimentDTO experimentDTO);
+    boolean updateExperimentFile(ExperimentDTO experimentDTO);
     /**
      * 更新实验答案
      * @param experimentDTO
      * @return
      */
-    ExperimentDTO updateExperimentAnswer(ExperimentDTO experimentDTO);
+    boolean updateExperimentAnswer(ExperimentDTO experimentDTO);
     /**
      * 更新实验答案文件
      * @param experimentDTO
      * @return
      */
-    ExperimentDTO updateExperimentAnswerFile(ExperimentDTO experimentDTO);
+    boolean updateExperimentAnswerFile(ExperimentDTO experimentDTO);
 
     /**
      * 根据experimentId逻辑删除实验主表记录

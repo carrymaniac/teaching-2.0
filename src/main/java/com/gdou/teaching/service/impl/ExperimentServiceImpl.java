@@ -174,28 +174,58 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     @Override
-    public ExperimentDTO updateExperimentInfo(ExperimentDTO experimentDTO) {
-        return null;
+    public boolean updateExperimentInfo(ExperimentDTO experimentDTO) {
+        ExperimentMaster experimentMaster=new ExperimentMaster();
+        BeanUtils.copyProperties(experimentDTO,experimentMaster);
+        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
+            log.info("[ExperimentServiceImpl]-更新实验基本信息失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
+        }
+        return true;
     }
 
     @Override
-    public ExperimentDTO updateExperimentDetail(ExperimentDTO experimentDTO) {
-        return null;
+    public boolean updateExperimentDetail(ExperimentDTO experimentDTO) {
+        ExperimentDetail experimentDetail=new ExperimentDetail();
+        BeanUtils.copyProperties(experimentDTO,experimentDetail);
+        if (experimentDetailMapper.updateByPrimaryKeyWithBLOBs(experimentDetail)!=1){
+            log.info("[ExperimentServiceImpl]-更新实验详情失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
+        }
+        return true;
     }
 
     @Override
-    public ExperimentDTO updateExperimentFile(ExperimentDTO experimentDTO) {
-        return null;
+    public boolean updateExperimentFile(ExperimentDTO experimentDTO) {
+        List<FileDTO> fileDTOList=experimentDTO.getExperimentDetailFile();
+        //更新，先删除之前所有的文件记录，进行重新插入
+        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_FILE.getCode(),experimentDTO.getExperimentId());
+        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
+            fileService.saveFile(FileCategoryEnum.EXPERIMENT_FILE.getCode(),experimentDTO.getExperimentId(),fileDTOList);
+        }
+        return true;
     }
 
     @Override
-    public ExperimentDTO updateExperimentAnswer(ExperimentDTO experimentDTO) {
-        return null;
+    public boolean updateExperimentAnswer(ExperimentDTO experimentDTO) {
+        ExperimentAnswer experimentAnswer=new ExperimentAnswer();
+        BeanUtils.copyProperties(experimentDTO,experimentAnswer);
+        if (  experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
+            log.info("[ExperimentServiceImpl]-更新实验答案失败");
+            throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
+        }
+        return true;
     }
 
     @Override
-    public ExperimentDTO updateExperimentAnswerFile(ExperimentDTO experimentDTO) {
-        return null;
+    public boolean updateExperimentAnswerFile(ExperimentDTO experimentDTO) {
+        List<FileDTO> fileDTOList=experimentDTO.getExperimentAnswerFile();
+        //更新，先删除之前所有的文件记录，进行重新插入
+        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentDTO.getExperimentAnswerId());
+        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
+            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentDTO.getExperimentAnswerId(),fileDTOList);
+        }
+        return true;
     }
 
     @Override

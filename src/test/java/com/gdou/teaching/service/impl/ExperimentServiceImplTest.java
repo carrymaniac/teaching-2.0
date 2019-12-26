@@ -36,7 +36,7 @@ class ExperimentServiceImplTest {
 
     @Test
     @Transactional
-    void save() {
+    void add() {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         experimentDTO.setCourseId(1);
         experimentDTO.setExperimentIntro("关于数组和链表的实验");
@@ -44,8 +44,8 @@ class ExperimentServiceImplTest {
         experimentDTO.setExperimentText("如何反转一个数组");
         //experimentDTO.setExperimentId(8);
         //experimentDTO.setExperimentDetailId(13);
-        ExperimentDTO save = experimentService.save(experimentDTO);
-        log.info("save:{}",save);
+        ExperimentDTO add = experimentService.add(experimentDTO);
+        log.info("add:{}",add);
     }
 
     @Test

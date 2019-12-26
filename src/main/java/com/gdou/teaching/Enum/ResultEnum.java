@@ -47,6 +47,7 @@ public enum  ResultEnum implements CodeEnum {
     //实验答案模块状态码
     ANSWER_NOT_EXIST(51,"实验答案不存在"),
     ANSWER_INVALID_ERROR(52,"删除实验答案失败"),
+    ANSWER_SAVE_ERROR(53,"实验答案保存失败"),
 
     //文件模块状态码
     FILE_ERROR(61,"文件插入数据库失败"),
