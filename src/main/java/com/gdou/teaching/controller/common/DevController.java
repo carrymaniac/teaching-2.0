@@ -61,7 +61,6 @@ public class DevController {
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode("学生成绩.xls","UTF-8"));
-        byte[] buffer = new byte[1024];
         OutputStream outputStream = response.getOutputStream();
         List<AchievementDTO> achievementByCourseId = achievementService.getAchievementByCourseId(1);
         List<List<String>> collect = achievementByCourseId.stream().map(achievementDTO -> {

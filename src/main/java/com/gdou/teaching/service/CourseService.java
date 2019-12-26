@@ -2,6 +2,7 @@ package com.gdou.teaching.service;
 
 
 import com.gdou.teaching.dto.CourseDTO;
+import com.gdou.teaching.exception.TeachingException;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface CourseService {
      * @param courseId
      * @return
      */
-    CourseDTO info(Integer courseId);
+    CourseDTO info(Integer courseId) throws TeachingException;
 
 
     /**
@@ -45,7 +46,7 @@ public interface CourseService {
      * @param courseId
      * @return
      */
-    CourseDTO detail(Integer courseId);
+    CourseDTO detail(Integer courseId) throws TeachingException;
 
 
     /**

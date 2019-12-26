@@ -20,16 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
-<<<<<<< HEAD
- * @author carrymaniac
- * @date Created in 14:26 2019-08-14
-=======
- * @author bo
- * @date Created in 14:26 2019/8/14
->>>>>>> CourseDev1
- * @description
- **/
 @Service
 @Slf4j
 public class CourseServiceImpl implements CourseService {
@@ -55,7 +45,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public CourseDTO info(Integer courseId) {
+    public CourseDTO info(Integer courseId) throws TeachingException{
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if(courseMaster==null){
             log.info("[CourseServiceImpl]-获取课程基本信息,课程主表不存在,courseId={}",courseId);
@@ -136,7 +126,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public CourseDTO detail(Integer courseId) {
+    public CourseDTO detail(Integer courseId) throws TeachingException{
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if (courseMaster==null){
             log.info("[CourseServiceImpl]-查询课程详情,课程主表不存在,courseId={}",courseId);
