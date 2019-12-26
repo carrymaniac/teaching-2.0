@@ -75,7 +75,6 @@ public class UserController {
             map.put("nickname",user.getNickname());
             map.put("headUrl",user.getHeadUrl());
             map.put("userId",user.getUserId());
-            log.info("登陆的用户为：{}", hostHolder.getUser());
             return ResultVOUtil.success(map);
         } catch (TeachingException e) {
             return ResultVOUtil.fail(e);
@@ -194,7 +193,6 @@ public class UserController {
         String token = UUID.randomUUID().toString();
         stringRedisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, token), String.valueOf(user.getUserId()), RedisConstant.EXPIRE, TimeUnit.SECONDS);
         //设置token到cookie
-        log.info("key:{},value:{}", CookieConstant.TOKEN, token);
         CookieUtil.set(response, CookieConstant.TOKEN, token, RedisConstant.EXPIRE);
     }
 

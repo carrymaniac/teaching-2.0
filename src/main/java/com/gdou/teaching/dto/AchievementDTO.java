@@ -47,7 +47,8 @@ public class AchievementDTO {
      * 教师ID
      */
     private String teacherName;
-
-    //成绩
+    /**
+     * 成绩
+     */
     private Double courseAchievement;
 }

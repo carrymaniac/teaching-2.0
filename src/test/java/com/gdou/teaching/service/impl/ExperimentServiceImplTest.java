@@ -44,8 +44,8 @@ class ExperimentServiceImplTest {
         experimentDTO.setExperimentText("如何反转一个数组");
         //experimentDTO.setExperimentId(8);
         //experimentDTO.setExperimentDetailId(13);
-        ExperimentDTO save = experimentService.save(experimentDTO);
-        log.info("save:{}",save);
+//        ExperimentDTO save = experimentService.save(experimentDTO);
+//        log.info("save:{}",save);
     }
 
     @Test
