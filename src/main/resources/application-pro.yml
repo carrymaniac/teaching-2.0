@@ -6,8 +6,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: Hgh_19981886
-    url: jdbc:mysql://120.77.242.172/teaching?characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+    password: Wzb199808.
+    url: jdbc:mysql://118.31.16.137/teaching?characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
     hikari:
       validation-timeout: 3000
 #      连接超时时间
@@ -22,8 +22,9 @@ spring:
       minimum-idle: 10
     type: com.zaxxer.hikari.HikariDataSource
   redis:
-    host: 120.77.242.172
+    host: 118.31.16.137
     port: 6379
+    password: Wzb199808.
   servlet:
     multipart:
       enabled: true
@@ -34,6 +35,8 @@ server:
     context-path: /teaching
   port: 8080
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations:
+    - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml
+    - classpath:mappers/com/gdou/teaching/dao/*.xml
 
 

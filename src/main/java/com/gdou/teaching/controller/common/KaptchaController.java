@@ -1,6 +1,7 @@
 package com.gdou.teaching.controller.common;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import java.io.ByteArrayOutputStream;
  * @Version:
  */
 @Controller
+@Slf4j
 public class KaptchaController {
     @Autowired
     DefaultKaptcha kaptcha;
@@ -34,6 +36,8 @@ public class KaptchaController {
         try {
             //生产验证码字符串并保存到session中
             String verifyCode = kaptcha.createText();
+            log.debug("生成的验证码为:{}",verifyCode);
+            httpServletRequest.getSession().removeAttribute("verifyCode");
             httpServletRequest.getSession().setAttribute("verifyCode", verifyCode);
             BufferedImage challenge = kaptcha.createImage(verifyCode);
             ImageIO.write(challenge, "jpg", imgOutputStream);
