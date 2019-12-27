@@ -65,6 +65,7 @@ public class UserIntercepter implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
+        log.debug("【UserIntercepter】清除用户信息:{}",hostHolder.getUser());
+        hostHolder.clear();
     }
 }
