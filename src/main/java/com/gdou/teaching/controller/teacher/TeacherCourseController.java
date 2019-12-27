@@ -57,8 +57,6 @@ public class TeacherCourseController {
     @Autowired
     private HostHolder hostHolder;
     @Autowired
-    private RecordService recordService;
-    @Autowired
     private FileService fileService;
 
 
@@ -72,6 +70,9 @@ public class TeacherCourseController {
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
         List<CourseDTO> list = courseService.listCourse(user.getUserId());
+        if(list==null){
+            return ResultVOUtil.success();
+        }
         //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
         //切割正常课程。
         List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode()))
