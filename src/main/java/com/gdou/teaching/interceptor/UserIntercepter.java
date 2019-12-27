@@ -37,15 +37,16 @@ public class UserIntercepter implements HandlerInterceptor {
         if(cookie==null||cookie.getValue()==null){
             return true;
         }
+
         String tokenValue = stringRedisTemplate.opsForValue().get(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
         if(StringUtils.isEmpty(tokenValue)){
             return true;
         }
         User user = userService.getUserById(Integer.parseInt(tokenValue));
         user.setPassword(null);
+        log.info("【UserIntercepter】此刻注入用户：user:{}",user);
         hostHolder.setUser(user);
         return true;
-
     }
 
     /**
@@ -65,7 +66,7 @@ public class UserIntercepter implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.debug("【UserIntercepter】清除用户信息:{}",hostHolder.getUser());
+        log.info("【UserIntercepter】清除用户信息:{}",hostHolder.getUser());
         hostHolder.clear();
     }
 }
