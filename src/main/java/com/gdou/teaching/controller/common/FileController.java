@@ -1,6 +1,7 @@
 package com.gdou.teaching.controller.common;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.util.FileUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
@@ -8,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +39,8 @@ public class FileController {
     private String contextPath;
     @Autowired
     FileUtil fileUtil;
+    @Autowired
+    FileService fileService;
     @PostMapping("/upload")
     @ResponseBody
     private ResultVO uploadForFile(HttpServletRequest httpServletRequest, @RequestParam("file") MultipartFile file) throws URISyntaxException {
@@ -66,6 +66,13 @@ public class FileController {
             return ResultVOUtil.fail(ResultEnum.FILE_UPLOAD_FAIL);
         }
     }
+
+    @GetMapping("/delete/{fileId}")
+    public ResultVO delete(@PathVariable(value = "fileId") Integer fileId){
+        fileService.deleteFile(fileId);
+        return ResultVOUtil.success();
+    }
+
 
     public HashMap<String, String> uploadFile(HttpServletRequest httpServletRequest, MultipartFile file) throws IOException {
         //文件原始名字
@@ -100,4 +107,6 @@ public class FileController {
         }
         return map;
     }
+
+
 }
