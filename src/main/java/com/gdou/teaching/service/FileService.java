@@ -56,4 +56,11 @@ public interface FileService {
      */
     boolean deleteFiles(Integer fileCategory, Integer fileCategoryId);
 
+    /**
+     * 删除单个文件
+     * @param fileId
+     * @return
+     */
+    boolean deleteFile(Integer fileId);
+
 }

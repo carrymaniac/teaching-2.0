@@ -107,6 +107,7 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/addCourse")
+    @Auth
     public ResultVO addCourse() {
         HashMap<String, Object> map = new HashMap<>();
         List<TreeMap> clazzList =classService.getAllClazzList();
@@ -136,6 +137,7 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/manage/{courseId}")
+    @Auth
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String, Object> map = new HashMap<>();
         List<TreeMap> clazzList = classService.getAllClazzList();
@@ -208,6 +210,7 @@ public class TeacherCourseController {
      * @return
      */
     @PostMapping("/save")
+    @Auth
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -234,8 +237,8 @@ public class TeacherCourseController {
         return ResultVOUtil.success();
     }
 
-    @PostMapping("/updateNumber")
     //课程详情
+    @PostMapping("/updateNumber")
     public ResultVO updateNumber(@RequestBody @Valid CourseUpdateStuForm form,
                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -255,6 +258,7 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/detail/{courseId}")
+    @Auth
     public ResultVO<CourseVO> detail(@PathVariable(value = "courseId") Integer courseId){
         CourseVO courseVO = new CourseVO();
         CourseDTO detail;
@@ -269,6 +273,7 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/resource/{courseId}")
+    @Auth
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关联的文件
@@ -283,22 +288,26 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/invalid/{courseId}")
+    @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
         courseService.invalid(courseId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{courseId}")
+    @Auth
     public ResultVO unlock(@PathVariable("courseId") Integer courseId) {
         courseService.unlock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/lock/{courseId}")
+    @Auth
     public ResultVO lock(@PathVariable("courseId") Integer courseId) {
         courseService.lock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/end/{courseId}")
+    @Auth
     public ResultVO end(@PathVariable("courseId") Integer courseId) {
         courseService.end(courseId);
         return ResultVOUtil.success();

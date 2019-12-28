@@ -62,6 +62,7 @@ public class UserController {
     @ResponseBody
     public ResultVO Login(@RequestParam("userNumber") String userNumber,
                           @RequestParam("password") String password,
+                          @RequestParam("ident") Integer ident,
                           HttpServletResponse response
     ) {
         if (StringUtils.isEmpty(userNumber)||StringUtils.isEmpty(password)) {
@@ -69,13 +70,17 @@ public class UserController {
         }
         try {
             User user = userService.login(userNumber, password);
-            addToken(user, response);
-            HashMap map = new HashMap();
-            map.put("userId",user.getUserId());
-            map.put("nickname",user.getNickname());
-            map.put("headUrl",user.getHeadUrl());
-            map.put("userId",user.getUserId());
-            return ResultVOUtil.success(map);
+            //判断身份
+            if (user.getUserIdent().intValue()==ident){
+                addToken(user, response);
+                HashMap map = new HashMap();
+                map.put("userId",user.getUserId());
+                map.put("nickname",user.getNickname());
+                map.put("headUrl",user.getHeadUrl());
+                return ResultVOUtil.success(map);
+            }else{
+                return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
+            }
         } catch (TeachingException e) {
             return ResultVOUtil.fail(e);
         }
@@ -161,6 +166,7 @@ public class UserController {
     public ResultVO login(@RequestParam("userNumber") String userNumber,
                           @RequestParam("password") String password,
                           @RequestParam("verifyCode") String verifyCode,
+                          @RequestParam("ident") Integer ident,
                           HttpSession httpSession,
                           HttpServletResponse response
     ){
@@ -168,20 +174,24 @@ public class UserController {
             return ResultVOUtil.fail(ResultEnum.PARAM_NULL);
         }
         String kaptchaCode = httpSession.getAttribute("verifyCode") + "";
-        log.debug("用户输入的验证码为:{},实际的验证码为:{}",verifyCode,kaptchaCode);
+        log.info("用户输入的验证码为:{},实际的验证码为:{}",verifyCode,kaptchaCode);
         if(StringUtils.isEmpty(kaptchaCode)||!verifyCode.equals(kaptchaCode)){
             return ResultVOUtil.fail(ResultEnum.VERIFYCODE_ERROR);
         }
         httpSession.removeAttribute("verifyCode");
         try {
             User user = userService.login(userNumber, password);
-            addToken(user, response);
-            HashMap map = new HashMap(3);
-            map.put("userId",user.getUserId());
-            map.put("nickname",user.getNickname());
-            map.put("headUrl",user.getHeadUrl());
-            map.put("ident",user.getUserIdent());
-            return ResultVOUtil.success(map);
+            if (user.getUserIdent().intValue()==ident){
+                addToken(user, response);
+                log.info("登陆的用户为：{}", hostHolder.getUser());
+                HashMap map = new HashMap(3);
+                map.put("userId",user.getUserId());
+                map.put("nickname",user.getNickname());
+                map.put("headUrl",user.getHeadUrl());
+                return ResultVOUtil.success(map);
+            }else{
+                return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
+            }
         } catch (TeachingException e) {
             return ResultVOUtil.fail(e);
         }

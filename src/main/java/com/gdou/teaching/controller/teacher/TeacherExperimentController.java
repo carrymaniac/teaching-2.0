@@ -11,6 +11,7 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class TeacherExperimentController {
      * @return
      */
     @GetMapping(path = "/list/{courseId}")
+    @Auth
     public ResultVO<CourseVO> list(@PathVariable(value = "courseId") Integer courseId) {
         CourseDTO courseDTO;
         List<ExperimentDTO> experimentDTOList;
@@ -75,6 +77,7 @@ public class TeacherExperimentController {
      * @return
      */
     @GetMapping("/detail/{experimentId}")
+    @Auth
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
@@ -84,6 +87,7 @@ public class TeacherExperimentController {
     }
 
     @GetMapping("/index")
+    @Auth
     public ResultVO<ExperimentDTO> index(@RequestParam(value = "experimentId", required = false) Integer experimentId) {
         ExperimentDTO experimentDTO=null;
         //如果传入courseId不为空,为更新操作
@@ -94,6 +98,7 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/add")
+    @Auth
     public ResultVO add(@RequestBody @Valid ExperimentForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -106,6 +111,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentInfo")
+    @Auth
     public ResultVO updateExperimentInfo(@RequestBody @Valid ExperimentInfoUpdateForm form,
                                      BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -119,6 +125,7 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/updateExperimentDetail")
+    @Auth
     public ResultVO updateExperimentDetail(@RequestBody @Valid ExperimentDetailUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -131,6 +138,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentFile")
+    @Auth
     public ResultVO updateExperimentFile(@RequestBody @Valid ExperimentFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -143,6 +151,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswer")
+    @Auth
     public ResultVO updateExperimentAnswer(@RequestBody @Valid ExperimentAnswerUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -155,6 +164,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswerFile")
+    @Auth
     public ResultVO updateExperimentAnswerFile(@RequestBody @Valid ExperimentAnswerFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -170,24 +180,28 @@ public class TeacherExperimentController {
 
 
     @GetMapping("/invalid/{experimentId}")
+    @Auth
     public ResultVO invalid(@PathVariable("experimentId") Integer experimentId) {
         experimentService.invalid(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/end/{experimentId}")
+    @Auth
     public ResultVO end(@PathVariable("experimentId") Integer experimentId) {
         experimentService.end(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/lock/{experimentId}")
+    @Auth
     public ResultVO lock(@PathVariable("experimentId") Integer experimentId) {
         experimentService.lock(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{experimentId}")
+    @Auth
     public ResultVO unlock(@PathVariable("experimentId") Integer experimentId) {
         experimentService.unlock(experimentId);
         return ResultVOUtil.success();

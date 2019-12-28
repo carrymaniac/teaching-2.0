@@ -157,21 +157,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 
     }
 
-    @Override
-    public boolean invalid(Integer experimentId) {
-        ExperimentMaster experimentMaster =
-                experimentMasterMapper.selectByPrimaryKey(experimentId);
-        if (experimentMaster == null) {
-            log.info("[ExperimentServiceImpl]-删除实验,该实验不存在或已被删除");
-            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
-        }
-        experimentMaster.setExperimentStatus(ExperimentStatusEnum.INVALID.getCode().byteValue());
-        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
-            log.info("[ExperimentServiceImpl]-删除实验,实验删除失败");
-            throw new TeachingException(ResultEnum.EXPERIMENT_INVALID_ERROR);
-        }
-        return true;
-    }
 
     @Override
     public boolean updateExperimentInfo(ExperimentDTO experimentDTO) {
@@ -229,6 +214,22 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     @Override
+    public boolean invalid(Integer experimentId) {
+        ExperimentMaster experimentMaster =
+                experimentMasterMapper.selectByPrimaryKey(experimentId);
+        if (experimentMaster == null) {
+            log.info("[ExperimentServiceImpl]-删除实验,该实验不存在或已被删除");
+            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+        }
+        experimentMaster.setExperimentStatus(ExperimentStatusEnum.INVALID.getCode().byteValue());
+        if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
+            log.info("[ExperimentServiceImpl]-删除实验,实验删除失败");
+            throw new TeachingException(ResultEnum.EXPERIMENT_INVALID_ERROR);
+        }
+        return true;
+    }
+
+    @Override
     public boolean end(Integer experimentId) {
         ExperimentMaster experimentMaster =
                 experimentMasterMapper.selectByPrimaryKey(experimentId);
@@ -265,7 +266,7 @@ public class ExperimentServiceImpl implements ExperimentService {
             log.info("[ExperimentServiceImpl]-锁定实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
             throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
         }
-        experimentMaster.setExperimentStatus(ExperimentStatusEnum.END.getCode().byteValue());
+        experimentMaster.setExperimentStatus(ExperimentStatusEnum.LOCK.getCode().byteValue());
         if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
             log.info("[ExperimentServiceImpl]-锁定实验,实验锁定失败");
             throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);

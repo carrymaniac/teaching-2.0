@@ -90,4 +90,9 @@ public class FileServiceImpl implements FileService {
         fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
         return fileMapper.deleteByExample(fileExample)>0;
     }
+
+    @Override
+    public boolean deleteFile(Integer fileId) {
+        return fileMapper.deleteByPrimaryKey(fileId)==1;
+    }
 }
