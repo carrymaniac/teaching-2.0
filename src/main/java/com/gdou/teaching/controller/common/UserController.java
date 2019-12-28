@@ -180,6 +180,7 @@ public class UserController {
             map.put("userId",user.getUserId());
             map.put("nickname",user.getNickname());
             map.put("headUrl",user.getHeadUrl());
+            map.put("ident",user.getUserIdent());
             return ResultVOUtil.success(map);
         } catch (TeachingException e) {
             return ResultVOUtil.fail(e);

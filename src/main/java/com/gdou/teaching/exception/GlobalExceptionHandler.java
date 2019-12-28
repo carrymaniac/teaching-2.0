@@ -34,7 +34,11 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = TeachingException.class)
     public ResultVO teachingExceptionHandler(HttpServletRequest httpServletRequest,TeachingException e){
-        return ResultVOUtil.fail(500,"很抱歉，您访问的服务出错了");
+        if(e.getCode()==500){
+            return ResultVOUtil.fail(500,"很抱歉，您访问的服务出错了");
+        }else{
+            return ResultVOUtil.fail(e);
+        }
     }
 
 }

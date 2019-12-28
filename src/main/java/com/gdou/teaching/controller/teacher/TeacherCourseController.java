@@ -4,6 +4,8 @@ package com.gdou.teaching.controller.teacher;
 import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.constant.CommonConstant;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.dto.CourseDTO;
@@ -17,6 +19,7 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.vo.UserVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+
+import static com.gdou.teaching.Enum.UserIdentEnum.TEACHER;
 
 /**
  * @ProjectName: teaching
@@ -66,6 +71,7 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/list")
+    @Auth
     public ResultVO list(){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据

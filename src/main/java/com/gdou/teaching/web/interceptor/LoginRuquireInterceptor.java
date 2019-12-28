@@ -1,4 +1,4 @@
-package com.gdou.teaching.interceptor;
+package com.gdou.teaching.web.interceptor;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dataobject.HostHolder;
