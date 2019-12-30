@@ -60,12 +60,12 @@ public class UserController {
      */
     @PostMapping("/loginForTest")
     @ResponseBody
-    public ResultVO Login(@RequestParam("userNumber") String userNumber,
-                          @RequestParam("password") String password,
-                          @RequestParam("ident") Integer ident,
+    public ResultVO Login(@RequestParam(value = "userNumber",required = false) String userNumber,
+                          @RequestParam(value ="password",required = false) String password,
+                          @RequestParam(value ="ident",required = false) Integer ident,
                           HttpServletResponse response
     ) {
-        if (StringUtils.isEmpty(userNumber)||StringUtils.isEmpty(password)) {
+        if (StringUtils.isEmpty(userNumber)||StringUtils.isEmpty(password)||ident==null) {
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST);
         }
         try {
@@ -163,14 +163,14 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ResultVO login(@RequestParam("userNumber") String userNumber,
-                          @RequestParam("password") String password,
-                          @RequestParam("verifyCode") String verifyCode,
-                          @RequestParam("ident") Integer ident,
+    public ResultVO login(@RequestParam(value = "userNumber",required = false) String userNumber,
+                          @RequestParam(value ="password",required = false) String password,
+                          @RequestParam(value ="verifyCode",required = false) String verifyCode,
+                          @RequestParam(value ="ident",required = false) Integer ident,
                           HttpSession httpSession,
                           HttpServletResponse response
     ){
-        if (StringUtils.isEmpty(userNumber)||StringUtils.isEmpty(verifyCode)||StringUtils.isEmpty(password)) {
+        if (StringUtils.isEmpty(userNumber)||StringUtils.isEmpty(verifyCode)||StringUtils.isEmpty(password)||ident==null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_NULL);
         }
         String kaptchaCode = httpSession.getAttribute("verifyCode") + "";
