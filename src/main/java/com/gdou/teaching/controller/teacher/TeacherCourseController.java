@@ -51,8 +51,6 @@ public class TeacherCourseController {
     @Autowired
     private UserService userService;
     @Autowired
-    private ExperimentService experimentService;
-    @Autowired
     private ClassService classService;
     @Autowired
     private AchievementService achievementService;
@@ -72,7 +70,7 @@ public class TeacherCourseController {
     public ResultVO list(){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
-        List<CourseDTO> list = courseService.listCourse(user.getUserId());
+        List<CourseDTO> list = courseService.listCourseForTeacher(user.getUserId());
         if(list==null){
             return ResultVOUtil.success();
         }
@@ -281,6 +279,8 @@ public class TeacherCourseController {
     @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
         courseService.invalid(courseId);
+        //删除课程下的选课记录
+        achievementService.deleteAchievementByCourseId(courseId);
         return ResultVOUtil.success();
     }
 

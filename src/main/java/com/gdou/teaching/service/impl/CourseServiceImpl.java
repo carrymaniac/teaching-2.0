@@ -251,7 +251,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public List<CourseDTO> list(Integer userId) {
+    public List<CourseDTO> listCourseForStudent(Integer userId) {
         //查询课程主表记录
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andUserIdEqualTo(userId);
@@ -296,10 +296,10 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<CourseDTO> listCourse(Integer userId) {
+    public List<CourseDTO> listCourseForTeacher(Integer userId) {
         //查询课程主表记录
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId);
+        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
         if(courseMasters==null||courseMasters.isEmpty()){
             //说明该教师暂无授课

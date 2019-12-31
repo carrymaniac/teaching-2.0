@@ -102,27 +102,6 @@ public class UserController {
         return ResultVOUtil.success();
     }
 
-    /**
-     * 主页接口
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping(path = {"/home"})
-    public String homePage(Model model) {
-        User user = hostHolder.getUser();
-        //说明是老师，需要将老师的课程信息、加载到首页
-        if (user.getUserIdent().equals(UserIdentEnum.TEACHER.getCode())) {
-            List<CourseDTO> coureses = courseService.getCourseByUserId(user.getUserId());
-            model.addAttribute("courses", coureses);
-        }
-        //如果是学生 需要将学生的课程信息，加载到首页
-        if (user.getUserIdent().equals(UserIdentEnum.SUTUDENT.getCode())) {
-
-        }
-        //如果是学生，需要将
-        return "home";
-    }
 
     /**
      * 用户个人信息接口

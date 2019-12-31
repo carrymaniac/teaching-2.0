@@ -40,6 +40,13 @@ public interface AchievementService {
     boolean deleteAchievementByStudentList(Integer courseId, List<Integer> studentIdList);
 
     /**
+     * 根据课程id,删除成绩记录
+     * @param courseId
+     * @return
+     */
+    Integer deleteAchievementByCourseId(Integer courseId);
+
+    /**
      * 根据用户ID查询学生选修的课程数量
      * @param userId
      * @return

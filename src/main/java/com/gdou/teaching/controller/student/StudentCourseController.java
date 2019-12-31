@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -118,34 +119,26 @@ public class StudentCourseController {
     @GetMapping("/listForNoPage")
     public ResultVO listForNoPage(){
         User user = hostHolder.getUser();
-        try{
-            //通过ID获取到用户课程数据
-            List<CourseDTO> list = courseService.list(user.getUserId());
-            //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
-            //切割正常课程。
-            List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.NORMAL.getCode().byteValue()))
-                    .map(courseDTO -> {
-                CourseVO courseVO = new CourseVO();
-                BeanUtils.copyProperties(courseDTO, courseVO);
-                return courseVO;
-            }).collect(Collectors.toList());
-            //切割出过期课程
-            List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.END.getCode().byteValue())).map(courseDTO -> {
-                CourseVO courseVO = new CourseVO();
-                BeanUtils.copyProperties(courseDTO, courseVO);
-                return courseVO;
-            }).collect(Collectors.toList());
-            HashMap<String, Object> map = new HashMap<>(2);
-            map.put("normal", normal);
-            map.put("end", end);
-            return ResultVOUtil.success(map);
-        } catch (TeachingException e) {
-            log.info("[StudentCourseController]查询课程, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        //通过ID获取到用户课程数据
+        List<CourseDTO> list = courseService.listCourseForStudent(user.getUserId());
+        if(list==null){
+            return ResultVOUtil.success();
         }
-
+        //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
+        Map<Boolean, List<CourseVO>> collect = list.stream().map(courseDTO -> {
+            CourseVO courseVO = new CourseVO();
+            BeanUtils.copyProperties(courseDTO, courseVO);
+            return courseVO;
+        }).collect(Collectors.groupingBy(courseVO -> courseVO.getCourseStatus().intValue() == (CourseStatusEnum.END.getCode())));
+        //切割正常课程。
+        List<CourseVO> normal = collect.get(false);
+        //切割出过期课程
+        List<CourseVO> end = collect.get(true);
+        HashMap<String, Object> map = new HashMap<>(2);
+        map.put("normal", normal);
+        map.put("end", end);
+        return ResultVOUtil.success(map);
     }
-
 
     /**
      *  通过课程ID获取该课程的分数
