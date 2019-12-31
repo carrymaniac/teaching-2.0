@@ -12,14 +12,20 @@ import java.util.List;
  **/
 @Data
 public class CourseUpdateStuForm {
+    /**
+     * 课程ID
+     */
     @NotNull(message = "课程编号必填")
-    //课程编号
     private Integer courseId;
 
-    //增加上课学生列表(userId)
-    private List<Integer> addStudentIdList;
+    /**
+     * 增加上课学生列表(userId)
+     */
 
-    //删除上课学生列表(userId)
+    private List<Integer> addStudentIdList;
+    /**
+     * 删除上课学生列表(userId)
+     */
     private List<Integer> deleteStudentIdList;
 
 }

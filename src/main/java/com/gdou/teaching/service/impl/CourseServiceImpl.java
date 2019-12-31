@@ -71,13 +71,13 @@ public class CourseServiceImpl implements CourseService {
         if (courseDetail.getCourseDetailId()==null){
             int insert = courseDetailMapper.insert(courseDetail);
             if (insert<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程详情失败,courseDetail={}",courseDetail);
+                log.error("[CourseServiceImpl-save]新增课程,新增课程详情表详情失败,courseDetail={}",courseDetail);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }else{
             int i = courseDetailMapper.updateByPrimaryKeySelective(courseDetail);
             if (i<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程详情失败,courseDetail={}",courseDetail);
+                log.error("[CourseServiceImpl-save]更新课程,更新课程详情表详情失败,courseDetail={}",courseDetail);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }
@@ -87,13 +87,13 @@ public class CourseServiceImpl implements CourseService {
         if (courseMaster.getCourseId()==null){
             Integer i = courseMasterMapper.insert(courseMaster);
             if (i<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程主表失败,courseMaster={}",courseMaster);
+                log.error("[CourseServiceImpl-save]新增课程,新增课程主表失败,courseMaster={}",courseMaster);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }else{
             int i = courseMasterMapper.updateByPrimaryKeySelective(courseMaster);
             if (i<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程主表失败,courseMaster={}",courseMaster);
+                log.error("[CourseServiceImpl-save]更新课程,更新课程主表失败,courseMaster={}",courseMaster);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }
