@@ -28,10 +28,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.gdou.teaching.Enum.UserIdentEnum.TEACHER;
@@ -80,24 +77,19 @@ public class TeacherCourseController {
             return ResultVOUtil.success();
         }
         //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
-        //切割正常课程。
-        List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode()))
-                .map(courseDTO -> {
-                    CourseVO courseVO = new CourseVO();
-                    BeanUtils.copyProperties(courseDTO, courseVO);
-                    return courseVO;
-                }).collect(Collectors.toList());
-        //切割出过期课程
-        List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().intValue()==(CourseStatusEnum.END.getCode())).map(courseDTO -> {
+        Map<Boolean, List<CourseVO>> collect = list.stream().map(courseDTO -> {
             CourseVO courseVO = new CourseVO();
             BeanUtils.copyProperties(courseDTO, courseVO);
             return courseVO;
-        }).collect(Collectors.toList());
-        HashMap<String, Object> map = new HashMap<>();
+        }).collect(Collectors.groupingBy(courseVO -> courseVO.getCourseStatus().intValue() == (CourseStatusEnum.END.getCode())));
+        //切割正常课程。
+        List<CourseVO> normal = collect.get(false);
+        //切割出过期课程
+        List<CourseVO> end = collect.get(true);
+        HashMap<String, Object> map = new HashMap<>(2);
         map.put("normal", normal);
         map.put("end", end);
         return ResultVOUtil.success(map);
-
     }
 
 
@@ -109,26 +101,27 @@ public class TeacherCourseController {
     @GetMapping("/addCourse")
     @Auth
     public ResultVO addCourse() {
-        HashMap<String, Object> map = new HashMap<>();
+        //获取班级列表
         List<TreeMap> clazzList =classService.getAllClazzList();
+        //获取所有学生的列表
         List<UserDTO> studentList = userService.getStudentListByClassId(0);
-        HashMap<String,Object> studentForSelect=new HashMap<>();
-        for(int i=0;i<clazzList.size();i++){
-            TreeMap treeMap = clazzList.get(i);
-            HashMap<String,Object> clazzMap=new HashMap<>();
-            List<UserVO> userVoList=studentList.stream().filter(c->c.getClassId().equals(treeMap.get("classId"))).map(student->{
+        //分组
+        Map<Integer, List<UserDTO>> collect = studentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
+        List<HashMap> list = new ArrayList<>(clazzList.size());
+        for(TreeMap map:clazzList){
+            HashMap<String,Object> clazzMap=new HashMap<>(3);
+            List<UserVO> studentVoList = collect.get(map.get("classId")).stream().map(student -> {
                 UserVO userVO = new UserVO();
                 userVO.setUserId(student.getUserId());
                 userVO.setNickname(student.getNickname());
                 return userVO;
             }).collect(Collectors.toList());
-            clazzMap.put("classId",clazzList.get(i).get("classId"));
-            clazzMap.put("className",clazzList.get(i).get("className"));
-            clazzMap.put("studentList",userVoList);
-            studentForSelect.put("class"+i,clazzMap);
+            clazzMap.put("classId",map.get("classId"));
+            clazzMap.put("className",map.get("className"));
+            clazzMap.put("studentList",studentVoList);
+            list.add(clazzMap);
         }
-        map.put("studentForSelect", studentForSelect);
-        return ResultVOUtil.success(map);
+        return ResultVOUtil.success(list);
     }
 
     /**
@@ -145,61 +138,58 @@ public class TeacherCourseController {
         List<AchievementDTO> achievementList = achievementService.getAchievementByCourseId(courseId);
         //获取已选课程的学生id列表
         Set<Integer> hadStudentIdSet = achievementList.stream().map(achievementDTO->achievementDTO.getUserId()).collect(Collectors.toSet());
-        // 已选学生列表
-        List<UserDTO> hadStudentList=studentList.stream().filter(c->hadStudentIdSet.contains(c.getUserId())).map(student->{
+
+        Map<Boolean, List<UserDTO>> collect = studentList.stream().map(student -> {
             UserDTO userDTO = new UserDTO();
             userDTO.setUserId(student.getUserId());
             userDTO.setNickname(student.getNickname());
             userDTO.setClassId(student.getClassId());
             return userDTO;
-        }).collect(Collectors.toList());
-        // 未选学生列表
-        List<UserDTO> ableStudentList=studentList.stream().filter(c->!hadStudentIdSet.contains(c.getUserId())).map(student->{
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(student.getUserId());
-            userDTO.setNickname(student.getNickname());
-            userDTO.setClassId(student.getClassId());
-            return userDTO;
-        }).collect(Collectors.toList());
-        HashMap<String,Object> studentForSelect=new HashMap<>();
-        HashMap<String,Object> hadSelect=new HashMap<>();
-        int index=0;
-        //根据班级进行分组
+        }).collect(Collectors.groupingBy(c -> hadStudentIdSet.contains(c.getUserId())));
+        //获取已经选了该课的学生和未选的学生
+        List<UserDTO> hadStudentList = collect.get(true);
+        List<UserDTO> ableStudentList = collect.get(false);
+        //将学生按班级ID分组
+        Map<Integer, List<UserDTO>> ableStudentListGroupByClassId = ableStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
+        Map<Integer, List<UserDTO>> hadStudentListGroupByClassId = hadStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
+
+        List studentForSelect= new ArrayList();
+        List hadSelect=new ArrayList();
+
         for(TreeMap clazz:clazzList){
-            HashMap<String,Object> clazzMap=new HashMap<>();
-            List<UserVO> ableStudentVOList=ableStudentList.stream().filter(c->c.getClassId().equals(clazz.get("classId"))).map(student->{
-                UserVO userVO = new UserVO();
-                userVO.setUserId(student.getUserId());
-                userVO.setNickname(student.getNickname());
-                return userVO;
-            }).collect(Collectors.toList());
-            if (!ableStudentVOList.isEmpty()){
-                clazzMap.put("classId",clazz.get("classId"));
-                clazzMap.put("className",clazz.get("className"));
-                clazzMap.put("studentList",ableStudentVOList);
-                studentForSelect.put("class"+index,clazzMap);
-                index++;
+            HashMap<String,Object> clazzMapforSelect=new HashMap<>(3);
+            HashMap<String,Object> clazzMapHad=new HashMap<>(3);
+            //获取归属classId下的未选课的学生，并处理为userVO
+            List<UserDTO> userDTOListFromAble = ableStudentListGroupByClassId.get(clazz.get("classId"));
+            if(userDTOListFromAble!=null){
+                List<UserVO> userVOList = userDTOListFromAble.stream().map(student -> {
+                    UserVO userVO = new UserVO();
+                    userVO.setUserId(student.getUserId());
+                    userVO.setNickname(student.getNickname());
+                    return userVO;
+                }).collect(Collectors.toList());
+                clazzMapforSelect.put("classId",clazz.get("classId"));
+                clazzMapforSelect.put("className",clazz.get("className"));
+                clazzMapforSelect.put("studentList",userVOList);
+                studentForSelect.add(clazzMapforSelect);
             }
-        }
-        index=0;
-        for(TreeMap clazz:clazzList){
-            HashMap<String,Object> clazzMap=new HashMap<>();
-            List<UserVO> hadStudentVOList=hadStudentList.stream().filter(c->c.getClassId().equals(clazz.get("classId"))).map(student->{
-                UserVO userVO = new UserVO();
-                userVO.setUserId(student.getUserId());
-                userVO.setNickname(student.getNickname());
-                return userVO;
-            }).collect(Collectors.toList());
-            if (!hadStudentVOList.isEmpty()){
-                clazzMap.put("classId",clazz.get("classId"));
-                clazzMap.put("className",clazz.get("className"));
-                clazzMap.put("studentList",hadStudentVOList);
-                hadSelect.put("class"+index,clazzMap);
-                index++;
+            //获取归属classId下的已经选课的学生，并处理为userVO
+            List<UserDTO> userDTOListFromHad = hadStudentListGroupByClassId.get(clazz.get("classId"));
+            if(userDTOListFromHad!=null){
+                List<UserVO> userVOList = userDTOListFromHad.stream().map(student -> {
+                    UserVO userVO = new UserVO();
+                    userVO.setUserId(student.getUserId());
+                    userVO.setNickname(student.getNickname());
+                    return userVO;
+                }).collect(Collectors.toList());
+                clazzMapHad.put("classId",clazz.get("classId"));
+                clazzMapHad.put("className",clazz.get("className"));
+                clazzMapHad.put("studentList",userVOList);
+                hadSelect.add(clazzMapHad);
             }
         }
         map.put("studentForSelect", studentForSelect);
-        map.put("hadSelect",hadSelect);
+        map.put("studentHadSelect",hadSelect);
         return ResultVOUtil.success(map);
     }
 
