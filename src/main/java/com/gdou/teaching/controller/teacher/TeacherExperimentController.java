@@ -8,8 +8,7 @@ import com.gdou.teaching.form.*;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.util.ResultVOUtil;
-import com.gdou.teaching.vo.CourseVO;
-import com.gdou.teaching.vo.ExperimentListVO;
+import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.web.Auth;
@@ -45,16 +44,15 @@ public class TeacherExperimentController {
      */
     @GetMapping(path = "/list/{courseId}")
     @Auth
-    public ResultVO<ExperimentListVO> list(@PathVariable(value = "courseId") Integer courseId) {
+    public ResultVO<CourseMainPageVO> list(@PathVariable(value = "courseId") Integer courseId) {
         //查询课程基本信息
         CourseDTO  courseDTO= courseService.info(courseId);
-        ExperimentListVO experimentListVO = new ExperimentListVO();
-        experimentListVO.setCourseId(courseId);
+        CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
+        BeanUtils.copyProperties(courseDTO,courseMainPageVO);
         // 查询实验列表信息
         List<ExperimentDTO> experimentDTOList=experimentService.list(courseId);
         if(experimentDTOList==null){
-            experimentListVO.setExperimentDTOList(null);
-            return ResultVOUtil.success(experimentListVO);
+            return ResultVOUtil.success(courseMainPageVO);
         }
         List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
             ExperimentVO experimentVO = new ExperimentVO();
@@ -65,8 +63,8 @@ public class TeacherExperimentController {
             experimentVO.setExperimentText(null);
             return experimentVO;
         }).collect(Collectors.toList());
-        experimentListVO.setExperimentDTOList(ExperimentVOList);
-        return ResultVOUtil.success(experimentListVO);
+        courseMainPageVO.setExperimentDTOList(ExperimentVOList);
+        return ResultVOUtil.success(courseMainPageVO);
     }
 
     /**

@@ -11,6 +11,7 @@ import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
+import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
@@ -63,8 +64,8 @@ public class StudentCourseController {
         try {
             //查询课程基本信息
             CourseDTO courseDTO = courseService.info(courseId);
-            CourseVO courseVO = new CourseVO();
-            BeanUtils.copyProperties(courseDTO, courseVO);
+            CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
+            BeanUtils.copyProperties(courseDTO, courseMainPageVO);
             //查询实验列表信息
             List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
             if(experimentDTOList!=null&&!experimentDTOList.isEmpty()){
@@ -87,9 +88,9 @@ public class StudentCourseController {
                     }
                     return experimentVO;
                 }).collect(Collectors.toList());
-                courseVO.setExperimentDTOList(ExperimentVOList);
+                courseMainPageVO.setExperimentDTOList(ExperimentVOList);
             }
-            return ResultVOUtil.success(courseVO);
+            return ResultVOUtil.success(courseMainPageVO);
         } catch (TeachingException e) {
             log.info("[StudentCourseController]查询课程主页, 查询异常:{}", e.getMessage());
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
