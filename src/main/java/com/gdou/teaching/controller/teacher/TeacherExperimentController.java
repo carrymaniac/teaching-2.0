@@ -9,6 +9,7 @@ import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseVO;
+import com.gdou.teaching.vo.ExperimentListVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.web.Auth;
@@ -44,20 +45,17 @@ public class TeacherExperimentController {
      */
     @GetMapping(path = "/list/{courseId}")
     @Auth
-    public ResultVO<CourseVO> list(@PathVariable(value = "courseId") Integer courseId) {
-        CourseDTO courseDTO;
-        List<ExperimentDTO> experimentDTOList;
+    public ResultVO<ExperimentListVO> list(@PathVariable(value = "courseId") Integer courseId) {
         //查询课程基本信息
-        courseDTO= courseService.info(courseId);
+        CourseDTO  courseDTO= courseService.info(courseId);
+        ExperimentListVO experimentListVO = new ExperimentListVO();
+        experimentListVO.setCourseId(courseId);
         // 查询实验列表信息
-        experimentDTOList=experimentService.list(courseId);
-        courseDTO.setCourseName(null);
-        courseDTO.setCourseDetailId(null);
-        courseDTO.setCourseStatus(null);
-        courseDTO.setTeacherId(null);
-        CourseVO courseVO = new CourseVO();
-        BeanUtils.copyProperties(courseDTO, courseVO);
-
+        List<ExperimentDTO> experimentDTOList=experimentService.list(courseId);
+        if(experimentDTOList==null){
+            experimentListVO.setExperimentDTOList(null);
+            return ResultVOUtil.success(experimentListVO);
+        }
         List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
             ExperimentVO experimentVO = new ExperimentVO();
             BeanUtils.copyProperties(experimentDTO, experimentVO);
@@ -67,8 +65,8 @@ public class TeacherExperimentController {
             experimentVO.setExperimentText(null);
             return experimentVO;
         }).collect(Collectors.toList());
-        courseVO.setExperimentDTOList(ExperimentVOList);
-        return ResultVOUtil.success(courseVO);
+        experimentListVO.setExperimentDTOList(ExperimentVOList);
+        return ResultVOUtil.success(experimentListVO);
     }
 
     /**
