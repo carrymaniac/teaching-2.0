@@ -145,8 +145,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
-            log.info("[ExperimentServiceImpl]-获取实验列表信息,实验主表不存在,courseId={}",courseId);
-            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+            return null;
         }
         List<ExperimentDTO> experimentDTOList = experimentMasters.stream().map(experimentMaster -> {
             ExperimentDTO experimentDTO = new ExperimentDTO();

@@ -67,28 +67,28 @@ public class StudentCourseController {
             BeanUtils.copyProperties(courseDTO, courseVO);
             //查询实验列表信息
             List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
-
-            //结合用户提交记录，将DTO转为VO
-            List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
-                ExperimentVO experimentVO = new ExperimentVO();
-                BeanUtils.copyProperties(experimentDTO, experimentVO);
-                //设置不需要的字段为空
-                experimentVO.setCourseId(null);
-                //设置状态
-                if(ExperimentStatusEnum.LOCK.getCode().byteValue()==experimentDTO.getExperimentStatus()){
-                    experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
-                }else{
-                    RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
-                    if(recordDTO!=null){
-                        experimentVO.setRecordStatus(recordDTO.getStatus().intValue());
+            if(experimentDTOList!=null&&!experimentDTOList.isEmpty()){
+                //结合用户提交记录，将DTO转为VO
+                List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
+                    ExperimentVO experimentVO = new ExperimentVO();
+                    BeanUtils.copyProperties(experimentDTO, experimentVO);
+                    //设置不需要的字段为空
+                    experimentVO.setCourseId(null);
+                    //设置状态
+                    if(ExperimentStatusEnum.LOCK.getCode().byteValue()==experimentDTO.getExperimentStatus()){
+                        experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
                     }else{
-                        experimentVO.setRecordStatus(RecordStatusEnum.NOT_FINISH.getCode());
+                        RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
+                        if(recordDTO!=null){
+                            experimentVO.setRecordStatus(recordDTO.getStatus().intValue());
+                        }else{
+                            experimentVO.setRecordStatus(RecordStatusEnum.NOT_FINISH.getCode());
+                        }
                     }
-                }
-                return experimentVO;
-            }).collect(Collectors.toList());
-
-            courseVO.setExperimentDTOList(ExperimentVOList);
+                    return experimentVO;
+                }).collect(Collectors.toList());
+                courseVO.setExperimentDTOList(ExperimentVOList);
+            }
             return ResultVOUtil.success(courseVO);
         } catch (TeachingException e) {
             log.info("[StudentCourseController]查询课程主页, 查询异常:{}", e.getMessage());
