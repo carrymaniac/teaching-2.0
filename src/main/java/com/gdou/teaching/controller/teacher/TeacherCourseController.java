@@ -293,9 +293,10 @@ public class TeacherCourseController {
     @GetMapping("/invalid/{courseId}")
     @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
-        courseService.invalid(courseId);
-        //删除课程下的选课记录
-        achievementService.deleteAchievementByCourseId(courseId);
+        if(courseService.invalid(courseId)){
+            //删除课程下的选课记录
+            achievementService.deleteAchievementByCourseId(courseId);
+        }
         return ResultVOUtil.success();
     }
 

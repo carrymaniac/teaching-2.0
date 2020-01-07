@@ -165,6 +165,10 @@ public class CourseServiceImpl implements CourseService {
             log.info("注销课程,该课程不存在或已被删除");
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
         }
+        if (courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode())){
+            log.info("注销课程,该课程状态异常");
+            throw new TeachingException(ResultEnum.COURSE_STATUS_ERROR);
+        }
         courseMaster.setCourseStatus(CourseStatusEnum.INVALID.getCode().byteValue());
         if (courseMasterMapper.updateByPrimaryKeySelective(courseMaster)!=1){
             log.info("注销课程,课程注销失败");

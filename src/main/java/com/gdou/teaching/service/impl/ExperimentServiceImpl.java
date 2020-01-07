@@ -220,6 +220,11 @@ public class ExperimentServiceImpl implements ExperimentService {
             log.info("[ExperimentServiceImpl]-删除实验,该实验不存在或已被删除");
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
+        //判断当前状态,仅结束状态的时候可被取消
+        if (experimentMaster.getExperimentStatus().intValue()!=ExperimentStatusEnum.END.getCode()){
+            log.info("[ExperimentServiceImpl]-完结实验,实验主表状态异常,status={}",experimentMaster.getExperimentStatus());
+            throw new TeachingException(ResultEnum.EXPERIMENT_STATUS_ERROR);
+        }
         experimentMaster.setExperimentStatus(ExperimentStatusEnum.INVALID.getCode().byteValue());
         if (experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster)!=1){
             log.info("[ExperimentServiceImpl]-删除实验,实验删除失败");
