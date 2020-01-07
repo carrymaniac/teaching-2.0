@@ -256,7 +256,7 @@ public class AchievementController {
      * @param classId
      * @return
      */
-    @GetMapping("/judge/batch/{experimentId}")
+    @PostMapping("/judge/batch/{experimentId}")
     @Auth
     public ResultVO<HashMap> batch(@PathVariable(value = "experimentId") Integer experimentId,
                                    @RequestParam(value = "classId", required = false) Integer classId) {
