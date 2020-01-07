@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/teacher/achievement")
 @Slf4j
-public class AchievementController {
+public class TeacherAchievementController {
     @Autowired
     AchievementService achievementService;
     @Autowired
