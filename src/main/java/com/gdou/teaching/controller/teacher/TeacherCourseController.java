@@ -273,6 +273,7 @@ public class TeacherCourseController {
         }
     }
 
+
     @GetMapping("/invalid/{courseId}")
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
         courseService.invalid(courseId);
