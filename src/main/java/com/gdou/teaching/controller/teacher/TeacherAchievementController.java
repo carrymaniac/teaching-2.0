@@ -95,17 +95,19 @@ public class TeacherAchievementController {
         }).collect(Collectors.toList());
 
         //按班级分割AchievementVO
-        for(int i=0;i<classList.size();i++){
+        List<HashMap> classData=new ArrayList<>(classList.size());
+        for(HashMap clazz:classList) {
             HashMap<String,Object> clazzMap=new HashMap<>();
-            Integer clazzId=(Integer) classList.get(i).get("classId");
-            String clazzName=(String) classList.get(i).get("className");
+            Integer clazzId=(Integer) clazz.get("classId");
+            String clazzName=(String) clazz.get("className");
             List<AchievementVO> achievementVO = achievementVOList.stream().filter(a->a.getClassId().equals(clazzId))
                     .collect(Collectors.toList());
             clazzMap.put("classId",clazzId);
             clazzMap.put("className",clazzName);
             clazzMap.put("userList",achievementVO);
-            map.put("class"+i,clazzMap);
+            classData.add(clazzMap);
         }
+        map.put("tableDatas",classData);
         return ResultVOUtil.success(map);
     }
 
@@ -185,28 +187,30 @@ public class TeacherAchievementController {
         map.put("classList",classList);
 
         //按班级分割
-        for(int i=0;i<classList.size();i++){
+        List<HashMap> classData=new ArrayList<>(classList.size());
+        for(HashMap clazz:classList) {
             //根据班级id筛选结果
-            if (classList.get(i).get("classId").equals(classId)){
+            if (clazz.get("classId").equals(classId)){
                 HashMap<String,Object> clazzMap=new HashMap<>();
                 List<JudgeVO> judgeVO = judgeVOList.stream().filter(a->a.getClassId().equals(classId))
                         .collect(Collectors.toList());
                 clazzMap.put("classId",classId);
-                clazzMap.put("className",classList.get(i).get("className"));
+                clazzMap.put("className",clazz.get("className"));
                 clazzMap.put("userList",judgeVO);
-                map.put("class0",clazzMap);
+                classData.add(clazzMap);
                 break;
             }
             HashMap<String,Object> clazzMap=new HashMap<>();
-            Integer clazzId=(Integer) classList.get(i).get("classId");
-            String clazzName=(String) classList.get(i).get("className");
+            Integer clazzId=(Integer) clazz.get("classId");
+            String clazzName=(String) clazz.get("className");
             List<JudgeVO> judgeVO = judgeVOList.stream().filter(a->a.getClassId().equals(clazzId) )
                     .collect(Collectors.toList());
             clazzMap.put("classId",clazzId);
             clazzMap.put("className",clazzName);
             clazzMap.put("userList",judgeVO);
-            map.put("class"+i,clazzMap);
+            classData.add(clazzMap);
         }
+        map.put("tableDatas",classData);
         return ResultVOUtil.success(map);
     }
 
@@ -297,19 +301,21 @@ public class TeacherAchievementController {
             return judgeVO;
         }).collect(Collectors.toList());
         //按班级分割
-        for(int i=0;i<classList.size();i++){
+        List<HashMap> classData=new ArrayList<>(classList.size());
+        for(HashMap clazz:classList){
             //根据班级id筛选结果
             HashMap<String,Object> clazzMap=new HashMap<>();
-            Integer clazzId=(Integer) classList.get(i).get("classId");
-            String clazzName=(String) classList.get(i).get("className");
+            Integer clazzId=(Integer) clazz.get("classId");
+            String clazzName=(String)clazz.get("className");
             List<JudgeVO> judgeVO = judgeVOList.stream().filter(a->a.getClassId().equals(clazzId))
                     .map(judgeVO1 -> {judgeVO1.setClassName(clazzName);return judgeVO1;})
                     .collect(Collectors.toList());
             clazzMap.put("classId",clazzId);
             clazzMap.put("className",clazzName);
             clazzMap.put("userList",judgeVO);
-            map.put("class"+i,clazzMap);
+            classData.add(clazzMap);
         }
+        map.put("tableDatas",classData);
         return ResultVOUtil.success(map);
     }
 
