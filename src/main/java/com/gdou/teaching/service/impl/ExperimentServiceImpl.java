@@ -145,7 +145,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
-            return null;
+           return null;
         }
         List<ExperimentDTO> experimentDTOList = experimentMasters.stream().map(experimentMaster -> {
             ExperimentDTO experimentDTO = new ExperimentDTO();
