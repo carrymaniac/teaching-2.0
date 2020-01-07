@@ -66,6 +66,14 @@ public class FileController {
             return ResultVOUtil.fail(ResultEnum.FILE_UPLOAD_FAIL);
         }
     }
+    @ResponseBody
+    @GetMapping("/delete/{fileId}")
+    public ResultVO delete(@PathVariable(value = "fileId") Integer fileId){
+        fileService.deleteFile(fileId);
+        return ResultVOUtil.success();
+    }
+
+
 
     @GetMapping("/delete/{fileId}")
     public ResultVO delete(@PathVariable(value = "fileId") Integer fileId){

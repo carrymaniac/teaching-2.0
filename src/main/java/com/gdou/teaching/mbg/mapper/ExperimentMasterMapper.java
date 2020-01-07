@@ -3,8 +3,12 @@ package com.gdou.teaching.mbg.mapper;
 import com.gdou.teaching.mbg.model.ExperimentMaster;
 import com.gdou.teaching.mbg.model.ExperimentMasterExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface ExperimentMasterMapper {
     int countByExample(ExperimentMasterExample example);
 

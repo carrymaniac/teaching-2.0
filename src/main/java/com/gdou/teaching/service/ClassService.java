@@ -39,8 +39,8 @@ public interface ClassService {
     Boolean updateClazz(Class clazz);
 
     /**
-     * 获取班级列表
-     * @return
+     * 获取班级列表,用于前端页面下拉框
+     * @return 一个包含id和className的List
      */
     List<TreeMap> getAllClazzList();
 

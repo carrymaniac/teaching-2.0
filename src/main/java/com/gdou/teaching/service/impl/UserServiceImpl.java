@@ -207,8 +207,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean updatePassword(Integer userId,String oldPassword ,String newPassword) {
         User user = userMapper.selectByPrimaryKey(userId);
+        if(user==null){
+            throw new TeachingException(USER_NOT_EXIST);
+        }
         if(!DigestUtils.md5DigestAsHex((oldPassword+user.getSalt()).getBytes()).equals(user.getPassword())){
-            return false;
+            throw new TeachingException(PARAM_ERROR.getCode(),"原密码错误");
+        }
+        if(DigestUtils.md5DigestAsHex((oldPassword+user.getSalt()).getBytes()).equals(DigestUtils.md5DigestAsHex((newPassword+user.getSalt()).getBytes()))){
+            throw new TeachingException(PARAM_ERROR.getCode(),"新密码不能与原密码相等");
         }
         //重新更新盐值
         String salt = UUID.randomUUID().toString().substring(0,5);

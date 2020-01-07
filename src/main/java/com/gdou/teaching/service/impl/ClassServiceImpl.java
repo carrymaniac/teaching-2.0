@@ -66,7 +66,6 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public List<Class> getClassesByPage(Integer page, Integer size) {
-        //todo 待测试 仍需要讨论确定要返回list还是pageInfo
         PageHelper.startPage(page,size);
         ClassExample classExample = new ClassExample();
         classExample.createCriteria();
@@ -91,10 +90,10 @@ public class ClassServiceImpl implements ClassService {
             log.info("[ClassServiceImpl]-获取班级列表,班级信息不存在");
             throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
         }
-        classes.forEach(clazze -> {
+        classes.forEach(clazz -> {
             TreeMap<String,Object> map = new TreeMap<>();
-            map.put("classId",clazze.getClassId());
-            map.put("className",clazze.getClassName());
+            map.put("classId",clazz.getClassId());
+            map.put("className",clazz.getClassName());
             list.add(map);
         });
         Collections.sort(list, (o1, o2) -> Collator.getInstance(Locale.CHINESE).compare(o1.get("className"),o2.get("className")));

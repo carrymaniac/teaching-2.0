@@ -54,14 +54,14 @@ public interface CourseService {
      * @param userId
      * @return
      */
-    List<CourseDTO> list(Integer userId);
+    List<CourseDTO> listCourseForStudent(Integer userId);
 
     /**
      * 展示所有的课程主表记录(教师端)
      * @param userId
      * @return
      */
-    List<CourseDTO> listCourse(Integer userId);
+    List<CourseDTO> listCourseForTeacher(Integer userId);
 
 
     /**

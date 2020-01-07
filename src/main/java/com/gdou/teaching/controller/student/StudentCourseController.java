@@ -11,6 +11,7 @@ import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
+import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -62,33 +64,33 @@ public class StudentCourseController {
         try {
             //查询课程基本信息
             CourseDTO courseDTO = courseService.info(courseId);
-            CourseVO courseVO = new CourseVO();
-            BeanUtils.copyProperties(courseDTO, courseVO);
+            CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
+            BeanUtils.copyProperties(courseDTO, courseMainPageVO);
             //查询实验列表信息
             List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
-
-            //结合用户提交记录，将DTO转为VO
-            List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
-                ExperimentVO experimentVO = new ExperimentVO();
-                BeanUtils.copyProperties(experimentDTO, experimentVO);
-                //设置不需要的字段为空
-                experimentVO.setCourseId(null);
-                //设置状态
-                if(ExperimentStatusEnum.LOCK.getCode().byteValue()==experimentDTO.getExperimentStatus()){
-                    experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
-                }else{
-                    RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
-                    if(recordDTO!=null){
-                        experimentVO.setRecordStatus(recordDTO.getStatus().intValue());
+            if(experimentDTOList!=null&&!experimentDTOList.isEmpty()){
+                //结合用户提交记录，将DTO转为VO
+                List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
+                    ExperimentVO experimentVO = new ExperimentVO();
+                    BeanUtils.copyProperties(experimentDTO, experimentVO);
+                    //设置不需要的字段为空
+                    experimentVO.setCourseId(null);
+                    //设置状态
+                    if(ExperimentStatusEnum.LOCK.getCode().byteValue()==experimentDTO.getExperimentStatus()){
+                        experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
                     }else{
-                        experimentVO.setRecordStatus(RecordStatusEnum.NOT_FINISH.getCode());
+                        RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
+                        if(recordDTO!=null){
+                            experimentVO.setRecordStatus(recordDTO.getStatus().intValue());
+                        }else{
+                            experimentVO.setRecordStatus(RecordStatusEnum.NOT_FINISH.getCode());
+                        }
                     }
-                }
-                return experimentVO;
-            }).collect(Collectors.toList());
-
-            courseVO.setExperimentDTOList(ExperimentVOList);
-            return ResultVOUtil.success(courseVO);
+                    return experimentVO;
+                }).collect(Collectors.toList());
+                courseMainPageVO.setExperimentDTOList(ExperimentVOList);
+            }
+            return ResultVOUtil.success(courseMainPageVO);
         } catch (TeachingException e) {
             log.info("[StudentCourseController]查询课程主页, 查询异常:{}", e.getMessage());
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
@@ -118,34 +120,26 @@ public class StudentCourseController {
     @GetMapping("/listForNoPage")
     public ResultVO listForNoPage(){
         User user = hostHolder.getUser();
-        try{
-            //通过ID获取到用户课程数据
-            List<CourseDTO> list = courseService.list(user.getUserId());
-            //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
-            //切割正常课程。
-            List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.NORMAL.getCode().byteValue()))
-                    .map(courseDTO -> {
-                CourseVO courseVO = new CourseVO();
-                BeanUtils.copyProperties(courseDTO, courseVO);
-                return courseVO;
-            }).collect(Collectors.toList());
-            //切割出过期课程
-            List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().equals(CourseStatusEnum.END.getCode().byteValue())).map(courseDTO -> {
-                CourseVO courseVO = new CourseVO();
-                BeanUtils.copyProperties(courseDTO, courseVO);
-                return courseVO;
-            }).collect(Collectors.toList());
-            HashMap<String, Object> map = new HashMap<>(2);
-            map.put("normal", normal);
-            map.put("end", end);
-            return ResultVOUtil.success(map);
-        } catch (TeachingException e) {
-            log.info("[StudentCourseController]查询课程, 查询异常" + e.getMessage());
-            return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        //通过ID获取到用户课程数据
+        List<CourseDTO> list = courseService.listCourseForStudent(user.getUserId());
+        if(list==null){
+            return ResultVOUtil.success();
         }
-
+        //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
+        Map<Boolean, List<CourseVO>> collect = list.stream().map(courseDTO -> {
+            CourseVO courseVO = new CourseVO();
+            BeanUtils.copyProperties(courseDTO, courseVO);
+            return courseVO;
+        }).collect(Collectors.groupingBy(courseVO -> courseVO.getCourseStatus().intValue() == (CourseStatusEnum.END.getCode())));
+        //切割正常课程。
+        List<CourseVO> normal = collect.get(false);
+        //切割出过期课程
+        List<CourseVO> end = collect.get(true);
+        HashMap<String, Object> map = new HashMap<>(2);
+        map.put("normal", normal);
+        map.put("end", end);
+        return ResultVOUtil.success(map);
     }
-
 
     /**
      *  通过课程ID获取该课程的分数

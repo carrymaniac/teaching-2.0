@@ -11,15 +11,16 @@ import java.util.List;
  * @description
  **/
 @Data
-//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnswerDTO {
     /**
      * 实验答案ID
      */
+
     private Integer experimentAnswerId;
     /**
      * 实验答案内容
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String experimentAnswerContent;
     /**
      * 实验答案文件路径
@@ -28,9 +29,11 @@ public class AnswerDTO {
     /**
      * 实验ID
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer experimentId;
     /**
      * 实验答案状态，可以用于删除，0表示正常，1表示删除
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Byte experimentAnswerStatus;
 }

@@ -1,4 +1,4 @@
-package com.gdou.teaching.interceptor;
+package com.gdou.teaching.web.interceptor;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dataobject.HostHolder;
@@ -25,11 +25,11 @@ public class LoginRuquireInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("登陆的用户是{}",hostHolder.getUser());
         if(hostHolder.getUser()==null){
             WebUtil.sendJsonMessage(response, ResultVOUtil.fail(ResultEnum.USER_NO_LOGIN));
             return false;
         }
+        log.info("【LoginRuquireInterceptor】已有用户信息:{}",hostHolder.getUser());
         return true;
     }
 
@@ -40,6 +40,5 @@ public class LoginRuquireInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
     }
 }

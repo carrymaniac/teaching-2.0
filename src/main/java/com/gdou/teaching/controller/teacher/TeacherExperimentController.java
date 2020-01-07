@@ -8,9 +8,10 @@ import com.gdou.teaching.form.*;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.util.ResultVOUtil;
-import com.gdou.teaching.vo.CourseVO;
+import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,20 +43,17 @@ public class TeacherExperimentController {
      * @return
      */
     @GetMapping(path = "/list/{courseId}")
-    public ResultVO<CourseVO> list(@PathVariable(value = "courseId") Integer courseId) {
-        CourseDTO courseDTO;
-        List<ExperimentDTO> experimentDTOList;
+    @Auth
+    public ResultVO<CourseMainPageVO> list(@PathVariable(value = "courseId") Integer courseId) {
         //查询课程基本信息
-        courseDTO= courseService.info(courseId);
+        CourseDTO  courseDTO= courseService.info(courseId);
+        CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
+        BeanUtils.copyProperties(courseDTO,courseMainPageVO);
         // 查询实验列表信息
-        experimentDTOList=experimentService.list(courseId);
-        courseDTO.setCourseName(null);
-        courseDTO.setCourseDetailId(null);
-        courseDTO.setCourseStatus(null);
-        courseDTO.setTeacherId(null);
-        CourseVO courseVO = new CourseVO();
-        BeanUtils.copyProperties(courseDTO, courseVO);
-
+        List<ExperimentDTO> experimentDTOList=experimentService.list(courseId);
+        if(experimentDTOList==null){
+            return ResultVOUtil.success(courseMainPageVO);
+        }
         List<ExperimentVO> ExperimentVOList = experimentDTOList.stream().map(experimentDTO -> {
             ExperimentVO experimentVO = new ExperimentVO();
             BeanUtils.copyProperties(experimentDTO, experimentVO);
@@ -65,8 +63,8 @@ public class TeacherExperimentController {
             experimentVO.setExperimentText(null);
             return experimentVO;
         }).collect(Collectors.toList());
-        courseVO.setExperimentDTOList(ExperimentVOList);
-        return ResultVOUtil.success(courseVO);
+        courseMainPageVO.setExperimentDTOList(ExperimentVOList);
+        return ResultVOUtil.success(courseMainPageVO);
     }
 
     /**
@@ -75,6 +73,7 @@ public class TeacherExperimentController {
      * @return
      */
     @GetMapping("/detail/{experimentId}")
+    @Auth
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
@@ -84,6 +83,7 @@ public class TeacherExperimentController {
     }
 
     @GetMapping("/index")
+    @Auth
     public ResultVO<ExperimentDTO> index(@RequestParam(value = "experimentId", required = false) Integer experimentId) {
         ExperimentDTO experimentDTO=null;
         //如果传入courseId不为空,为更新操作
@@ -94,6 +94,7 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/add")
+    @Auth
     public ResultVO add(@RequestBody @Valid ExperimentForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -106,6 +107,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentInfo")
+    @Auth
     public ResultVO updateExperimentInfo(@RequestBody @Valid ExperimentInfoUpdateForm form,
                                      BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -119,6 +121,7 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/updateExperimentDetail")
+    @Auth
     public ResultVO updateExperimentDetail(@RequestBody @Valid ExperimentDetailUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -131,6 +134,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentFile")
+    @Auth
     public ResultVO updateExperimentFile(@RequestBody @Valid ExperimentFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -143,6 +147,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswer")
+    @Auth
     public ResultVO updateExperimentAnswer(@RequestBody @Valid ExperimentAnswerUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -155,6 +160,7 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswerFile")
+    @Auth
     public ResultVO updateExperimentAnswerFile(@RequestBody @Valid ExperimentAnswerFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -170,24 +176,28 @@ public class TeacherExperimentController {
 
 
     @GetMapping("/invalid/{experimentId}")
+    @Auth
     public ResultVO invalid(@PathVariable("experimentId") Integer experimentId) {
         experimentService.invalid(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/end/{experimentId}")
+    @Auth
     public ResultVO end(@PathVariable("experimentId") Integer experimentId) {
         experimentService.end(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/lock/{experimentId}")
+    @Auth
     public ResultVO lock(@PathVariable("experimentId") Integer experimentId) {
         experimentService.lock(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{experimentId}")
+    @Auth
     public ResultVO unlock(@PathVariable("experimentId") Integer experimentId) {
         experimentService.unlock(experimentId);
         return ResultVOUtil.success();

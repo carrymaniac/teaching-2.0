@@ -71,13 +71,13 @@ public class CourseServiceImpl implements CourseService {
         if (courseDetail.getCourseDetailId()==null){
             int insert = courseDetailMapper.insert(courseDetail);
             if (insert<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程详情失败,courseDetail={}",courseDetail);
+                log.error("[CourseServiceImpl-save]新增课程,新增课程详情表详情失败,courseDetail={}",courseDetail);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }else{
             int i = courseDetailMapper.updateByPrimaryKeySelective(courseDetail);
             if (i<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程详情失败,courseDetail={}",courseDetail);
+                log.error("[CourseServiceImpl-save]更新课程,更新课程详情表详情失败,courseDetail={}",courseDetail);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }
@@ -87,13 +87,13 @@ public class CourseServiceImpl implements CourseService {
         if (courseMaster.getCourseId()==null){
             Integer i = courseMasterMapper.insert(courseMaster);
             if (i<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程主表失败,courseMaster={}",courseMaster);
+                log.error("[CourseServiceImpl-save]新增课程,新增课程主表失败,courseMaster={}",courseMaster);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }else{
             int i = courseMasterMapper.updateByPrimaryKeySelective(courseMaster);
             if (i<=0){
-                log.error("[CourseServiceImpl]-保存课表,保存课程主表失败,courseMaster={}",courseMaster);
+                log.error("[CourseServiceImpl-save]更新课程,更新课程主表失败,courseMaster={}",courseMaster);
                 throw new TeachingException(ResultEnum.COURSE_SAVE_ERROR);
             }
         }
@@ -164,6 +164,10 @@ public class CourseServiceImpl implements CourseService {
         if (courseMaster == null) {
             log.info("注销课程,该课程不存在或已被删除");
             throw new TeachingException(ResultEnum.COURSE_NOT_EXIST);
+        }
+        if (courseMaster.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode())){
+            log.info("注销课程,该课程状态异常");
+            throw new TeachingException(ResultEnum.COURSE_STATUS_ERROR);
         }
         courseMaster.setCourseStatus(CourseStatusEnum.INVALID.getCode().byteValue());
         if (courseMasterMapper.updateByPrimaryKeySelective(courseMaster)!=1){
@@ -251,12 +255,12 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public List<CourseDTO> list(Integer userId) {
+    public List<CourseDTO> listCourseForStudent(Integer userId) {
         //查询课程主表记录
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andUserIdEqualTo(userId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
-        if(achievements.size()==0){
+        if(achievements==null||achievements.isEmpty()){
             //说明该学生无报任何班级
             return null;
         }
@@ -296,12 +300,12 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<CourseDTO> listCourse(Integer userId) {
+    public List<CourseDTO> listCourseForTeacher(Integer userId) {
         //查询课程主表记录
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId);
+        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
-        if(courseMasters.size()==0){
+        if(courseMasters==null||courseMasters.isEmpty()){
             //说明该教师暂无授课
             return null;
         }

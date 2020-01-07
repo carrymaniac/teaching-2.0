@@ -1,7 +1,8 @@
 package com.gdou.teaching.config;
 
-import com.gdou.teaching.interceptor.LoginRuquireInterceptor;
-import com.gdou.teaching.interceptor.UserIntercepter;
+import com.gdou.teaching.web.interceptor.AuthIntercepter;
+import com.gdou.teaching.web.interceptor.LoginRuquireInterceptor;
+import com.gdou.teaching.web.interceptor.UserIntercepter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,11 +26,14 @@ public class WebConfig implements WebMvcConfigurer {
     UserIntercepter userIntercepter(){
         return new UserIntercepter();
     }
+    @Bean
+    AuthIntercepter authIntercepter(){return new AuthIntercepter();}
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userIntercepter()).excludePathPatterns("/common/kaptcha","/static/**","/dev/**","/user/login","/user/register","/index.html","/download/**","/user/loginForTest");
         registry.addInterceptor(loginRuquireInterceptor()).excludePathPatterns("/common/kaptcha","/static/**","/dev/**","/user/login","/user/register","/index.html","/download/**","/user/loginForTest");
+        registry.addInterceptor(authIntercepter()).excludePathPatterns("/common/kaptcha","/static/**","/dev/**","/user/login","/user/register","/index.html","/download/**","/user/loginForTest");
     }
 
     @Override

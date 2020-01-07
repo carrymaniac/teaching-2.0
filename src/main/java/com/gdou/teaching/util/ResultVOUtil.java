@@ -7,8 +7,8 @@ import com.gdou.teaching.vo.ResultVO;
 public class ResultVOUtil {
     public static ResultVO success(Object o){
         ResultVO resultVO = new ResultVO();
-        resultVO.setCode(0);
-        resultVO.setMsg("成功");
+        resultVO.setCode(ResultEnum.SUCCESS.getCode());
+        resultVO.setMsg(ResultEnum.SUCCESS.getMsg());
         resultVO.setData(o);
         return resultVO;
     }

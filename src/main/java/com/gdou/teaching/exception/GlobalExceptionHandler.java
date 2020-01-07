@@ -4,6 +4,8 @@ import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,9 +34,26 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    public ResultVO MissingServletRequestParameterException(HttpServletRequest httpServletRequest, MissingServletRequestParameterException e){
+        return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    public ResultVO HttpRequestMethodNotSupportedException(HttpServletRequest httpServletRequest, HttpRequestMethodNotSupportedException e){
+        return ResultVOUtil.fail(404,"请求方法不存在");
+    }
+
+
+    @ResponseBody
     @ExceptionHandler(value = TeachingException.class)
     public ResultVO teachingExceptionHandler(HttpServletRequest httpServletRequest,TeachingException e){
-        return ResultVOUtil.fail(500,"很抱歉，您访问的服务出错了");
+        if(e.getCode()==500){
+            return ResultVOUtil.fail(500,"很抱歉，您访问的服务出错了");
+        }else{
+            return ResultVOUtil.fail(e);
+        }
     }
 
 }

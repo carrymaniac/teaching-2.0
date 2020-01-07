@@ -4,6 +4,8 @@ package com.gdou.teaching.controller.teacher;
 import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.constant.CommonConstant;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.dto.CourseDTO;
@@ -17,6 +19,7 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.vo.UserVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +28,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.gdou.teaching.Enum.UserIdentEnum.TEACHER;
 
 /**
  * @ProjectName: teaching
@@ -49,15 +51,11 @@ public class TeacherCourseController {
     @Autowired
     private UserService userService;
     @Autowired
-    private ExperimentService experimentService;
-    @Autowired
     private ClassService classService;
     @Autowired
     private AchievementService achievementService;
     @Autowired
     private HostHolder hostHolder;
-    @Autowired
-    private RecordService recordService;
     @Autowired
     private FileService fileService;
 
@@ -68,59 +66,64 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/list")
+    @Auth
     public ResultVO list(){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
-        List<CourseDTO> list = courseService.listCourse(user.getUserId());
+        List<CourseDTO> list = courseService.listCourseForTeacher(user.getUserId());
+        if(list==null){
+            return ResultVOUtil.success();
+        }
         //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
-        //切割正常课程。
-        List<CourseVO> normal = list.stream().filter(c->c.getCourseStatus().intValue()!=(CourseStatusEnum.END.getCode()))
-                .map(courseDTO -> {
-                    CourseVO courseVO = new CourseVO();
-                    BeanUtils.copyProperties(courseDTO, courseVO);
-                    return courseVO;
-                }).collect(Collectors.toList());
-        //切割出过期课程
-        List<CourseVO> end = list.stream().filter(c->c.getCourseStatus().intValue()==(CourseStatusEnum.END.getCode())).map(courseDTO -> {
+        Map<Boolean, List<CourseVO>> collect = list.stream().map(courseDTO -> {
             CourseVO courseVO = new CourseVO();
             BeanUtils.copyProperties(courseDTO, courseVO);
             return courseVO;
-        }).collect(Collectors.toList());
-        HashMap<String, Object> map = new HashMap<>();
+        }).collect(Collectors.groupingBy(courseVO -> courseVO.getCourseStatus().intValue() == (CourseStatusEnum.END.getCode())));
+        //切割正常课程。
+        List<CourseVO> normal = collect.get(false);
+        //切割出过期课程
+        List<CourseVO> end = collect.get(true);
+        HashMap<String, Object> map = new HashMap<>(2);
         map.put("normal", normal);
         map.put("end", end);
         return ResultVOUtil.success(map);
-
     }
 
 
     /**
-     * 添加课程信息页
+     * 班级下拉框
+     * 返回下拉框所需的数据-包括班级、学生等一系列信息
      * @param
      * @return
      */
-    @GetMapping("/addCourse")
-    public ResultVO addCourse() {
-        HashMap<String, Object> map = new HashMap<>();
+    @GetMapping("/classSelectList")
+    @Auth
+    public ResultVO classSelectList() {
+        //获取班级列表
         List<TreeMap> clazzList =classService.getAllClazzList();
+        //获取所有学生的列表
         List<UserDTO> studentList = userService.getStudentListByClassId(0);
-        HashMap<String,Object> studentForSelect=new HashMap<>();
-        for(int i=0;i<clazzList.size();i++){
-            TreeMap treeMap = clazzList.get(i);
-            HashMap<String,Object> clazzMap=new HashMap<>();
-            List<UserVO> userVoList=studentList.stream().filter(c->c.getClassId().equals(treeMap.get("classId"))).map(student->{
-                UserVO userVO = new UserVO();
-                userVO.setUserId(student.getUserId());
-                userVO.setNickname(student.getNickname());
-                return userVO;
-            }).collect(Collectors.toList());
-            clazzMap.put("classId",clazzList.get(i).get("classId"));
-            clazzMap.put("className",clazzList.get(i).get("className"));
-            clazzMap.put("studentList",userVoList);
-            studentForSelect.put("class"+i,clazzMap);
+        //分组
+        Map<Integer, List<UserDTO>> collect = studentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
+        List<HashMap> list = new ArrayList<>(clazzList.size());
+        for(TreeMap map:clazzList){
+            HashMap<String,Object> clazzMap=new HashMap<>(3);
+            List<UserDTO> userDTOS = collect.get(map.get("classId"));
+            if(userDTOS!=null&&!userDTOS.isEmpty()){
+                List<UserVO> studentVoList = collect.get(map.get("classId")).stream().map(student -> {
+                    UserVO userVO = new UserVO();
+                    userVO.setUserId(student.getUserId());
+                    userVO.setNickname(student.getNickname());
+                    return userVO;
+                }).collect(Collectors.toList());
+                clazzMap.put("studentList",studentVoList);
+            }
+            clazzMap.put("classId",map.get("classId"));
+            clazzMap.put("className",map.get("className"));
+            list.add(clazzMap);
         }
-        map.put("studentForSelect", studentForSelect);
-        return ResultVOUtil.success(map);
+        return ResultVOUtil.success(list);
     }
 
     /**
@@ -129,68 +132,70 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/manage/{courseId}")
+    @Auth
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String, Object> map = new HashMap<>();
+        //获取所有的班级列表
         List<TreeMap> clazzList = classService.getAllClazzList();
+        //获取所有的学生列表
         List<UserDTO> studentList= userService.getStudentListByClassId(0);
-        List<AchievementDTO> achievementList = achievementService.getAchievementByCourseId(courseId);
+
         //获取已选课程的学生id列表
+        List<AchievementDTO> achievementList = achievementService.getAchievementByCourseId(courseId);
         Set<Integer> hadStudentIdSet = achievementList.stream().map(achievementDTO->achievementDTO.getUserId()).collect(Collectors.toSet());
-        // 已选学生列表
-        List<UserDTO> hadStudentList=studentList.stream().filter(c->hadStudentIdSet.contains(c.getUserId())).map(student->{
+
+        //处理学生列表，并将其切割为已选该课和未选该课两部分
+        Map<Boolean, List<UserDTO>> collect = studentList.stream().map(student -> {
             UserDTO userDTO = new UserDTO();
             userDTO.setUserId(student.getUserId());
             userDTO.setNickname(student.getNickname());
             userDTO.setClassId(student.getClassId());
             return userDTO;
-        }).collect(Collectors.toList());
-        // 未选学生列表
-        List<UserDTO> ableStudentList=studentList.stream().filter(c->!hadStudentIdSet.contains(c.getUserId())).map(student->{
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(student.getUserId());
-            userDTO.setNickname(student.getNickname());
-            userDTO.setClassId(student.getClassId());
-            return userDTO;
-        }).collect(Collectors.toList());
-        HashMap<String,Object> studentForSelect=new HashMap<>();
-        HashMap<String,Object> hadSelect=new HashMap<>();
-        int index=0;
-        //根据班级进行分组
+        }).collect(Collectors.groupingBy(c -> hadStudentIdSet.contains(c.getUserId())));
+        //获取已经选了该课的学生和未选的学生
+        List<UserDTO> hadStudentList = collect.get(true);
+        List<UserDTO> ableStudentList = collect.get(false);
+        //将学生按班级ID分组
+        Map<Integer, List<UserDTO>> ableStudentListGroupByClassId = ableStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
+        Map<Integer, List<UserDTO>> hadStudentListGroupByClassId = hadStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
+
+        List studentForSelect= new ArrayList();
+        List studentHadSelect=new ArrayList();
+
         for(TreeMap clazz:clazzList){
-            HashMap<String,Object> clazzMap=new HashMap<>();
-            List<UserVO> ableStudentVOList=ableStudentList.stream().filter(c->c.getClassId().equals(clazz.get("classId"))).map(student->{
-                UserVO userVO = new UserVO();
-                userVO.setUserId(student.getUserId());
-                userVO.setNickname(student.getNickname());
-                return userVO;
-            }).collect(Collectors.toList());
-            if (!ableStudentVOList.isEmpty()){
-                clazzMap.put("classId",clazz.get("classId"));
-                clazzMap.put("className",clazz.get("className"));
-                clazzMap.put("studentList",ableStudentVOList);
-                studentForSelect.put("class"+index,clazzMap);
-                index++;
+            HashMap<String,Object> clazzMapforSelect=new HashMap<>(3);
+            HashMap<String,Object> clazzMapHad=new HashMap<>(3);
+            //获取归属classId下的未选课的学生，并处理为userVO
+            List<UserDTO> userDTOListFromAble = ableStudentListGroupByClassId.get(clazz.get("classId"));
+            if(userDTOListFromAble!=null&&!userDTOListFromAble.isEmpty()){
+                List<UserVO> userVOList = userDTOListFromAble.stream().map(student -> {
+                    UserVO userVO = new UserVO();
+                    userVO.setUserId(student.getUserId());
+                    userVO.setNickname(student.getNickname());
+                    return userVO;
+                }).collect(Collectors.toList());
+                clazzMapforSelect.put("studentList",userVOList);
             }
-        }
-        index=0;
-        for(TreeMap clazz:clazzList){
-            HashMap<String,Object> clazzMap=new HashMap<>();
-            List<UserVO> hadStudentVOList=hadStudentList.stream().filter(c->c.getClassId().equals(clazz.get("classId"))).map(student->{
-                UserVO userVO = new UserVO();
-                userVO.setUserId(student.getUserId());
-                userVO.setNickname(student.getNickname());
-                return userVO;
-            }).collect(Collectors.toList());
-            if (!hadStudentVOList.isEmpty()){
-                clazzMap.put("classId",clazz.get("classId"));
-                clazzMap.put("className",clazz.get("className"));
-                clazzMap.put("studentList",hadStudentVOList);
-                hadSelect.put("class"+index,clazzMap);
-                index++;
+            clazzMapforSelect.put("classId",clazz.get("classId"));
+            clazzMapforSelect.put("className",clazz.get("className"));
+            studentForSelect.add(clazzMapforSelect);
+            //获取归属classId下的已经选课的学生，并处理为userVO
+            List<UserDTO> userDTOListFromHad = hadStudentListGroupByClassId.get(clazz.get("classId"));
+            if(userDTOListFromHad!=null&&!userDTOListFromHad.isEmpty()){
+                List<UserVO> userVOList = userDTOListFromHad.stream().map(student -> {
+                    UserVO userVO = new UserVO();
+                    userVO.setUserId(student.getUserId());
+                    userVO.setNickname(student.getNickname());
+                    return userVO;
+                }).collect(Collectors.toList());
+                clazzMapHad.put("studentList",userVOList);
             }
+            clazzMapHad.put("classId",clazz.get("classId"));
+            clazzMapHad.put("className",clazz.get("className"));
+            studentHadSelect.add(clazzMapHad);
         }
         map.put("studentForSelect", studentForSelect);
-        map.put("hadSelect",hadSelect);
+        map.put("studentHadSelect",studentHadSelect);
         return ResultVOUtil.success(map);
     }
 
@@ -201,6 +206,7 @@ public class TeacherCourseController {
      * @return
      */
     @PostMapping("/save")
+    @Auth
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -218,21 +224,30 @@ public class TeacherCourseController {
         if (form.getCourseId()==null){
             //  todo 异步更新成绩表 addAchievementByClazzId
             List<Integer> studentIdList = form.getAddStudentIdList();
-            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
-            // 异步更新课程及其下属实验的上课人数
-            courseService.updateNumber(courseDTO.getCourseId());
+            if(studentIdList!=null&&!studentIdList.isEmpty()){
+                achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+                // 异步更新课程及其下属实验的上课人数
+                courseService.updateNumber(courseDTO.getCourseId());
+            }
         }
         return ResultVOUtil.success();
     }
 
+    /**
+     * 更新课程人员
+     * @param form
+     * @param bindingResult
+     * @return
+     */
     @PostMapping("/updateNumber")
-    //课程详情
     public ResultVO updateNumber(@RequestBody @Valid CourseUpdateStuForm form,
                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
-            throw new TeachingException(ResultEnum.PARAM_ERROR.getCode(), ResultEnum.PARAM_ERROR.getMsg());
+            throw new TeachingException(ResultEnum.PARAM_ERROR);
         }
+        //检查主表是否存在
+        courseService.info(form.getCourseId());
         //修改
         if (form.getAddStudentIdList()!=null && !form.getAddStudentIdList().isEmpty()){
             achievementService.addAchievementByStudentList(form.getCourseId(), form.getAddStudentIdList());
@@ -246,6 +261,7 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/detail/{courseId}")
+    @Auth
     public ResultVO<CourseVO> detail(@PathVariable(value = "courseId") Integer courseId){
         CourseVO courseVO = new CourseVO();
         CourseDTO detail;
@@ -260,6 +276,7 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/resource/{courseId}")
+    @Auth
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关联的文件
@@ -275,22 +292,30 @@ public class TeacherCourseController {
 
 
     @GetMapping("/invalid/{courseId}")
+    @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
-        courseService.invalid(courseId);
+        if(courseService.invalid(courseId)){
+            //删除课程下的选课记录
+            achievementService.deleteAchievementByCourseId(courseId);
+        }
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{courseId}")
+    @Auth
     public ResultVO unlock(@PathVariable("courseId") Integer courseId) {
         courseService.unlock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/lock/{courseId}")
+    @Auth
     public ResultVO lock(@PathVariable("courseId") Integer courseId) {
         courseService.lock(courseId);
         return ResultVOUtil.success();
     }
+
     @GetMapping("/end/{courseId}")
+    @Auth
     public ResultVO end(@PathVariable("courseId") Integer courseId) {
         courseService.end(courseId);
         return ResultVOUtil.success();

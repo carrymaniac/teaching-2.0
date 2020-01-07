@@ -33,7 +33,6 @@ public class CourseVO {
     /**
      * 授课老师Id
      */
-
     private Integer userId;
     /**
      *  课程详情Id
@@ -54,7 +53,6 @@ public class CourseVO {
     /**
      * 课程班级列表
      */
-
     private List<ClazzVO> clazzList;
     /**
      * 课程下属实验

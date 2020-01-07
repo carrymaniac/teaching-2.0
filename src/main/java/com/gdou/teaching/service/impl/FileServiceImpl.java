@@ -93,6 +93,10 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean deleteFile(Integer fileId) {
+<<<<<<< HEAD
         return fileMapper.deleteByPrimaryKey(fileId)!=1;
+=======
+        return fileMapper.deleteByPrimaryKey(fileId)==1;
+>>>>>>> origin/master
     }
 }

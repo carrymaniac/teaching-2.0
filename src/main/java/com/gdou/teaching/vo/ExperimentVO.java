@@ -38,7 +38,7 @@ public class ExperimentVO {
     /**
      * 实验文本内容
      */
-    private String experiment_intro;
+    private String experimentIntro;
     /**
      * 实验文本内容
      */

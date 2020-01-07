@@ -18,6 +18,7 @@ import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.PoiUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.*;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/teacher/achievement")
 @Slf4j
-public class AchievementController {
+public class TeacherAchievementController {
     @Autowired
     AchievementService achievementService;
     @Autowired
@@ -61,6 +62,7 @@ public class AchievementController {
 
     //todo  根据classId进行筛选,待完成
     @GetMapping("/list/{courseId}")
+    @Auth
     public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId,
                                   @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
@@ -112,6 +114,7 @@ public class AchievementController {
      * @return 该课程下的实验分数。
      */
     @GetMapping("/score/{courseId}")
+    @Auth
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId,
                               @RequestParam(value = "userId") Integer userId){
         Achievement achievement = achievementService.getAchievementByUserIdAndCourseId(userId, courseId);
@@ -134,6 +137,7 @@ public class AchievementController {
     }
 
     @GetMapping("/judge/{courseId}")
+    @Auth
     public ResultVO<HashMap> judge(@PathVariable(value = "courseId", required = true) Integer courseId,
                                    @RequestParam(value = "experimentId", required = false) Integer experimentId,
                                    @RequestParam(value = "classId", required = false) Integer classId) {
@@ -207,6 +211,7 @@ public class AchievementController {
     }
 
     @GetMapping("/judge/detail/{experimentId}")
+    @Auth
     public ResultVO<RecordVO> detail(@PathVariable(value = "experimentId") Integer experimentId,
                                      @RequestParam(value = "userId") Integer userId) {
         RecordVO recordVO=new RecordVO();
@@ -220,6 +225,7 @@ public class AchievementController {
     }
 
     @PostMapping("/judge/save")
+    @Auth
     public ResultVO save(@RequestBody @Valid JudgeForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -251,6 +257,7 @@ public class AchievementController {
      * @return
      */
     @GetMapping("/judge/batch/{experimentId}")
+    @Auth
     public ResultVO<HashMap> batch(@PathVariable(value = "experimentId") Integer experimentId,
                                    @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
@@ -308,6 +315,7 @@ public class AchievementController {
 
 
     @PostMapping("/judge/batch/save")
+    @Auth
     public ResultVO batchSave(@RequestBody @Valid BatchJudgeForm form,
                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -345,6 +353,7 @@ public class AchievementController {
      * @throws IOException
      */
     @GetMapping("/export/{courseId}")
+    @Auth
     public String export(HttpServletResponse response,@PathVariable(value = "courseId") Integer courseId) throws IOException {
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");

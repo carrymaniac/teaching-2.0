@@ -18,6 +18,7 @@ import com.gdou.teaching.service.ExperimentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -107,6 +108,14 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementExample achievementExample = new AchievementExample();
         achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdIn(studentIdList);
         return achievementMapper.deleteByExample(achievementExample)==studentIdList.size();
+    }
+
+    @Override
+    @Async
+    public Integer deleteAchievementByCourseId(Integer courseId) {
+        AchievementExample achievementExample = new AchievementExample();
+        achievementExample.createCriteria().andCourseIdEqualTo(courseId);
+        return achievementMapper.deleteByExample(achievementExample);
     }
 
     @Override
