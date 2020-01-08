@@ -74,14 +74,6 @@ public class FileController {
     }
 
 
-
-    @GetMapping("/delete/{fileId}")
-    public ResultVO delete(@PathVariable(value = "fileId") Integer fileId){
-        fileService.deleteFile(fileId);
-        return ResultVOUtil.success();
-    }
-
-
     public HashMap<String, String> uploadFile(HttpServletRequest httpServletRequest, MultipartFile file) throws IOException {
         //文件原始名字
         String fileName = file.getOriginalFilename();
