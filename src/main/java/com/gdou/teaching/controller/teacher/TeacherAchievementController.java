@@ -146,18 +146,21 @@ public class TeacherAchievementController {
         HashMap<String,Object> map=new HashMap<>();
         //根据课程id  获取实验列表
         List<ExperimentDTO> experimentDTOList= experimentService.list(courseId);
-        //获取实验列表
-        List<HashMap> experimentList=new ArrayList<>();
-        for(ExperimentDTO experimentDTO:experimentDTOList){
-            HashMap<String,Object> experimentMap=new HashMap<>();
-            experimentMap.put("experimentId",experimentDTO.getExperimentId());
-            experimentMap.put("experimentName",experimentDTO.getExperimentName());
-            experimentList.add(experimentMap);
-        }
-        map.put("experimentList",experimentList);
-        //获取实验的提交记录    缺省默认查找实验列表中的第一个实验
-        if (experimentId==null&&!experimentList.isEmpty()){
-            experimentId=(Integer) experimentList.get(0).get("experimentId");
+
+        //首次访问--获取实验列表
+        if (experimentId==null){
+            List<HashMap> experimentList=new ArrayList<>();
+            for(ExperimentDTO experimentDTO:experimentDTOList){
+                HashMap<String,Object> experimentMap=new HashMap<>();
+                experimentMap.put("experimentId",experimentDTO.getExperimentId());
+                experimentMap.put("experimentName",experimentDTO.getExperimentName());
+                experimentList.add(experimentMap);
+            }
+            map.put("experimentList",experimentList);
+            //获取实验的提交记录    缺省默认查找实验列表中的第一个实验
+            if (!experimentList.isEmpty()){
+                experimentId=(Integer) experimentList.get(0).get("experimentId");
+            }
         }
         List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
         //班级列表
@@ -174,32 +177,30 @@ public class TeacherAchievementController {
             judgeVO.setStatus(recordDTO.getStatus().intValue());
             return judgeVO;
         }).collect(Collectors.toList());
-
         //获取班级列表
         List<HashMap> classList=new ArrayList<>();
-        for(Integer clazzId:classIdSet){
-            Class classByClazzId = classService.getClassByClazzId(clazzId);
+        if(classId==null||classId==0){
+            for(Integer clazzId:classIdSet){
+                Class classByClazzId = classService.getClassByClazzId(clazzId);
+                HashMap<String,Object> clazzMap=new HashMap<>();
+                clazzMap.put("classId",classByClazzId.getClassId());
+                clazzMap.put("className",classByClazzId.getClassName());
+                classList.add(clazzMap);
+            }
+            //首次访问 --返回班级列表
+            if(classId==null){
+                map.put("classList",classList);
+            }
+        }else{
+            Class classByClazzId = classService.getClassByClazzId(classId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
             classList.add(clazzMap);
         }
-        map.put("classList",classList);
-
         //按班级分割
         List<HashMap> classData=new ArrayList<>(classList.size());
         for(HashMap clazz:classList) {
-            //根据班级id筛选结果
-            if (clazz.get("classId").equals(classId)){
-                HashMap<String,Object> clazzMap=new HashMap<>();
-                List<JudgeVO> judgeVO = judgeVOList.stream().filter(a->a.getClassId().equals(classId))
-                        .collect(Collectors.toList());
-                clazzMap.put("classId",classId);
-                clazzMap.put("className",clazz.get("className"));
-                clazzMap.put("userList",judgeVO);
-                classData.add(clazzMap);
-                break;
-            }
             HashMap<String,Object> clazzMap=new HashMap<>();
             Integer clazzId=(Integer) clazz.get("classId");
             String clazzName=(String) clazz.get("className");
