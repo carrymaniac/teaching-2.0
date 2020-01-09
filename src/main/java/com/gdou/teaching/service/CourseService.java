@@ -30,15 +30,6 @@ public interface CourseService {
     CourseDTO save(CourseDTO courseDTO);
 
 
-    /**
-     * 根据用户ID查询用户所选修的课程记录
-     * 使用userID在Achievement表进行查询获取courseID信息，之后再回Course表查询即可
-     * 不需要详细信息
-     * @param userId
-     * @return
-     */
-    List<CourseDTO> getCourseByUserId(Integer userId);
-
 
     /**
      * 根据课程ID展示课程详情
@@ -50,18 +41,33 @@ public interface CourseService {
 
 
     /**
-     * 展示所有的课程主表记录
-     * @param userId
+     * 展示学生的所有的选修的课程主表记录
+     * 不需要副表
+     * @param userId 学生端
      * @return
      */
     List<CourseDTO> listCourseForStudent(Integer userId);
 
     /**
      * 展示所有的课程主表记录(教师端)
-     * @param userId
+     * @param userId 教师ID
      * @return
      */
     List<CourseDTO> listCourseForTeacher(Integer userId);
+
+    /**
+     * 展示对应教师的所有的课程主表记录+副表记录（用于15字介绍）(管理员端)
+     * @param userId 教师ID
+     * @return
+     */
+    List<CourseDTO> listCourseForAdminByTeacherId(Integer userId);
+
+    /**
+     * 展示对应学生所选修的所有的课程主表记录+副表记录（用于15字介绍）(管理员端)
+     * @param userId 学生ID
+     * @return
+     */
+    List<CourseDTO> listCourseForAdminByStudentId(Integer userId);
 
 
     /**
@@ -99,5 +105,7 @@ public interface CourseService {
      * @param courseId
      */
     void updateNumber(Integer courseId);
+
+
 
 }

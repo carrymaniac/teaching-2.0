@@ -55,13 +55,6 @@ class  CourseServiceImplTest {
     }
 
     @Test
-    void getCourseByUserId() {
-        List<CourseDTO> courseByUserId = courseService.getCourseByUserId(5);
-        Assert.isTrue(!courseByUserId.isEmpty(),"courseByUserId is null");
-        log.info("courseByUserId is {}",courseByUserId);
-    }
-
-    @Test
     void detail() {
         CourseDTO detail = courseService.detail(1);
         Assert.notNull(detail,"detail is null");

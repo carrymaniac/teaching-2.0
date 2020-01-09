@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.gdou.teaching.vo.ClazzVO;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,6 +60,13 @@ public class CourseDTO {
     /**
      *  课程班级列表
      */
-
     private List<ClazzVO> clazzList;
+    /**
+     * 创建时间（开始时间）
+     */
+    private Date createTime;
+    /**
+     * 成绩
+     */
+    private Double achievement;
 }

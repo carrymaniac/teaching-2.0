@@ -79,6 +79,15 @@ public interface UserService {
     List<UserDTO> getStudentListByClassId(Integer classId);
 
     /**
+     * 根据班级Id查询学生列表, 若classId为0即全查,采用分页返回
+     * @param classId
+     * @param page
+     * @param size
+     * @return
+     */
+    PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword);
+
+    /**
      * 查询所有的教师列表
      * @return
      */

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,24 +101,6 @@ public class CourseServiceImpl implements CourseService {
         //回填setCourseId
         courseDTO.setCourseId(courseMaster.getCourseId());
         return courseDTO;
-    }
-
-    /**
-     * 通过老师UserID获取课程信息 不包含info信息 ---隶属教师端
-     * @param userId
-     * @return
-     */
-    @Override
-    public List<CourseDTO> getCourseByUserId(Integer userId) {
-        CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId);
-        List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
-        List<CourseDTO> courseDTOList = courseMasters.stream().map(courseMaster -> {
-            CourseDTO courseDTO = new CourseDTO();
-            BeanUtils.copyProperties(courseMaster, courseDTO);
-            return courseDTO;
-        }).collect(Collectors.toList());
-        return courseDTOList;
     }
 
     /**
@@ -261,10 +244,10 @@ public class CourseServiceImpl implements CourseService {
         achievementExample.createCriteria().andUserIdEqualTo(userId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
-            //说明该学生无报任何班级
+            //说明该学生无报任何课程
             return null;
         }
-        //获取选修的班级ID
+        //获取选修的课程ID
         List<Integer> courseIds = achievements.stream().map(achievement -> {
             Integer courseId = achievement.getCourseId();
             return courseId;
@@ -301,6 +284,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDTO> listCourseForTeacher(Integer userId) {
+        User user = userMapper.selectByPrimaryKey(userId);
+        if(user==null) {
+            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }
         //查询课程主表记录
         CourseMasterExample courseMasterExample = new CourseMasterExample();
         courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
@@ -309,23 +296,13 @@ public class CourseServiceImpl implements CourseService {
             //说明该教师暂无授课
             return null;
         }
-        List<Integer> ids = courseMasters.stream().map(courseMaster -> {
-            Integer teacherId = courseMaster.getTeacherId();
-            return teacherId;
-        }).collect(Collectors.toList());
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdIn(ids);
-        List<User> teacherList = userMapper.selectByExample(userExample);
-        //获取到老师的信息
+        //拼装
         List<CourseDTO> result = courseMasters.stream().map(courseMaster -> {
             CourseDTO courseDTO = new CourseDTO();
-            List<User> teacher = teacherList.stream().filter(userDTO -> userDTO.getUserId().equals(courseMaster.getTeacherId())).collect(Collectors.toList());
-            if (teacher.size()>0) {
-                courseDTO.setTeacherNickname(teacher.get(0).getNickname());
-                courseDTO.setCourseName(courseMaster.getCourseName());
-                courseDTO.setCourseId(courseMaster.getCourseId());
-                courseDTO.setCourseStatus(courseMaster.getCourseStatus());
-            }
+            courseDTO.setTeacherNickname(user.getNickname());
+            courseDTO.setCourseName(courseMaster.getCourseName());
+            courseDTO.setCourseId(courseMaster.getCourseId());
+            courseDTO.setCourseStatus(courseMaster.getCourseStatus());
             return courseDTO;
         }).collect(Collectors.toList());
         return result;
@@ -353,4 +330,54 @@ public class CourseServiceImpl implements CourseService {
         experimentMaster.setExperimentParticipationNum(number);
         experimentMasterMapper.updateByExampleSelective(experimentMaster,experimentMasterExample);
     }
+
+
+    @Override
+    public List<CourseDTO> listCourseForAdminByTeacherId(Integer userId) {
+        CourseMasterExample courseMasterExample = new CourseMasterExample();
+        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
+        if(courseMasters==null||courseMasters.isEmpty()){
+            //说明该教师暂无授课
+            return null;
+        }
+        List<CourseDTO> collect = courseMasters.stream().map(courseMaster -> {
+            CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
+            CourseDTO courseDTO = new CourseDTO();
+            BeanUtils.copyProperties(courseMaster, courseDTO);
+            BeanUtils.copyProperties(courseDetail, courseDTO);
+            return courseDTO;
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
+    public List<CourseDTO> listCourseForAdminByStudentId(Integer userId) {
+        AchievementExample achievementExample = new AchievementExample();
+        achievementExample.createCriteria().andUserIdEqualTo(userId);
+        List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
+        if(achievements==null||achievements.isEmpty()){
+            //说明该学生无报任何课程
+            return null;
+        }
+        Map<Integer, Double> map = achievements.stream().collect(Collectors.toMap(Achievement::getCourseId, Achievement::getCourseAchievement));
+        List<Integer> courseIds = achievements.stream().map(achievement -> {
+            Integer courseId = achievement.getCourseId();
+            return courseId;
+        }).collect(Collectors.toList());
+        //获取选修的班级主表ID
+        CourseMasterExample courseMasterExample = new CourseMasterExample();
+        courseMasterExample.createCriteria().andCourseIdIn(courseIds);
+        List<CourseMaster> courseMasterList = courseMasterMapper.selectByExample(courseMasterExample);
+        List<CourseDTO> collect = courseMasterList.stream().map(courseMaster -> {
+            CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
+            CourseDTO courseDTO = new CourseDTO();
+            BeanUtils.copyProperties(courseMaster, courseDTO);
+            courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction().substring(0, 15));
+            courseDTO.setAchievement(map.get(courseMaster.getCourseId()));
+            return courseDTO;
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
 }
