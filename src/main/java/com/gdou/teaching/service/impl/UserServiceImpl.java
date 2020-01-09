@@ -15,9 +15,12 @@ import com.gdou.teaching.mbg.model.UserExample;
 import com.gdou.teaching.mbg.model.UserInfo;
 import com.gdou.teaching.mbg.model.UserInfoExample;
 import com.gdou.teaching.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -63,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean register(User user) {
+    public Boolean addUser(User user) {
         //判断学号信息是否重复
         String userNumber = user.getUserNumber();
         UserExample userExample = new UserExample();
@@ -132,13 +135,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Boolean deleteUserByBatch(List<String> userNumbers) {
+    public Boolean deleteUserByBatch(List<Integer> userIds) {
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserNumberIn(userNumbers);
+        userExample.createCriteria().andUserIdIn(userIds);
         User user = new User();
         user.setUserStatus(UserStatusEnum.INVALID.getCode().byteValue());
         int i = userMapper.updateByExampleSelective(user, userExample);
-        return i==userNumbers.size();
+        return i==userIds.size();
     }
 
     @Override
@@ -186,9 +189,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> selectTeacherList() {
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue());
+        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
         List<User> teachers = userMapper.selectByExample(userExample);
         return teachers;
+    }
+
+    @Override
+    public PageInfo selectTeacherListByPage(Integer page, Integer size) {
+        PageHelper.startPage(page,size);
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
+        List<User> teachers = userMapper.selectByExample(userExample);
+        List<UserDTO> collect = teachers.stream().map(teacher -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(teacher.getUserId());
+            userDTO.setNickname(teacher.getNickname());
+            return userDTO;
+        }).collect(Collectors.toList());
+        PageInfo<UserDTO> pageInfo = new PageInfo<>(collect);
+        return pageInfo;
     }
 
     @Override
@@ -215,6 +234,19 @@ public class UserServiceImpl implements UserService {
         }
         if(DigestUtils.md5DigestAsHex((oldPassword+user.getSalt()).getBytes()).equals(DigestUtils.md5DigestAsHex((newPassword+user.getSalt()).getBytes()))){
             throw new TeachingException(PARAM_ERROR.getCode(),"新密码不能与原密码相等");
+        }
+        //重新更新盐值
+        String salt = UUID.randomUUID().toString().substring(0,5);
+        user.setSalt(salt);
+        user.setPassword(DigestUtils.md5DigestAsHex((newPassword+salt).getBytes()));
+        return userMapper.updateByPrimaryKey(user)>0;
+    }
+
+    @Override
+    public Boolean resetPassword(Integer userId, String newPassword) {
+        User user = userMapper.selectByPrimaryKey(userId);
+        if(user==null){
+            throw new TeachingException(USER_NOT_EXIST);
         }
         //重新更新盐值
         String salt = UUID.randomUUID().toString().substring(0,5);
