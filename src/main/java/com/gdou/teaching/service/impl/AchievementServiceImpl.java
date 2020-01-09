@@ -137,6 +137,8 @@ public class AchievementServiceImpl implements AchievementService {
         return achievements.get(0);
     }
 
+
+    //todo 考虑不存在成绩表的情况
     @Override
     public List<AchievementDTO> getAchievementByCourseId(Integer courseId) {
         AchievementExample achievementExample = new AchievementExample();

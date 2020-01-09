@@ -4,6 +4,7 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.User;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ class UserServiceImplTest {
         user.setUserIdent(UserIdentEnum.TEACHER.getCode().byteValue());
         user.setUserNumber("8885867");
         user.setPassword("123456");
-        Boolean register = userService.register(user);
+        Boolean register = userService.addUser(user);
 
     }
 
@@ -96,5 +97,11 @@ class UserServiceImplTest {
 
     @Test
     void updatePassword() {
+    }
+
+    @Test
+    void selectTeacherListByPage(){
+        PageInfo pageInfo = userService.selectTeacherListByPage(1, 10);
+        log.info("pageInfo:{}",pageInfo);
     }
 }

@@ -2,6 +2,8 @@ package com.gdou.teaching.service;
 
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
+import com.github.pagehelper.PageInfo;
+import org.springframework.data.relational.core.sql.In;
 
 import java.util.List;
 import java.util.Map;
@@ -13,18 +15,11 @@ import java.util.Map;
  **/
 public interface UserService {
     /**
-     * 通过ID获取用户
-     * @param id
-     * @return
-     */
-    User getUserById(int id);
-
-    /**
      * 注册
      * @param user
      * @return
      */
-    Boolean register(User user);
+    Boolean addUser(User user);
 
     /**
      * 登陆
@@ -35,11 +30,32 @@ public interface UserService {
     User login(String username, String password);
 
     /**
+     * 通过ID获取用户
+     * @param id
+     * @return
+     */
+    User getUserById(int id);
+
+    /**
      * 通过用户工号获取用户
      * @param userNumber
      * @return
      */
     User getUserByUserNumber(String userNumber);
+
+    /**
+     * 通过用户ID查询用户详细信息
+     * @param userId
+     * @return
+     */
+    UserDTO getUserDetailByUserId(Integer userId);
+
+    /**
+     * 通过ID列表批量获取用户信息
+     * @param userIds
+     * @return
+     */
+    List<UserDTO> getUsersByUserId(List<Integer> userIds);
 
     /**
      * 批量增加用户
@@ -50,18 +66,10 @@ public interface UserService {
 
     /**
      * 通过用户工号学号，批量注销用户
-     * @param userNumbers
-     * @return
-     */
-    Boolean deleteUserByBatch(List<String> userNumbers);
-
-    /**
-     * 通过用户ID查询用户详细信息
      * @param userId
      * @return
      */
-    UserDTO getUserDetailByUserId(Integer userId);
-
+    Boolean deleteUserByBatch(List<Integer> userId);
 
     /**
      * 根据班级Id查询学生列表, 若classId为0即全查
@@ -77,11 +85,13 @@ public interface UserService {
     List<User> selectTeacherList();
 
     /**
-     * 通过ID列表批量获取用户信息
-     * @param userIds
+     * 通过分页查询所有的教师列表
+     * @param page
+     * @param size
      * @return
      */
-    List<UserDTO> getUsersByUserId(List<Integer> userIds);
+    PageInfo selectTeacherListByPage(Integer page, Integer size);
+
 
     /**
      * 更新密码
@@ -92,4 +102,11 @@ public interface UserService {
      */
     Boolean updatePassword(Integer userId,String oldPassword ,String newPassword);
 
+    /**
+     * 重设密码
+     * @param userId 用户ID
+     * @param newPassword 新密码
+     * @return
+     */
+    Boolean resetPassword(Integer userId,String newPassword);
 }

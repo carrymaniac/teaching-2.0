@@ -74,7 +74,6 @@ public class FileController {
     }
 
 
-
     public HashMap<String, String> uploadFile(HttpServletRequest httpServletRequest, MultipartFile file) throws IOException {
         //文件原始名字
         String fileName = file.getOriginalFilename();

@@ -290,6 +290,7 @@ public class TeacherCourseController {
         }
     }
 
+
     @GetMapping("/invalid/{courseId}")
     @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
@@ -312,6 +313,7 @@ public class TeacherCourseController {
         courseService.lock(courseId);
         return ResultVOUtil.success();
     }
+
     @GetMapping("/end/{courseId}")
     @Auth
     public ResultVO end(@PathVariable("courseId") Integer courseId) {
