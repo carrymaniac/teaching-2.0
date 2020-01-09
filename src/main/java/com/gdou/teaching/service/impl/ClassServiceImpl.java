@@ -65,13 +65,13 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public List<Class> getClassesByPage(Integer page, Integer size) {
+    public PageInfo getClassesByPage(Integer page, Integer size) {
         PageHelper.startPage(page,size);
         ClassExample classExample = new ClassExample();
         classExample.createCriteria();
         List<Class> classes = classMapper.selectByExample(classExample);
         PageInfo<Class> pageInfo = new PageInfo<>(classes);
-        return pageInfo.getList();
+        return pageInfo;
     }
 
     @Override

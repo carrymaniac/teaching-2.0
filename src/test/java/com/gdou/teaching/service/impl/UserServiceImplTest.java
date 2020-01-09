@@ -39,7 +39,7 @@ class UserServiceImplTest {
     }
 
     @Test
-//    @Transactional
+    @Transactional
     void register() {
         User user = new User();
         user.setClassId(0);

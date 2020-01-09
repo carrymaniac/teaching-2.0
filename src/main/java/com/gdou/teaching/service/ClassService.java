@@ -2,6 +2,7 @@ package com.gdou.teaching.service;
 
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.mbg.model.User;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public interface ClassService {
      * @param size
      * @return
      */
-    List<Class> getClassesByPage(Integer page, Integer size);
+    PageInfo getClassesByPage(Integer page, Integer size);
 
     /**
      * 班级信息修改

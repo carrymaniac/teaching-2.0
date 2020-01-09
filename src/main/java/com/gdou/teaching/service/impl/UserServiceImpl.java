@@ -158,10 +158,12 @@ public class UserServiceImpl implements UserService {
             throw new TeachingException(USER_NOT_EXIST);
         }
         UserInfo userInfo = userInfos.get(0);
-        Class aClass = classMapper.selectByPrimaryKey(user.getClassId());
+        if(user.getClassId()!=0){
+            Class aClass = classMapper.selectByPrimaryKey(user.getClassId());
+            userDTO.setClassName(aClass.getClassName());
+        }
         BeanUtils.copyProperties(userInfo,userDTO);
         BeanUtils.copyProperties(user,userDTO);
-        userDTO.setClassName(aClass.getClassName());
         return userDTO;
     }
 
@@ -184,6 +186,31 @@ public class UserServiceImpl implements UserService {
             return userDTO;
         }).collect(Collectors.toList());
         return userDTOS;
+    }
+
+    @Override
+    public PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword) {
+        UserExample userExample = new UserExample();
+        if(classId!=0){
+            userExample.createCriteria().andClassIdEqualTo(classId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue()).andNicknameLike(keyword);
+        }else {
+            userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue()).andNicknameLike(keyword);
+        }
+        PageHelper.startPage(page,size);
+        List<User> users = userMapper.selectByExample(userExample);
+        if (users==null||users.isEmpty()){
+            log.info("[UserServiceImpl]-,根据classId查询学生列表,学生信息不存在,classId:{}",classId);
+            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+        }
+        List<UserDTO> userDTOS = users.stream().map(user -> {
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            return userDTO;
+        }).collect(Collectors.toList());
+        PageInfo pageInfo = new PageInfo(userDTOS);
+        return pageInfo;
+
+
     }
 
     @Override
