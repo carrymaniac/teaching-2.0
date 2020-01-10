@@ -110,8 +110,7 @@ public class RecordServiceImpl implements RecordService {
         userReExperimentExample.createCriteria().andUserIdEqualTo(userId).andExperimentIdEqualTo(experimentId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExampleWithBLOBs(userReExperimentExample);
         if(userReExperiments==null||userReExperiments.isEmpty()){
-            log.error("[RecordServiceImpl]-selectOne,实验提交表信息不存在,experimentId={},userId={}",experimentId,userId);
-            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
+           return null;
         }
         UserReExperiment userReExperiment = userReExperiments.get(0);
         RecordDTO recordDTO = new RecordDTO();
