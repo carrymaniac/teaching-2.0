@@ -3,12 +3,8 @@ package com.gdou.teaching.mbg.mapper;
 import com.gdou.teaching.mbg.model.UserInfo;
 import com.gdou.teaching.mbg.model.UserInfoExample;
 import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface UserInfoMapper {
     int countByExample(UserInfoExample example);
 

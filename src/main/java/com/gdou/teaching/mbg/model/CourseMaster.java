@@ -60,6 +60,13 @@ public class CourseMaster implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 课程封面
+     *
+     * @mbggenerated
+     */
+    private String courseCover;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getCourseId() {
@@ -126,6 +133,14 @@ public class CourseMaster implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getCourseCover() {
+        return courseCover;
+    }
+
+    public void setCourseCover(String courseCover) {
+        this.courseCover = courseCover;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -140,6 +155,7 @@ public class CourseMaster implements Serializable {
         sb.append(", courseNumber=").append(courseNumber);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
+        sb.append(", courseCover=").append(courseCover);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

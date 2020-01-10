@@ -55,6 +55,12 @@ public class CourseVO {
      */
     private List<ClazzVO> clazzList;
     /**
+     * 课程封面
+     *
+     * @mbggenerated
+     */
+    private String courseCover;
+    /**
      * 课程下属实验
      */
     List<ExperimentVO> ExperimentDTOList;

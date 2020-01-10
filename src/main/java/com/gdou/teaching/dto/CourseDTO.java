@@ -66,6 +66,12 @@ public class CourseDTO {
      */
     private Date createTime;
     /**
+     * 课程封面
+     *
+     *
+     */
+    private String courseCover;
+    /**
      * 成绩
      */
     private Double achievement;
