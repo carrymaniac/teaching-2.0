@@ -5,6 +5,7 @@ import com.gdou.teaching.Enum.*;
 import com.gdou.teaching.dataobject.*;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
+import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.Achievement;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,13 +173,17 @@ public class StudentCourseController {
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关连的文件
-            return ResultVOUtil.success(
-                    fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId));
+            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId);
+            if(result!=null&&!result.isEmpty()){
+                return ResultVOUtil.success(result);
+            }
         }else {
+            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword);
             //通过关键字和课程ID获取关联的文件
-            return ResultVOUtil.success(
-                    fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword)
-            );
+            if(result!=null&&!result.isEmpty()){
+                return ResultVOUtil.success(result);
+            }
         }
+        return ResultVOUtil.success(new ArrayList<>());
     }
 }
