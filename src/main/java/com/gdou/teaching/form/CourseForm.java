@@ -59,4 +59,11 @@ public class CourseForm {
      * 增加上课学生id列表,以id列表的形式
      */
     private List<Integer> addStudentIdList;
+
+    /**
+     * 课程封面
+     *
+     *
+     */
+    private String courseCover;
 }
