@@ -276,6 +276,7 @@ public class CourseServiceImpl implements CourseService {
             courseDTO.setCourseName(courseMaster.getCourseName());
             courseDTO.setCourseId(courseMaster.getCourseId());
             courseDTO.setCourseStatus(courseMaster.getCourseStatus());
+            courseDTO.setCourseCover(courseMaster.getCourseCover());
             return courseDTO;
         }).collect(Collectors.toList());
         return result;
@@ -303,6 +304,7 @@ public class CourseServiceImpl implements CourseService {
             courseDTO.setCourseName(courseMaster.getCourseName());
             courseDTO.setCourseId(courseMaster.getCourseId());
             courseDTO.setCourseStatus(courseMaster.getCourseStatus());
+            courseDTO.setCourseCover(courseMaster.getCourseCover());
             return courseDTO;
         }).collect(Collectors.toList());
         return result;

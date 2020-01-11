@@ -37,6 +37,6 @@ mybatis:
    - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml
    - classpath:mappers/com/gdou/teaching/dao/*.xml
 teaching:
-  uploadPath: /Users/carrymaniac/upload/
+  uploadPath: /Users/27362/upload/
 
 
