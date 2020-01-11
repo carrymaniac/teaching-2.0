@@ -29,6 +29,12 @@ public class CourseMainPageVO {
      * 课程状态
      */
     private Byte courseStatus;
+    /**
+     * 课程封面
+     *
+     * @mbggenerated
+     */
+    private String courseCover;
 
     /**
      * 课程下属实验
