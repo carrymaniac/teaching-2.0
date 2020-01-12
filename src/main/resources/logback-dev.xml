@@ -1,0 +1,11 @@
+<included>
+    <contextName>teaching</contextName>
+
+    <springProfile name="bo">
+        <logger name="com.gdou.teaching" level="info"/>
+    </springProfile>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</included>

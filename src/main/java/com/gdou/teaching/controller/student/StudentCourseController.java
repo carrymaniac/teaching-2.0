@@ -171,19 +171,27 @@ public class StudentCourseController {
 
     @GetMapping("/resource/{courseId}")
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
+//        if(StringUtils.isEmpty(keyword)){
+//            //通过课程ID获取课程关连的文件
+//            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId);
+//            if(result!=null&&!result.isEmpty()){
+//                return ResultVOUtil.success(result);
+//            }
+//        }else {
+//            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword);
+//            //通过关键字和课程ID获取关联的文件
+//            if(result!=null&&!result.isEmpty()){
+//                return ResultVOUtil.success(result);
+//            }
+//        }
+//        return ResultVOUtil.success(new ArrayList<>());
+
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关连的文件
-            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId);
-            if(result!=null&&!result.isEmpty()){
-                return ResultVOUtil.success(result);
-            }
+                return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId));
         }else {
-            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword);
             //通过关键字和课程ID获取关联的文件
-            if(result!=null&&!result.isEmpty()){
-                return ResultVOUtil.success(result);
-            }
+                return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword));
         }
-        return ResultVOUtil.success(new ArrayList<>());
     }
 }

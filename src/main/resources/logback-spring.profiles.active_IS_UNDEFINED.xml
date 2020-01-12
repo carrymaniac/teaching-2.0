@@ -1,0 +1,8 @@
+<included>
+    <contextName>teaching</contextName>
+    <!--    单独声明我们项目的级别-->
+    <logger name="com.gdou.teaching" level="info"/>
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</included>
