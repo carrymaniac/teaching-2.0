@@ -39,4 +39,5 @@ mybatis:
 teaching:
   uploadPath: /Users/27362/upload/
 
-
+logging:
+  config: classpath:logback-dev.xml
