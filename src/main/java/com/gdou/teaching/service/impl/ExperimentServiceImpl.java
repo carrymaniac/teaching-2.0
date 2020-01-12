@@ -114,6 +114,9 @@ public class ExperimentServiceImpl implements ExperimentService {
         if(experimentDTO.getPunishment()==null){
             experimentDTO.setPunishment((float) 0.9);
         }
+        if(experimentDTO.getExperimentStatus()==null){
+            experimentDTO.setExperimentStatus(ExperimentStatusEnum.NORMAL.getCode().byteValue());
+        }
         if (experimentDTO.getExperimentIntro()==null){
             String text=experimentDTO.getExperimentText();
             if (text.length()>15){

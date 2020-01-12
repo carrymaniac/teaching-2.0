@@ -31,6 +31,11 @@ public class CourseDTO {
      * 授课老师名
      */
     private String teacherNickname;
+
+    /**
+     * 授课老师头像
+     */
+    private String headUrl;
     /**
      * 课程人数
      */

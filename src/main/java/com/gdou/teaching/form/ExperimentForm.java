@@ -28,8 +28,8 @@ public class ExperimentForm {
     @NotNull(message = "课程Id必填")
     private Integer courseId;
 
-    //课程Id
-    @NotNull(message = "课程阈值必填")
+    //实验阈值
+    @NotNull(message = "实验阈值必填")
     private Float valve;
 
     //实验简介

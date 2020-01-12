@@ -34,6 +34,11 @@ public class CourseVO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String teacherNickname;
     /**
+     * 授课老师头像
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String headUrl;
+    /**
      * 授课老师Id
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)

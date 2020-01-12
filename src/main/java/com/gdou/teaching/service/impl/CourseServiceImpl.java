@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -266,13 +267,19 @@ public class CourseServiceImpl implements CourseService {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserIdIn(ids);
         List<User> teacherList = userMapper.selectByExample(userExample);
+        //
+        HashMap<Integer,User>teacherMap=new HashMap<Integer,User>(teacherList.size()){
+            {
+                teacherList.forEach(aTeacher->{
+                    put(aTeacher.getUserId(),aTeacher);
+                });
+            }
+        };
         //获取到老师的信息
         List<CourseDTO> result = courseMasterList.stream().map(courseMaster -> {
             CourseDTO courseDTO = new CourseDTO();
-            List<User> teacher = teacherList.stream().filter(userDTO -> userDTO.getUserId().equals(courseMaster.getTeacherId())).collect(Collectors.toList());
-            if (teacher.size()>0) {
-                courseDTO.setTeacherNickname(teacher.get(0).getNickname());
-            }
+            courseDTO.setTeacherNickname(teacherMap.get(courseMaster.getTeacherId()).getNickname());
+            courseDTO.setHeadUrl(teacherMap.get(courseMaster.getTeacherId()).getHeadUrl());
             courseDTO.setCourseName(courseMaster.getCourseName());
             courseDTO.setCourseId(courseMaster.getCourseId());
             courseDTO.setCourseStatus(courseMaster.getCourseStatus());
@@ -301,6 +308,7 @@ public class CourseServiceImpl implements CourseService {
         List<CourseDTO> result = courseMasters.stream().map(courseMaster -> {
             CourseDTO courseDTO = new CourseDTO();
             courseDTO.setTeacherNickname(user.getNickname());
+            courseDTO.setHeadUrl(user.getHeadUrl());
             courseDTO.setCourseName(courseMaster.getCourseName());
             courseDTO.setCourseId(courseMaster.getCourseId());
             courseDTO.setCourseStatus(courseMaster.getCourseStatus());
