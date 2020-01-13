@@ -2,6 +2,7 @@ package com.gdou.teaching.mbg.mapper;
 
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.mbg.model.UserExample;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @Version:
  */
 @SpringBootTest
+@Slf4j
 class UserMapperTest {
     @Autowired
     UserMapper userMapper;

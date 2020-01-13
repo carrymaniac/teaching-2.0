@@ -51,8 +51,15 @@ class ExperimentServiceImplTest {
     @Test
     void list() {
         List<ExperimentDTO> list = experimentService.list(1);
-        Assert.isTrue(!list.isEmpty(),"error ");
-        log.info("list: {}",list);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(1);
+
+//        Assert.isTrue(!list.isEmpty(),"error ");
+//        log.info("list: {}",list);
     }
 
     @Test

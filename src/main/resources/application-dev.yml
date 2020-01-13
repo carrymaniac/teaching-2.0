@@ -44,3 +44,14 @@ pagehelper:
   params: count=countSql
 logging:
   config: classpath:logback-dev.xml
+#caffeine缓存的参数
+caffeine:
+  course:
+    #热点数据的最大数量
+    maxSize: 15
+    #淘汰时间
+    expire-seconds: 180
+  experiment:
+    maxSize: 15
+    expire-seconds: 180
+
