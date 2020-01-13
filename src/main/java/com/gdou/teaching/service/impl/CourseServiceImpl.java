@@ -253,7 +253,7 @@ public class CourseServiceImpl implements CourseService {
             Integer courseId = achievement.getCourseId();
             return courseId;
         }).collect(Collectors.toList());
-        //获取选修的班级主表ID
+        //获取选修的课程主表ID
         CourseMasterExample courseMasterExample = new CourseMasterExample();
         courseMasterExample.createCriteria().andCourseIdIn(courseIds);
         List<CourseMaster> courseMasterList = courseMasterMapper.selectByExample(courseMasterExample);

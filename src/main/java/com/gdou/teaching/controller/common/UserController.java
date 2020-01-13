@@ -116,9 +116,9 @@ public class UserController {
             UserDTO userByUserId = userService.getUserDetailByUserId(userId);
             UserVO userVO = new UserVO();
             BeanUtils.copyProperties(userByUserId, userVO);
-            if (userByUserId.getUserIdent().equals(UserIdentEnum.SUTUDENT.getCode())) {
+            if (userByUserId.getUserIdent().equals(UserIdentEnum.SUTUDENT.getCode().byteValue())) {
                 userVO.setUserIdent("学生");
-            } else if (userByUserId.getUserIdent().equals(UserIdentEnum.TEACHER.getCode())) {
+            } else if (userByUserId.getUserIdent().equals(UserIdentEnum.TEACHER.getCode().byteValue())) {
                 userVO.setUserIdent("老师");
             } else {
                 userVO.setUserIdent("管理员");
