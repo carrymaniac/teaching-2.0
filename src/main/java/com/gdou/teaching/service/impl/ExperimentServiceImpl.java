@@ -94,6 +94,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     public ExperimentDTO detailFromDB(Integer experimentId) {
         //需要查询的数据有：
         // 主表数据 副表detail数据 实验文件数据
+        log.info("load detail from DB.");
         ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
         if(experimentMaster==null){
             log.info("[ExperimentServiceImpl]-datail查询实验详情信息,实验主表不存在,experimentId={}",experimentId);

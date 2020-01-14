@@ -5,7 +5,6 @@ import com.gdou.teaching.Enum.*;
 import com.gdou.teaching.dataobject.*;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
-import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.Achievement;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
