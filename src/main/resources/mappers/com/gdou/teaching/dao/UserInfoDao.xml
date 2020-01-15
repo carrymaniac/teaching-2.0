@@ -4,11 +4,11 @@
 
 <mapper namespace="com.gdou.teaching.dao.UserInfoDao">
     <sql id="table">user_info</sql>
-    <sql id="selectFields">user_info_id,user_id,mail, phone,password,college,series,major,create_time,update_time</sql>
+    <sql id="selectFields">user_info_id,user_id,mail,phone,password,college,series,major,create_time,update_time</sql>
     <sql id="insertFields">user_id,mail,phone,college,series,major</sql>
 
 
-    <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="user_info_id">
+    <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="userInfoId">
         INSERT INTO <include refid="table"/>
         (<include refid="insertFields"/>)
         VALUES
