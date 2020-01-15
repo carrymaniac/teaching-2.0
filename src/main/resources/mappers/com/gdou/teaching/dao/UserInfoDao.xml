@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.gdou.teaching.dao.UserInfoDao">
+    <sql id="table">user_info</sql>
+    <sql id="selectFields">user_info_id,user_id,mail, phone,password,college,series,major,create_time,update_time</sql>
+    <sql id="insertFields">user_id,mail,phone,college,series,major</sql>
+
+
+    <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="user_info_id">
+        INSERT INTO <include refid="table"/>
+        (<include refid="insertFields"/>)
+        VALUES
+        <foreach collection="list" item="userInfo" index="index" separator=",">
+            (#{userInfo.userId},#{userInfo.mail},#{userInfo.phone},#{userInfo.college},#{userInfo.series},#{userInfo.major})
+        </foreach>
+    </insert>
+
+</mapper>

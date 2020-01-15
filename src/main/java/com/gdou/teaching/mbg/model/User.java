@@ -1,11 +1,13 @@
 package com.gdou.teaching.mbg.model;
 
+
+import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 import java.util.Date;
 
 public class User implements Serializable {
     private Integer userId;
-
     /**
      * 用户名
      *
@@ -75,6 +77,9 @@ public class User implements Serializable {
      * @mbggenerated
      */
     private Date updateTime;
+
+
+
 
     private static final long serialVersionUID = 1L;
 

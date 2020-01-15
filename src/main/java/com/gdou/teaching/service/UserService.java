@@ -65,6 +65,16 @@ public interface UserService {
     Boolean addUserByBatch(List<User> users);
 
     /**
+     * 批量增加用户信息
+     * @param userIdList
+     * @param college
+     * @param series
+     * @param major
+     * @return
+     */
+    Boolean addUserInfoByBatch(List<Integer> userIdList,String college,String series,String major);
+
+    /**
      * 通过用户工号学号，批量注销用户
      * @param userId
      * @return
@@ -118,4 +128,6 @@ public interface UserService {
      * @return
      */
     Boolean resetPassword(Integer userId,String newPassword);
+
+
 }

@@ -72,6 +72,18 @@ public class AdminTeacherController {
         return ResultVOUtil.success();
     }
 
+    @ResponseBody
+//    @Auth(user=UserIdentEnum.ADMIN)
+    @PostMapping("/addTeacherByBatch")
+    public ResultVO addTeacherByBatch(@RequestBody List<User> userList){
+        userList.forEach(user->{
+            user.setClassId(0);
+            user.setUserIdent(UserIdentEnum.TEACHER.getCode().byteValue());
+        });
+        userService.addUserByBatch(userList);
+        return ResultVOUtil.success();
+    }
+
 
     @ResponseBody
 //    @Auth(user=UserIdentEnum.ADMIN)
@@ -84,4 +96,5 @@ public class AdminTeacherController {
         map.put("courseList",courseByUserId);
         return ResultVOUtil.success(map);
     }
+
 }

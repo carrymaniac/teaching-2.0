@@ -4,6 +4,7 @@ import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.UserDao;
+import com.gdou.teaching.dao.UserInfoDao;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.ClassMapper;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -50,6 +52,8 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     @Autowired
     UserDao userDao;
+    @Autowired
+    UserInfoDao userInfoDao;
     @Autowired
     UserInfoMapper userInfoMapper;
     @Autowired
@@ -132,7 +136,18 @@ public class UserServiceImpl implements UserService {
         return userDao.insertList(userList)==userList.size();
     }
 
-
+    @Override
+    public Boolean addUserInfoByBatch(List<Integer> userIdList, String college, String series, String major) {
+        List<UserInfo> userInfoList=userIdList.stream().map(userId -> {
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserId(userId);
+            userInfo.setCollege(college);
+            userInfo.setSeries(series);
+            userInfo.setMajor(major);
+            return userInfo;
+        }).collect(Collectors.toList());
+        return userInfoDao.insertList(userInfoList)==userIdList.size();
+    }
 
     @Override
     public Boolean deleteUserByBatch(List<Integer> userIds) {
