@@ -115,8 +115,8 @@ public class TeacherCourseController {
             if(userDTOS!=null&&!userDTOS.isEmpty()){
                 List<Evaluation> evaluationList = collect.get(map.get("classId")).stream().map(student -> {
                     Evaluation evaluation=new Evaluation();
-                    evaluation.setId(map.get("classId").toString()+"-"+student.getUserId().toString());
                     evaluation.setPid(map.get("classId").toString());
+                    evaluation.setId(evaluation.getPid()+"-"+student.getUserId().toString());
                     evaluation.setLabel(student.getNickname());
                     return evaluation;
                 }).collect(Collectors.toList());
@@ -182,8 +182,8 @@ public class TeacherCourseController {
                 if(userDTOListFromAble!=null&&!userDTOListFromAble.isEmpty()){
                     List<Evaluation> userVOList = userDTOListFromAble.stream().map(student -> {
                         Evaluation userVO = new Evaluation();
-                        userVO.setId(clazz.get("classId").toString()+"-"+student.getUserId().toString());
-                        userVO.setPid(student.getUserId().toString());
+                        userVO.setPid(clazz.get("classId").toString());
+                        userVO.setId(userVO.getPid()+"-"+student.getUserId().toString());
                         userVO.setLabel(student.getNickname());
                         return userVO;
                     }).collect(Collectors.toList());
@@ -200,9 +200,9 @@ public class TeacherCourseController {
                 if(userDTOListFromHad!=null&&!userDTOListFromHad.isEmpty()){
                     List<Evaluation> userVOList = userDTOListFromHad.stream().map(student -> {
                         Evaluation userVO = new Evaluation();
-                        userVO.setId(clazz.get("classId").toString()+"-"+student.getUserId().toString());
+                        userVO.setPid(clazz.get("classId").toString());
+                        userVO.setId(userVO.getPid()+"-"+student.getUserId().toString());
                         userVO.setLabel(student.getNickname());
-                        userVO.setPid(student.getUserId().toString());
                         return userVO;
                     }).collect(Collectors.toList());
                     clazzMapHad.setChildren(userVOList);
