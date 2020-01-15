@@ -33,7 +33,6 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.gdou.teaching.Enum.UserIdentEnum.TEACHER;
 
 /**
  * @ProjectName: teaching
@@ -134,7 +133,6 @@ public class TeacherCourseController {
      * @param
      * @return
      */
-    //todo  当查询的课程无学生选修时,会返回已选的空的班级列表(待修复)
     @GetMapping("/manage/{courseId}")
     @Auth
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
@@ -165,11 +163,11 @@ public class TeacherCourseController {
         if(hadStudentList==null){
             hadStudentList=new ArrayList<>();
         }
+        //将学生按班级ID分组
         List<UserDTO> ableStudentList = collect.get(false);
         if(ableStudentList==null){
             ableStudentList=new ArrayList<>();
         }
-        //将学生按班级ID分组
         Map<Integer, List<UserDTO>> ableStudentListGroupByClassId = ableStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
         Map<Integer, List<UserDTO>> hadStudentListGroupByClassId = hadStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
 
@@ -177,38 +175,42 @@ public class TeacherCourseController {
         List<Evaluation> studentHadSelect= new ArrayList();
 
         for(TreeMap clazz:clazzList){
-            Evaluation clazzMapForSelect=new Evaluation();
-            Evaluation clazzMapHad=new Evaluation();
-            //获取归属classId下的未选课的学生，并处理为userVO
-            List<UserDTO> userDTOListFromAble = ableStudentListGroupByClassId.get(clazz.get("classId"));
-            if(userDTOListFromAble!=null&&!userDTOListFromAble.isEmpty()){
-                List<Evaluation> userVOList = userDTOListFromAble.stream().map(student -> {
-                    Evaluation userVO = new Evaluation();
-                    userVO.setId(clazz.get("classId").toString()+"-"+student.getUserId().toString());
-                    userVO.setPid(student.getUserId().toString());
-                    userVO.setLabel(student.getNickname());
-                    return userVO;
-                }).collect(Collectors.toList());
-                clazzMapForSelect.setChildren(userVOList);
+            if(!ableStudentListGroupByClassId.isEmpty()){
+                Evaluation clazzMapForSelect=new Evaluation();
+                //获取归属classId下的未选课的学生，并处理为userVO
+                List<UserDTO> userDTOListFromAble = ableStudentListGroupByClassId.get(clazz.get("classId"));
+                if(userDTOListFromAble!=null&&!userDTOListFromAble.isEmpty()){
+                    List<Evaluation> userVOList = userDTOListFromAble.stream().map(student -> {
+                        Evaluation userVO = new Evaluation();
+                        userVO.setId(clazz.get("classId").toString()+"-"+student.getUserId().toString());
+                        userVO.setPid(student.getUserId().toString());
+                        userVO.setLabel(student.getNickname());
+                        return userVO;
+                    }).collect(Collectors.toList());
+                    clazzMapForSelect.setChildren(userVOList);
+                }
+                clazzMapForSelect.setId(clazz.get("classId").toString());
+                clazzMapForSelect.setLabel(clazz.get("className").toString());
+                studentForSelect.add(clazzMapForSelect);
             }
-            clazzMapForSelect.setId(clazz.get("classId").toString());
-            clazzMapForSelect.setLabel(clazz.get("className").toString());
-            studentForSelect.add(clazzMapForSelect);
-            //获取归属classId下的已经选课的学生，并处理为userVO
-            List<UserDTO> userDTOListFromHad = hadStudentListGroupByClassId.get(clazz.get("classId"));
-            if(userDTOListFromHad!=null&&!userDTOListFromHad.isEmpty()){
-                List<Evaluation> userVOList = userDTOListFromHad.stream().map(student -> {
-                    Evaluation userVO = new Evaluation();
-                    userVO.setId(clazz.get("classId").toString()+"-"+student.getUserId().toString());
-                    userVO.setLabel(student.getNickname());
-                    userVO.setPid(student.getUserId().toString());
-                    return userVO;
-                }).collect(Collectors.toList());
-                clazzMapHad.setChildren(userVOList);
+            if(!hadStudentListGroupByClassId.isEmpty()){
+                Evaluation clazzMapHad=new Evaluation();
+                //获取归属classId下的已经选课的学生，并处理为userVO
+                List<UserDTO> userDTOListFromHad = hadStudentListGroupByClassId.get(clazz.get("classId"));
+                if(userDTOListFromHad!=null&&!userDTOListFromHad.isEmpty()){
+                    List<Evaluation> userVOList = userDTOListFromHad.stream().map(student -> {
+                        Evaluation userVO = new Evaluation();
+                        userVO.setId(clazz.get("classId").toString()+"-"+student.getUserId().toString());
+                        userVO.setLabel(student.getNickname());
+                        userVO.setPid(student.getUserId().toString());
+                        return userVO;
+                    }).collect(Collectors.toList());
+                    clazzMapHad.setChildren(userVOList);
+                }
+                clazzMapHad.setId(clazz.get("classId").toString());
+                clazzMapHad.setLabel(clazz.get("className").toString());
+                studentHadSelect.add(clazzMapHad);
             }
-            clazzMapHad.setId(clazz.get("classId").toString());
-            clazzMapHad.setLabel(clazz.get("className").toString());
-            studentHadSelect.add(clazzMapHad);
         }
         map.put("studentForSelect", studentForSelect);
         map.put("studentHadSelect",studentHadSelect);
