@@ -132,6 +132,13 @@ public class UserServiceImpl implements UserService {
             sb.append(" 已存在,请检查数据是否有误");
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
+        userList.forEach(user -> {
+            String salt = UUID.randomUUID().toString().substring(0,5);
+            user.setSalt(salt);
+            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+        });
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
         return userDao.insertList(userList)==userList.size();
     }
