@@ -33,8 +33,11 @@ public class RecordVO {
     /**
      *  用户实验提交记录文本内容
      */
-
     private String userExperimentText;
+    /**
+     * 用户头像
+     */
+    private String headUrl;
     /**
      * 用户实验提交记录文件内容
      */
