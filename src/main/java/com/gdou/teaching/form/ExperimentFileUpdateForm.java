@@ -3,7 +3,6 @@ package com.gdou.teaching.form;
 import com.gdou.teaching.dto.FileDTO;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 

@@ -34,7 +34,7 @@ class ClassServiceImplTest {
     @Test
     @Transactional
     void registerClass() {
-        Class clazz = classService.registerClass("信管1164");
+        Class clazz = classService.registerClass("信管1164",0);
     }
 
     @Test

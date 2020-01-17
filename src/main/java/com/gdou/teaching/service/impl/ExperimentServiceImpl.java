@@ -51,23 +51,27 @@ public class ExperimentServiceImpl implements ExperimentService {
     ExperimentAnswerMapper experimentAnswerMapper;
     @Override
     public ExperimentDTO detail(Integer experimentId) {
+        ExperimentDTO experimentDTO = new ExperimentDTO();
         //需要查询的数据有：
-        // 主表数据 副表detail数据 实验文件数据
+        // 主表数据 副表detail数据 实验文件数据 实验答案数据
         ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
         if(experimentMaster==null){
             log.info("[ExperimentServiceImpl]-datail查询实验详情信息,实验主表不存在,experimentId={}",experimentId);
             throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
         }
         ExperimentDetail experimentDetail = experimentDetailMapper.selectByPrimaryKey(experimentMaster.getExperimentDetailId());
-        if(experimentDetail==null){
-            log.info("[ExperimentServiceImpl]-datail查询实验详情信息,实验详情表不存在,experimentDetailId={}",experimentMaster.getExperimentDetailId());
-            throw new TeachingException(ResultEnum.EXPERIMENT_DETAIL_NOT_EXIST);
+        if(experimentDetail!=null){
+            BeanUtils.copyProperties(experimentDetail,experimentDTO);
         }
-        ExperimentDTO experimentDTO = new ExperimentDTO();
+        ExperimentAnswer experimentAnswer =experimentAnswerMapper.selectByPrimaryKey(experimentMaster.getExperimentAnswerId());
+        if(experimentAnswer!=null){
+            BeanUtils.copyProperties(experimentAnswer,experimentDTO);
+        }
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
         experimentDTO.setExperimentDetailFile(fileDTOList);
+        List<FileDTO> answerFiles = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(), experimentMaster.getExperimentAnswerId());
+        experimentDTO.setExperimentAnswerFile(answerFiles);
         //属性拷贝
-        BeanUtils.copyProperties(experimentDetail,experimentDTO);
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
         return experimentDTO;
     }
@@ -141,6 +145,29 @@ public class ExperimentServiceImpl implements ExperimentService {
         return experimentDTO;
     }
 
+    @Override
+    public boolean autoUnLock(Integer experimentId) {
+        ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
+        ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
+        //取出courseId相同,大于experimentId的实验.
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(experimentMaster.getCourseId()).andExperimentIdGreaterThan(experimentId);
+        List<ExperimentMaster> experimentMasterList = experimentMasterMapper.selectByExample(experimentMasterExample);
+        if(experimentMasterList==null||experimentMasterList.isEmpty()){
+            return false;
+        }
+        Integer target=Integer.MAX_VALUE;
+        for(ExperimentMaster experiment:experimentMasterList){
+             if (experiment.getExperimentId()<target){
+                 target=experiment.getExperimentId();
+             }
+        }
+        try{
+            unlock(target);
+        }catch (TeachingException e){
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
@@ -303,7 +330,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     @Override
-    public void updateCommitNumber(Integer experimentId) {
+    public ExperimentMaster updateCommitNumber(Integer experimentId) {
         UserReExperimentExample example = new UserReExperimentExample();
         example.createCriteria().andExperimentIdEqualTo(experimentId);
         int i = userReExperimentMapper.countByExample(example);
@@ -311,5 +338,6 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMaster.setExperimentId(experimentId);
         experimentMaster.setExperimentCommitNum(i);
         experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
+        return experimentMasterMapper.selectByPrimaryKey(experimentId);
     }
 }

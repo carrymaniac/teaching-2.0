@@ -1,8 +1,10 @@
 package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
+import com.gdou.teaching.form.ClazzRegisterForm;
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.AchievementService;
@@ -12,14 +14,19 @@ import com.gdou.teaching.service.UserService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * @ProjectName: teaching
@@ -32,6 +39,7 @@ import java.util.TreeMap;
  */
 @Controller
 @RequestMapping("admin/class")
+@Slf4j
 public class AdminClassController {
 
     @Autowired
@@ -79,5 +87,26 @@ public class AdminClassController {
         return ResultVOUtil.success(map);
     }
 
+    @ResponseBody
+//    @Auth(user=UserIdentEnum.ADMIN)
+    @PostMapping("/addStudentByBatch")
+    public ResultVO addStudentByBatch(@RequestBody @Valid ClazzRegisterForm form,
+                                      BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            log.error("参数格式错误：{}" + form);
+            return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
+        }
+        List<User> userList = form.getUserList();
+        //注册班级
+        Class aClass = classService.registerClass(form.getClassName(),userList.size());
 
+        userList.forEach(user->{
+            user.setClassId(aClass.getClassId());
+            user.setUserIdent(UserIdentEnum.SUTUDENT.getCode().byteValue());
+        });
+        userService.addUserByBatch(userList);
+        List<Integer> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+        userService.addUserInfoByBatch(userIdList,form.getCollege(),form.getSeries(),form.getMajor());
+        return ResultVOUtil.success();
+    }
 }
