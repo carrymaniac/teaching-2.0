@@ -6,6 +6,7 @@ import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.RecordForm;
+import com.gdou.teaching.mbg.model.ExperimentMaster;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.service.RecordService;
@@ -67,9 +68,14 @@ public class StudentRecordController {
         }
         try {
             recordService.save(recordDTO);
+            //UserExperimentId为空,为新增提交记录.
             if(form.getUserExperimentId()==null){
                 //更新提交人数
-                experimentService.updateCommitNumber(form.getExperimentId());
+                ExperimentMaster experimentMaster = experimentService.updateCommitNumber(form.getExperimentId());
+                //判断解锁阈值, 提交人数/总人数>解锁阈值,则自动解锁下一个实验.
+                if (experimentMaster.getExperimentCommitNum()*1.0/experimentMaster.getExperimentParticipationNum()>=experimentMaster.getValve()){
+                    experimentService.autoUnLock(form.getExperimentId());
+                }
             }
         } catch (TeachingException e) {
             log.error("保存记录,发生异常:{}", e);

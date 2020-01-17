@@ -145,6 +145,29 @@ public class ExperimentServiceImpl implements ExperimentService {
         return experimentDTO;
     }
 
+    @Override
+    public boolean autoUnLock(Integer experimentId) {
+        ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
+        ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
+        //取出courseId相同,大于experimentId的实验.
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(experimentMaster.getCourseId()).andExperimentIdGreaterThan(experimentId);
+        List<ExperimentMaster> experimentMasterList = experimentMasterMapper.selectByExample(experimentMasterExample);
+        if(experimentMasterList==null||experimentMasterList.isEmpty()){
+            return false;
+        }
+        Integer target=Integer.MAX_VALUE;
+        for(ExperimentMaster experiment:experimentMasterList){
+             if (experiment.getExperimentId()<target){
+                 target=experiment.getExperimentId();
+             }
+        }
+        try{
+            unlock(target);
+        }catch (TeachingException e){
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
@@ -307,7 +330,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     @Override
-    public void updateCommitNumber(Integer experimentId) {
+    public ExperimentMaster updateCommitNumber(Integer experimentId) {
         UserReExperimentExample example = new UserReExperimentExample();
         example.createCriteria().andExperimentIdEqualTo(experimentId);
         int i = userReExperimentMapper.countByExample(example);
@@ -315,5 +338,6 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMaster.setExperimentId(experimentId);
         experimentMaster.setExperimentCommitNum(i);
         experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
+        return experimentMasterMapper.selectByPrimaryKey(experimentId);
     }
 }

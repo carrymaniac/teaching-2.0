@@ -1,6 +1,7 @@
 package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.Class;
@@ -79,5 +80,15 @@ public class AdminClassController {
         return ResultVOUtil.success(map);
     }
 
-
+//    @ResponseBody
+////    @Auth(user=UserIdentEnum.ADMIN)
+//    @PostMapping("/addStudentByBatch")
+//    public ResultVO addStudentByBatch(@RequestBody List<User> userList,){
+//        userList.forEach(user->{
+//            user.setClassId();
+//            user.setUserIdent(UserIdentEnum.SUTUDENT.getCode().byteValue());
+//        });
+//        userService.addUserByBatch(userList);
+//        return ResultVOUtil.success();
+//    }
 }
