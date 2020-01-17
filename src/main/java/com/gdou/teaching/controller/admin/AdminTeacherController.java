@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ProjectName: teaching
@@ -81,6 +82,8 @@ public class AdminTeacherController {
             user.setUserIdent(UserIdentEnum.TEACHER.getCode().byteValue());
         });
         userService.addUserByBatch(userList);
+        List<Integer> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+        userService.addUserInfoByBatch(userIdList,"","","");
         return ResultVOUtil.success();
     }
 

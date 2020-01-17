@@ -17,10 +17,11 @@ public interface ClassService {
 
     /**
      * 注册一个班级
-     * @param clazzName 班级名
+     * @param clazzName  班级名
+     * @param classSize  班级人数
      * @return
      */
-    Class registerClass(String clazzName);
+    Class registerClass(String clazzName,Integer classSize);
 
     Class getClassByClazzId(Integer classId);
 

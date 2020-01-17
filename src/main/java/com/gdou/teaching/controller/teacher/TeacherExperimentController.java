@@ -133,6 +133,7 @@ public class TeacherExperimentController {
         experimentService.updateExperimentDetail(experimentDTO);
         return ResultVOUtil.success();
     }
+
     @PostMapping("/updateExperimentFile")
     @Auth
     public ResultVO updateExperimentFile(@RequestBody @Valid ExperimentFileUpdateForm form,

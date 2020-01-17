@@ -1,8 +1,10 @@
 package com.gdou.teaching.form;
 
+import com.gdou.teaching.mbg.model.User;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author carrymaniac
@@ -13,7 +15,22 @@ import javax.validation.constraints.NotNull;
 public class ClazzRegisterForm {
     @NotNull
     private String className;
+    /**
+     * 学院名
+     */
     @NotNull
-    private String userList;
+    private String college;
+    /**
+     * 系名
+     */
+    @NotNull
+    private String series;
+    /**
+     * 专业名
+     */
+    @NotNull
+    private String major;
 
+    @NotNull
+    private List<User> userList;
 }

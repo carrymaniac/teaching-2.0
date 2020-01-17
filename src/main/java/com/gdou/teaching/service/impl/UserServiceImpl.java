@@ -115,15 +115,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean addUserByBatch(List<User> users) {
-        List<String> userNumbers = users.stream().map(User::getUserNumber).collect(Collectors.toList());
+    public Boolean addUserByBatch(List<User> userList) {
+        List<String> userNumbers = userList.stream().map(User::getUserNumber).collect(Collectors.toList());
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberIn(userNumbers);
-        List<User> userList = userMapper.selectByExample(userExample);
-        if(userList!=null&&!userList.isEmpty()){
+        List<User> users = userMapper.selectByExample(userExample);
+        if(users!=null&&!users.isEmpty()){
             StringBuilder sb = new StringBuilder();
             sb.append("用户");
-            userList.forEach(user -> {
+            users.forEach(user -> {
                 sb.append(" 学号-").append(user.getUserNumber());
                 sb.append(" 姓名-").append(user.getNickname());
                 sb.append(",");
@@ -133,6 +133,13 @@ public class UserServiceImpl implements UserService {
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
+        userList.forEach(user -> {
+            String salt = UUID.randomUUID().toString().substring(0,5);
+            user.setSalt(salt);
+            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png",new Random().nextInt(1000)));
+            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+        });
         return userDao.insertList(userList)==userList.size();
     }
 

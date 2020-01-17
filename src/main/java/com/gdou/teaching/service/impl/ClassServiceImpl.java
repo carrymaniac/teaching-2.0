@@ -39,7 +39,7 @@ public class ClassServiceImpl implements ClassService {
     @Autowired
     UserMapper userMapper;
     @Override
-    public Class registerClass(String clazzName) {
+    public Class registerClass(String clazzName,Integer classSize) {
         Class clazz = new Class();
         ClassExample classExample = new ClassExample();
         classExample.createCriteria().andClassNameEqualTo(clazzName).andClassStatusEqualTo(ClazzStatusEnum.NORMAL.getCode().byteValue());
@@ -48,7 +48,7 @@ public class ClassServiceImpl implements ClassService {
             throw new TeachingException(ResultEnum.CLASSNAME_ERROR);
         }
         clazz.setClassName(clazzName);
-        clazz.setClassSize(0);
+        clazz.setClassSize(classSize);
         clazz.setClassStatus(ClazzStatusEnum.NORMAL.getCode().byteValue());
         classMapper.insert(clazz);
         return clazz;
