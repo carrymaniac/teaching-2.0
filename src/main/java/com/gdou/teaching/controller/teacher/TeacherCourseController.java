@@ -14,6 +14,7 @@ import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.CourseForm;
+import com.gdou.teaching.form.CourseInfoUpdateForm;
 import com.gdou.teaching.form.CourseUpdateStuForm;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.*;
@@ -218,7 +219,7 @@ public class TeacherCourseController {
     }
 
     /**
-     * 保存课程信息
+     * 新增课程  保存信息
      * @param form
      * @param bindingResult
      * @return
@@ -227,35 +228,51 @@ public class TeacherCourseController {
     @Auth
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
+        User user = hostHolder.getUser();
+        if (bindingResult.hasErrors()) {
+            log.error("参数格式错误：{}" + form);
+            return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
+        }
+        CourseDTO courseDTO = new CourseDTO();
+        courseDTO.setTeacherId(user.getUserId());
+        BeanUtils.copyProperties(form, courseDTO);
+        courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
+        courseDTO.setCourseNumber(0);
+        courseService.save(courseDTO);
+        //  todo 异步更新成绩表 addAchievementByClazzId
+        List<String> addStudentIdList = form.getAddStudentIdList();
+        //过滤多余的字符
+        List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
+            String[] split = studentId.trim().split("-");
+            return Integer.parseInt(split[split.length-1]);
+        }).collect(Collectors.toList());
+        if(studentIdList!=null&&!studentIdList.isEmpty()){
+            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+            // 异步更新课程及其下属实验的上课人数
+            courseService.updateNumber(courseDTO.getCourseId());
+        }
+        return ResultVOUtil.success();
+    }
+
+    /**
+     * 更新课程基本信息
+     * @param form
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("/updateCourseInfo")
+    @Auth
+    public ResultVO updateCourseInfo(@RequestBody @Valid CourseInfoUpdateForm form,
+                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数格式错误：{}" + form);
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(form, courseDTO);
-        if(form.getCourseId()==null){
-            courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
-            courseDTO.setCourseNumber(0);
-        }
         courseService.save(courseDTO);
-         // 新增课程课程时执行
-        if (form.getCourseId()==null){
-            //  todo 异步更新成绩表 addAchievementByClazzId
-            List<String> addStudentIdList = form.getAddStudentIdList();
-            //过滤多余的字符
-            List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
-                String[] split = studentId.trim().split("-");
-                return Integer.parseInt(split[split.length-1]);
-            }).collect(Collectors.toList());
-            if(studentIdList!=null&&!studentIdList.isEmpty()){
-                achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
-                // 异步更新课程及其下属实验的上课人数
-                courseService.updateNumber(courseDTO.getCourseId());
-            }
-        }
         return ResultVOUtil.success();
     }
-
     /**
      * 更新课程人员
      * @param form
