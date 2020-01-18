@@ -11,6 +11,8 @@ class ApplicationTests {
     void contextLoads() {
         String s = CommonUtil.genConversationId(3, 4);
         System.out.println(s);
+        int toId = CommonUtil.getToId("3-4", 3);
+        System.out.println(toId);
     }
 
 }

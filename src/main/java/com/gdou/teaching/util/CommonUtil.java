@@ -20,4 +20,9 @@ public class CommonUtil {
             return fromId+"-"+toId;
         }
     }
+
+    public static int getToId(String conversationId,int fromId){
+        String[] split = conversationId.split("-");
+        return split[0].equals(String.valueOf(fromId))?Integer.valueOf(split[1]):Integer.valueOf(split[0]);
+    }
 }

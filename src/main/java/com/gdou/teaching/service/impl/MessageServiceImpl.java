@@ -15,6 +15,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ManagedList;
+import org.springframework.data.annotation.Transient;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public int addMessage(Integer fromId, Integer toId, String content) {
+    public Message addMessage(Integer fromId, Integer toId, String content) {
         String s = CommonUtil.genConversationId(fromId, toId);
         Message message = new Message();
         message.setToId(toId);
@@ -58,7 +60,8 @@ public class MessageServiceImpl implements MessageService {
         message.setContent(content);
         message.setStatus(MessageStatusEnum.UNREAD.getCode());
         message.setConversationId(s);
-        return messageMapper.insert(message);
+        messageMapper.insert(message);
+        return message;
     }
 
     @Override
@@ -116,13 +119,23 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public PageInfo getConversation(String conversationId, int page, int size) {
+    public PageInfo<Message> getConversation(String conversationId, int page, int size) {
         MessageExample example = new MessageExample();
         example.createCriteria().andConversationIdEqualTo(conversationId);
         example.setOrderByClause("message_id DESC");
         PageHelper.startPage(page,size);
         List<Message> messages = messageMapper.selectByExample(example);
-        PageInfo pageInfo = new PageInfo(messages);
+        PageInfo<Message> pageInfo = new PageInfo(messages);
         return pageInfo;
+    }
+
+    @Override
+    @Async
+    public int setMessageRead(List<Integer> messageId) {
+        MessageExample example = new MessageExample();
+        example.createCriteria().andMessageIdIn(messageId);
+        Message message = new Message();
+        message.setStatus(MessageStatusEnum.READ.getCode());
+        return messageMapper.updateByExampleSelective(message,example);
     }
 }

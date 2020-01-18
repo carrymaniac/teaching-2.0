@@ -27,16 +27,18 @@ public interface MessageService {
     int addMessage(Message message);
 
     /**
-     *
+     * 增加一条新的消息
      * @param fromId
      * @param toId
      * @param content
      * @return
      */
-    int addMessage(Integer fromId,Integer toId,String content);
+    Message addMessage(Integer fromId,Integer toId,String content);
 
     /**
      * 获取系统通知
+     * @param userId
+     * @return
      */
     List<HashMap> getMessageFromSystem(Integer userId);
 
@@ -55,5 +57,12 @@ public interface MessageService {
      * @param size
      * @return
      */
-    PageInfo getConversation(String conversationId, int page, int size);
+    PageInfo<Message> getConversation(String conversationId, int page, int size);
+
+    /**
+     * 将消息设置为已读
+     * @param messageId
+     * @return
+     */
+    int setMessageRead(List<Integer> messageId);
 }

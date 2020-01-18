@@ -18,8 +18,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EventProducer {
-    @Autowired
-    private KafkaTemplate kafkaTemplate;
+    private final KafkaTemplate kafkaTemplate;
+
+    public EventProducer(KafkaTemplate kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void fireEvent(Event event){
         kafkaTemplate.send(event.getTopic(), JSONObject.toJSONString(event));
