@@ -4,6 +4,7 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.User;
+import com.gdou.teaching.service.UserService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceImplTest {
 
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
     @Test
     void getUserById() {
         User userById = userService.getUserById(17);
@@ -81,6 +82,11 @@ class UserServiceImplTest {
         }catch (TeachingException e){
             log.info(e.getMessage());
         }
+    }
+    @Test
+    void addUserInfoByBatch() {
+        Boolean flag = userService.addUserInfoByBatch(Arrays.asList(3, 9, 10), "数学与计算机学院", "物联网工程系", "信息管理与信息系统");
+        Assert.isTrue(flag);
     }
 
     @Test

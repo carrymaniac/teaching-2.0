@@ -22,10 +22,10 @@ public class CourseUpdateStuForm {
      * 增加上课学生列表(userId)
      */
 
-    private List<Integer> addStudentIdList;
+    private List<String> addStudentIdList;
     /**
      * 删除上课学生列表(userId)
      */
-    private List<Integer> deleteStudentIdList;
+    private List<String> deleteStudentIdList;
 
 }

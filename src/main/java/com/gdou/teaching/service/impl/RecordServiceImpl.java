@@ -70,7 +70,6 @@ public class RecordServiceImpl implements RecordService {
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
         //上次提交过
         if(userReExperiments!=null&&!userReExperiments.isEmpty()){
-
             Byte preStatus = userReExperiments.get(0).getStatus();
             //检查状态
             if(preStatus.equals(RecordStatusEnum.PASS.getCode().byteValue())||preStatus.equals(RecordStatusEnum.LOCK.getCode().byteValue())){
@@ -88,12 +87,13 @@ public class RecordServiceImpl implements RecordService {
                 userReExperimentMapper.updateByPrimaryKeySelective(userReExperiment);
             }
         }
-
-        //进行新增存储记录
-        int insert = userReExperimentMapper.insert(userReExperiment);
-        if (insert<=0){
-            log.error("保存记录,保存实验记录失败,record={}",userReExperiment);
-            throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
+        else{
+            //进行新增存储记录
+            int insert = userReExperimentMapper.insert(userReExperiment);
+            if (insert<=0){
+                log.error("保存记录,保存实验记录失败,record={}",userReExperiment);
+                throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
+            }
         }
         //存储文件
         if(fileDTOList!=null&&!fileDTOList.isEmpty()) {

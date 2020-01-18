@@ -4,6 +4,7 @@ import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.UserDao;
+import com.gdou.teaching.dao.UserInfoDao;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.ClassMapper;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -50,6 +52,8 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
     @Autowired
     UserDao userDao;
+    @Autowired
+    UserInfoDao userInfoDao;
     @Autowired
     UserInfoMapper userInfoMapper;
     @Autowired
@@ -111,15 +115,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean addUserByBatch(List<User> users) {
-        List<String> userNumbers = users.stream().map(User::getUserNumber).collect(Collectors.toList());
+    public Boolean addUserByBatch(List<User> userList) {
+        List<String> userNumbers = userList.stream().map(User::getUserNumber).collect(Collectors.toList());
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberIn(userNumbers);
-        List<User> userList = userMapper.selectByExample(userExample);
-        if(userList!=null&&!userList.isEmpty()){
+        List<User> users = userMapper.selectByExample(userExample);
+        if(users!=null&&!users.isEmpty()){
             StringBuilder sb = new StringBuilder();
             sb.append("用户");
-            userList.forEach(user -> {
+            users.forEach(user -> {
                 sb.append(" 学号-").append(user.getUserNumber());
                 sb.append(" 姓名-").append(user.getNickname());
                 sb.append(",");
@@ -128,11 +132,36 @@ public class UserServiceImpl implements UserService {
             sb.append(" 已存在,请检查数据是否有误");
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
+        userList.forEach(user -> {
+            String salt = UUID.randomUUID().toString().substring(0,5);
+            user.setSalt(salt);
+            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+        });
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
+        userList.forEach(user -> {
+            String salt = UUID.randomUUID().toString().substring(0,5);
+            user.setSalt(salt);
+            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png",new Random().nextInt(1000)));
+            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+        });
         return userDao.insertList(userList)==userList.size();
     }
 
-
+    @Override
+    public Boolean addUserInfoByBatch(List<Integer> userIdList, String college, String series, String major) {
+        List<UserInfo> userInfoList=userIdList.stream().map(userId -> {
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserId(userId);
+            userInfo.setCollege(college);
+            userInfo.setSeries(series);
+            userInfo.setMajor(major);
+            return userInfo;
+        }).collect(Collectors.toList());
+        return userInfoDao.insertList(userInfoList)==userIdList.size();
+    }
 
     @Override
     public Boolean deleteUserByBatch(List<Integer> userIds) {

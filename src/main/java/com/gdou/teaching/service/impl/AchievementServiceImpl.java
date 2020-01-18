@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class AchievementServiceImpl implements AchievementService {
-
     @Autowired
     UserMapper userMapper;
     @Autowired
@@ -146,7 +145,7 @@ public class AchievementServiceImpl implements AchievementService {
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if (achievements==null||achievements.isEmpty()){
             log.info("[AchievementServiceImpl]-getAchievementByCourseId,成绩表信息不存在,courseId:{}",courseId);
-           throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
+            return null;
         }
         //获取老师名字
         Integer teacherId = achievements.get(0).getTeacherId();

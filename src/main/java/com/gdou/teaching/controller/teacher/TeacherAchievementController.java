@@ -119,6 +119,9 @@ public class TeacherAchievementController {
     @Auth
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId,
                               @RequestParam(value = "userId") Integer userId){
+        //获取学生信息
+        User user = userService.getUserById(userId);
+        //获取课程成绩信息
         Achievement achievement = achievementService.getAchievementByUserIdAndCourseId(userId, courseId);
         Double score = achievement.getCourseAchievement();
         //通过课程ID和用户ID获取提交记录列表
@@ -131,10 +134,11 @@ public class TeacherAchievementController {
             ex.put("experimentAchievement", r.getExperimentAchievement().toString());
             return ex;
         }).collect(Collectors.toList());
-        //获取课程成绩信息
         HashMap<String,Object> map = new HashMap<>();
         map.put("experiments",experiments);
         map.put("score",score);
+        map.put("headUrl",user.getHeadUrl());
+        map.put("nickName",user.getNickname());
         return ResultVOUtil.success(map);
     }
 
@@ -220,12 +224,14 @@ public class TeacherAchievementController {
     public ResultVO<RecordVO> detail(@PathVariable(value = "experimentId") Integer experimentId,
                                      @RequestParam(value = "userId") Integer userId) {
         RecordVO recordVO=new RecordVO();
+        User user = userService.getUserById(userId);
         RecordDTO recordDTO = recordService.selectOne(experimentId, userId);
-        BeanUtils.copyProperties(recordDTO,recordVO);
-        User user = userService.getUserById(recordVO.getUserId());
+        if (recordDTO!=null){
+            BeanUtils.copyProperties(recordDTO,recordVO);
+        }
         recordVO.setUserName(user.getNickname());
         recordVO.setUserNumber(user.getUserNumber());
-
+        recordVO.setHeadUrl(user.getHeadUrl());
         return ResultVOUtil.success(recordVO);
     }
 

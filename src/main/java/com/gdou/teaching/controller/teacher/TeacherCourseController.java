@@ -6,6 +6,7 @@ import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.constant.CommonConstant;
+import com.gdou.teaching.dataobject.Evaluation;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.dto.CourseDTO;
@@ -32,7 +33,6 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.gdou.teaching.Enum.UserIdentEnum.TEACHER;
 
 /**
  * @ProjectName: teaching
@@ -93,6 +93,7 @@ public class TeacherCourseController {
 
 
     /**
+     *  树形菜单形式
      * 班级下拉框
      * 返回下拉框所需的数据-包括班级、学生等一系列信息
      * @param
@@ -107,26 +108,26 @@ public class TeacherCourseController {
         List<UserDTO> studentList = userService.getStudentListByClassId(0);
         //分组
         Map<Integer, List<UserDTO>> collect = studentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
-        List<HashMap> list = new ArrayList<>(clazzList.size());
+        List<Evaluation> list = new ArrayList<>(clazzList.size());
         for(TreeMap map:clazzList){
-            HashMap<String,Object> clazzMap=new HashMap<>(3);
+            Evaluation top=new Evaluation();
             List<UserDTO> userDTOS = collect.get(map.get("classId"));
             if(userDTOS!=null&&!userDTOS.isEmpty()){
-                List<UserVO> studentVoList = collect.get(map.get("classId")).stream().map(student -> {
-                    UserVO userVO = new UserVO();
-                    userVO.setUserId(student.getUserId());
-                    userVO.setNickname(student.getNickname());
-                    return userVO;
+                List<Evaluation> evaluationList = collect.get(map.get("classId")).stream().map(student -> {
+                    Evaluation evaluation=new Evaluation();
+                    evaluation.setPid(map.get("classId").toString());
+                    evaluation.setId(evaluation.getPid()+"-"+student.getUserId().toString());
+                    evaluation.setLabel(student.getNickname());
+                    return evaluation;
                 }).collect(Collectors.toList());
-                clazzMap.put("studentList",studentVoList);
+                top.setChildren(evaluationList);
             }
-            clazzMap.put("classId",map.get("classId"));
-            clazzMap.put("className",map.get("className"));
-            list.add(clazzMap);
+            top.setId(map.get("classId").toString());
+            top.setLabel(map.get("className").toString());
+            list.add(top);
         }
         return ResultVOUtil.success(list);
     }
-
     /**
      * 课程学生管理
      * @param
@@ -141,10 +142,14 @@ public class TeacherCourseController {
         //获取所有的学生列表
         List<UserDTO> studentList= userService.getStudentListByClassId(0);
 
+        Set<Integer>hadStudentIdSet;
         //获取已选课程的学生id列表
         List<AchievementDTO> achievementList = achievementService.getAchievementByCourseId(courseId);
-        Set<Integer> hadStudentIdSet = achievementList.stream().map(achievementDTO->achievementDTO.getUserId()).collect(Collectors.toSet());
-
+        if (achievementList!=null){
+            hadStudentIdSet = achievementList.stream().map(achievementDTO->achievementDTO.getUserId()).collect(Collectors.toSet());
+        }else{
+            hadStudentIdSet=new HashSet<>();
+        }
         //处理学生列表，并将其切割为已选该课和未选该课两部分
         Map<Boolean, List<UserDTO>> collect = studentList.stream().map(student -> {
             UserDTO userDTO = new UserDTO();
@@ -155,45 +160,57 @@ public class TeacherCourseController {
         }).collect(Collectors.groupingBy(c -> hadStudentIdSet.contains(c.getUserId())));
         //获取已经选了该课的学生和未选的学生
         List<UserDTO> hadStudentList = collect.get(true);
-        List<UserDTO> ableStudentList = collect.get(false);
+        if(hadStudentList==null){
+            hadStudentList=new ArrayList<>();
+        }
         //将学生按班级ID分组
+        List<UserDTO> ableStudentList = collect.get(false);
+        if(ableStudentList==null){
+            ableStudentList=new ArrayList<>();
+        }
         Map<Integer, List<UserDTO>> ableStudentListGroupByClassId = ableStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
         Map<Integer, List<UserDTO>> hadStudentListGroupByClassId = hadStudentList.stream().collect(Collectors.groupingBy(UserDTO::getClassId));
 
-        List studentForSelect= new ArrayList();
-        List studentHadSelect=new ArrayList();
+        List<Evaluation> studentForSelect= new ArrayList();
+        List<Evaluation> studentHadSelect= new ArrayList();
 
         for(TreeMap clazz:clazzList){
-            HashMap<String,Object> clazzMapforSelect=new HashMap<>(3);
-            HashMap<String,Object> clazzMapHad=new HashMap<>(3);
-            //获取归属classId下的未选课的学生，并处理为userVO
-            List<UserDTO> userDTOListFromAble = ableStudentListGroupByClassId.get(clazz.get("classId"));
-            if(userDTOListFromAble!=null&&!userDTOListFromAble.isEmpty()){
-                List<UserVO> userVOList = userDTOListFromAble.stream().map(student -> {
-                    UserVO userVO = new UserVO();
-                    userVO.setUserId(student.getUserId());
-                    userVO.setNickname(student.getNickname());
-                    return userVO;
-                }).collect(Collectors.toList());
-                clazzMapforSelect.put("studentList",userVOList);
+            if(!ableStudentListGroupByClassId.isEmpty()){
+                Evaluation clazzMapForSelect=new Evaluation();
+                //获取归属classId下的未选课的学生，并处理为userVO
+                List<UserDTO> userDTOListFromAble = ableStudentListGroupByClassId.get(clazz.get("classId"));
+                if(userDTOListFromAble!=null&&!userDTOListFromAble.isEmpty()){
+                    List<Evaluation> userVOList = userDTOListFromAble.stream().map(student -> {
+                        Evaluation userVO = new Evaluation();
+                        userVO.setPid(clazz.get("classId").toString());
+                        userVO.setId(userVO.getPid()+"-"+student.getUserId().toString());
+                        userVO.setLabel(student.getNickname());
+                        return userVO;
+                    }).collect(Collectors.toList());
+                    clazzMapForSelect.setChildren(userVOList);
+                }
+                clazzMapForSelect.setId(clazz.get("classId").toString());
+                clazzMapForSelect.setLabel(clazz.get("className").toString());
+                studentForSelect.add(clazzMapForSelect);
             }
-            clazzMapforSelect.put("classId",clazz.get("classId"));
-            clazzMapforSelect.put("className",clazz.get("className"));
-            studentForSelect.add(clazzMapforSelect);
-            //获取归属classId下的已经选课的学生，并处理为userVO
-            List<UserDTO> userDTOListFromHad = hadStudentListGroupByClassId.get(clazz.get("classId"));
-            if(userDTOListFromHad!=null&&!userDTOListFromHad.isEmpty()){
-                List<UserVO> userVOList = userDTOListFromHad.stream().map(student -> {
-                    UserVO userVO = new UserVO();
-                    userVO.setUserId(student.getUserId());
-                    userVO.setNickname(student.getNickname());
-                    return userVO;
-                }).collect(Collectors.toList());
-                clazzMapHad.put("studentList",userVOList);
+            if(!hadStudentListGroupByClassId.isEmpty()){
+                Evaluation clazzMapHad=new Evaluation();
+                //获取归属classId下的已经选课的学生，并处理为userVO
+                List<UserDTO> userDTOListFromHad = hadStudentListGroupByClassId.get(clazz.get("classId"));
+                if(userDTOListFromHad!=null&&!userDTOListFromHad.isEmpty()){
+                    List<Evaluation> userVOList = userDTOListFromHad.stream().map(student -> {
+                        Evaluation userVO = new Evaluation();
+                        userVO.setPid(clazz.get("classId").toString());
+                        userVO.setId(userVO.getPid()+"-"+student.getUserId().toString());
+                        userVO.setLabel(student.getNickname());
+                        return userVO;
+                    }).collect(Collectors.toList());
+                    clazzMapHad.setChildren(userVOList);
+                }
+                clazzMapHad.setId(clazz.get("classId").toString());
+                clazzMapHad.setLabel(clazz.get("className").toString());
+                studentHadSelect.add(clazzMapHad);
             }
-            clazzMapHad.put("classId",clazz.get("classId"));
-            clazzMapHad.put("className",clazz.get("className"));
-            studentHadSelect.add(clazzMapHad);
         }
         map.put("studentForSelect", studentForSelect);
         map.put("studentHadSelect",studentHadSelect);
@@ -224,7 +241,12 @@ public class TeacherCourseController {
          // 新增课程课程时执行
         if (form.getCourseId()==null){
             //  todo 异步更新成绩表 addAchievementByClazzId
-            List<Integer> studentIdList = form.getAddStudentIdList();
+            List<String> addStudentIdList = form.getAddStudentIdList();
+            //过滤多余的字符
+            List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
+                String[] split = studentId.trim().split("-");
+                return Integer.parseInt(split[split.length-1]);
+            }).collect(Collectors.toList());
             if(studentIdList!=null&&!studentIdList.isEmpty()){
                 achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
                 // 异步更新课程及其下属实验的上课人数
@@ -249,12 +271,24 @@ public class TeacherCourseController {
         }
         //检查主表是否存在
         courseService.info(form.getCourseId());
+        List<String> addStudentIdList = form.getAddStudentIdList();
+        List<String> deleteStudentIdList = form.getDeleteStudentIdList();
         //修改
-        if (form.getAddStudentIdList()!=null && !form.getAddStudentIdList().isEmpty()){
-            achievementService.addAchievementByStudentList(form.getCourseId(), form.getAddStudentIdList());
+        if (addStudentIdList!=null && !addStudentIdList.isEmpty()){
+            //过滤多余的字符
+            List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
+                String[] split = studentId.trim().split("-");
+                return Integer.parseInt(split[split.length-1]);
+            }).collect(Collectors.toList());
+            achievementService.addAchievementByStudentList(form.getCourseId(), studentIdList);
         }
-        if (form.getDeleteStudentIdList()!=null &&!form.getDeleteStudentIdList().isEmpty()){
-            achievementService.deleteAchievementByStudentList(form.getCourseId(), form.getDeleteStudentIdList());
+        if (deleteStudentIdList!=null &&!deleteStudentIdList.isEmpty()){
+            //过滤多余的字符
+            List<Integer> studentIdList =deleteStudentIdList.stream().map(studentId->{
+                String[] split = studentId.trim().split("-");
+                return Integer.parseInt(split[split.length-1]);
+            }).collect(Collectors.toList());
+            achievementService.deleteAchievementByStudentList(form.getCourseId(), studentIdList);
         }
         //todo  更新上课及其下属实验的人数
         courseService.updateNumber(form.getCourseId());

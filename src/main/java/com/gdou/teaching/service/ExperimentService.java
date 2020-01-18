@@ -37,6 +37,13 @@ public interface ExperimentService {
     ExperimentDTO add(ExperimentDTO experimentDTO);
 
     /**
+     * 当前实验提交人数大于解锁阈值,自动解锁下一个实验
+     * @param experimentId
+     * @return
+     */
+    boolean autoUnLock(Integer experimentId);
+
+    /**
      * 更新实验基本信息(实验主表)
      * @param experimentDTO
      * @return
@@ -100,6 +107,7 @@ public interface ExperimentService {
     /**
      * 根据experimentId更新实验提交人数
      * @param experimentId
+     * @return 返回更新后的实验主表
      */
-    void updateCommitNumber(Integer experimentId);
+    ExperimentMaster updateCommitNumber(Integer experimentId);
 }

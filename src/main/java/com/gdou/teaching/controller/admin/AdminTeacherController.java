@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ProjectName: teaching
@@ -72,6 +73,20 @@ public class AdminTeacherController {
         return ResultVOUtil.success();
     }
 
+    @ResponseBody
+//    @Auth(user=UserIdentEnum.ADMIN)
+    @PostMapping("/addTeacherByBatch")
+    public ResultVO addTeacherByBatch(@RequestBody List<User> userList){
+        userList.forEach(user->{
+            user.setClassId(0);
+            user.setUserIdent(UserIdentEnum.TEACHER.getCode().byteValue());
+        });
+        userService.addUserByBatch(userList);
+        List<Integer> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+        userService.addUserInfoByBatch(userIdList,"","","");
+        return ResultVOUtil.success();
+    }
+
 
     @ResponseBody
 //    @Auth(user=UserIdentEnum.ADMIN)
@@ -84,4 +99,5 @@ public class AdminTeacherController {
         map.put("courseList",courseByUserId);
         return ResultVOUtil.success(map);
     }
+
 }
