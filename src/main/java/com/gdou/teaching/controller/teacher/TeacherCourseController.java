@@ -224,6 +224,7 @@ public class TeacherCourseController {
      * @param bindingResult
      * @return
      */
+    //todo  课程封面非必传参数,需要在新增时设置一个默认封面
     @PostMapping("/save")
     @Auth
     public ResultVO save(@RequestBody @Valid CourseForm form,

@@ -68,6 +68,9 @@ public class TeacherAchievementController {
         HashMap<String,Object> map=new HashMap<>();
         //根据courseId查出所有AchievementDTO
         List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
+        if (achievementDTOList==null||achievementDTOList.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
         //班级列表
         Set<Integer> classIdSet=new HashSet<>();
         for(AchievementDTO achievementDTO:achievementDTOList){
@@ -150,7 +153,9 @@ public class TeacherAchievementController {
         HashMap<String,Object> map=new HashMap<>();
         //根据课程id  获取实验列表
         List<ExperimentDTO> experimentDTOList= experimentService.list(courseId);
-
+        if(experimentDTOList==null||experimentDTOList.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
         //首次访问--获取实验列表
         if (experimentId==null){
             List<HashMap> experimentList=new ArrayList<>();
@@ -166,21 +171,12 @@ public class TeacherAchievementController {
                 experimentId=(Integer) experimentList.get(0).get("experimentId");
             }
         }
-        List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
+        List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
+        if (achievementDTOList==null||achievementDTOList.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
         //班级列表
-        Set<Integer> classIdSet=recordDTOS.stream().map(recordDTO -> recordDTO.getClassId()).collect(Collectors.toSet());
-        //获取学生列表
-        List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
-            JudgeVO judgeVO=new JudgeVO();
-            User user = userService.getUserById(recordDTO.getUserId());
-            judgeVO.setClassId(user.getClassId());
-            judgeVO.setUserId(user.getUserId());
-            judgeVO.setUserNumber(user.getUserNumber());
-            judgeVO.setNickName(user.getNickname());
-            judgeVO.setUserExperimentId(recordDTO.getUserExperimentId());
-            judgeVO.setStatus(recordDTO.getStatus().intValue());
-            return judgeVO;
-        }).collect(Collectors.toList());
+        Set<Integer> classIdSet=achievementDTOList.stream().map(achievement -> achievement.getClassId()).collect(Collectors.toSet());
         //获取班级列表
         List<HashMap> classList=new ArrayList<>();
         if(classId==null||classId==0){
@@ -202,6 +198,25 @@ public class TeacherAchievementController {
             clazzMap.put("className",classByClazzId.getClassName());
             classList.add(clazzMap);
         }
+
+
+        List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
+        if (recordDTOS==null||recordDTOS.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
+        //获取学生列表
+        List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
+            JudgeVO judgeVO=new JudgeVO();
+            User user = userService.getUserById(recordDTO.getUserId());
+            judgeVO.setClassId(user.getClassId());
+            judgeVO.setUserId(user.getUserId());
+            judgeVO.setUserNumber(user.getUserNumber());
+            judgeVO.setNickName(user.getNickname());
+            judgeVO.setUserExperimentId(recordDTO.getUserExperimentId());
+            judgeVO.setStatus(recordDTO.getStatus().intValue());
+            return judgeVO;
+        }).collect(Collectors.toList());
+
         //按班级分割
         List<HashMap> classData=new ArrayList<>(classList.size());
         for(HashMap clazz:classList) {
