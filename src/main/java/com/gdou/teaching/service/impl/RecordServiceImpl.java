@@ -182,7 +182,7 @@ public class RecordServiceImpl implements RecordService {
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
         if (userReExperiments==null||userReExperiments.isEmpty()){
             log.info("[RecordServiceImpl]-getRecordListByExperimentId,实验提交表信息不存在,experimentId={}",experimentId);
-            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
+            return null;
         }
         List<RecordDTO> recordDTOList = userReExperiments.stream().map(record -> {
             RecordDTO recordDTO = new RecordDTO();
