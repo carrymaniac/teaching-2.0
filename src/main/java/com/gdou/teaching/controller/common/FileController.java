@@ -117,9 +117,9 @@ public class FileController {
             file.transferTo(destFile);
             String url = FileUtil.getHost(new URI(httpServletRequest.getRequestURL() + "")) + contextPath + "/download/" + newFileName;
             file.getSize();
-            map.put("fileName", fileName);
+            map.put("name", fileName);
             map.put("fileType", fileUtil.getType(suffixName));
-            map.put("filePath", url);
+            map.put("url", url);
             map.put("fileSize", fileUtil.getFileSize(file.getSize()));
         }catch (Exception e) {
             e.printStackTrace();
