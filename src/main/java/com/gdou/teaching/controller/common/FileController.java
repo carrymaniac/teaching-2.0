@@ -18,9 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @ProjectName: teaching
@@ -52,6 +50,22 @@ public class FileController {
         try {
             HashMap<String, String> map = uploadFile(httpServletRequest, file);
             return ResultVOUtil.success(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultVOUtil.fail(ResultEnum.FILE_UPLOAD_FAIL);
+        }
+    }
+
+    @PostMapping("/uploadBatch")
+    @ResponseBody
+    private ResultVO uploadForFileBatch(HttpServletRequest httpServletRequest, @RequestParam("files") MultipartFile[] files) throws URISyntaxException {
+        try {
+            List<HashMap<String,String>> result = new ArrayList<>();
+            for(MultipartFile file:files){
+                HashMap<String, String> map = uploadFile(httpServletRequest, file);
+                result.add(map);
+            }
+            return ResultVOUtil.success(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultVOUtil.fail(ResultEnum.FILE_UPLOAD_FAIL);
