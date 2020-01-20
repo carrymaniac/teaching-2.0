@@ -22,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,8 +82,10 @@ public class TeacherExperimentController {
         experimentDTO = experimentService.detail(experimentId);
         if(experimentDTO.getExperimentAnswerId()!=null){
             AnswerDTO answerDTO = answerService.detail(experimentDTO.getExperimentAnswerId());
-            experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList());
+            experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList()==null?new ArrayList<>():answerDTO.getExperimentAnswerFileList());
             experimentDTO.setExperimentAnswerContent(answerDTO.getExperimentAnswerContent());
+        }else{
+            experimentDTO.setExperimentAnswerFile(new ArrayList<>());
         }
         //将不需要的字段置空
         experimentDTO.setExperimentIntro(null);

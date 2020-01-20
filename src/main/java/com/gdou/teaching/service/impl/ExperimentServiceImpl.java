@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,8 @@ public class ExperimentServiceImpl implements ExperimentService {
             BeanUtils.copyProperties(experimentDetail,experimentDTO);
         }
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
-        experimentDTO.setExperimentDetailFile(fileDTOList);
+        //fileDTOList为null, 则new一个新的List,不为空则设置进去.
+        experimentDTO.setExperimentDetailFile(fileDTOList==null?new ArrayList<>():fileDTOList);
         //属性拷贝
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
         return experimentDTO;
