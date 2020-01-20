@@ -1,10 +1,12 @@
 package com.gdou.teaching.controller.teacher;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.*;
+import com.gdou.teaching.service.AnswerService;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.util.ResultVOUtil;
@@ -37,7 +39,8 @@ public class TeacherExperimentController {
     private ExperimentService experimentService;
     @Autowired
     private CourseService courseService;
-
+    @Autowired
+    private AnswerService answerService;
     /**
      * 实验列表
      * @param courseId
@@ -76,6 +79,11 @@ public class TeacherExperimentController {
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
+        if(experimentDTO.getExperimentAnswerId()!=null){
+            AnswerDTO answerDTO = answerService.detail(experimentDTO.getExperimentAnswerId());
+            experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList());
+            experimentDTO.setExperimentAnswerContent(answerDTO.getExperimentAnswerContent());
+        }
         //将不需要的字段置空
         experimentDTO.setExperimentIntro(null);
         return ResultVOUtil.success(experimentDTO);

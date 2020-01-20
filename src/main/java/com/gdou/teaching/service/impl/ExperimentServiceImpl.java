@@ -63,14 +63,8 @@ public class ExperimentServiceImpl implements ExperimentService {
         if(experimentDetail!=null){
             BeanUtils.copyProperties(experimentDetail,experimentDTO);
         }
-        ExperimentAnswer experimentAnswer =experimentAnswerMapper.selectByPrimaryKey(experimentMaster.getExperimentAnswerId());
-        if(experimentAnswer!=null){
-            BeanUtils.copyProperties(experimentAnswer,experimentDTO);
-        }
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
         experimentDTO.setExperimentDetailFile(fileDTOList);
-        List<FileDTO> answerFiles = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(), experimentMaster.getExperimentAnswerId());
-        experimentDTO.setExperimentAnswerFile(answerFiles);
         //属性拷贝
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
         return experimentDTO;

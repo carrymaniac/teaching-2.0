@@ -12,7 +12,7 @@ import java.util.List;
  * @description
  **/
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ExperimentDTO {
     /**
      * 实验ID
@@ -51,6 +51,7 @@ public class ExperimentDTO {
      *
      * @mbggenerated
      */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String experimentIntro;
     /**
      * 实验目前提交人数
