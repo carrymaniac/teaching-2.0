@@ -15,14 +15,18 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -108,5 +112,56 @@ public class AdminClassController {
         List<Integer> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
         userService.addUserInfoByBatch(userIdList,form.getCollege(),form.getSeries(),form.getMajor());
         return ResultVOUtil.success();
+    }
+
+    @ResponseBody
+    @PostMapping("/readFile")
+    public ResultVO readFile(@RequestParam("file") MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String extension = fileName.lastIndexOf(".") == -1 ? "" : fileName.substring(fileName.lastIndexOf(".") + 1);
+        System.out.println(extension);
+        if ("xls".equals(extension)) {
+            return read2003Excel(file);
+        } else if ("xlsx".equals(extension)) {
+            return read2007Excel(file);
+        } else {
+            throw new IOException("不支持的文件类型");
+        }
+    }
+
+    ResultVO read2003Excel(MultipartFile file) throws IOException {
+            Workbook workbook = new HSSFWorkbook(file.getInputStream());
+            Sheet sheet = workbook.getSheetAt(0);
+        return parseSheetToResultVO(sheet);
+    }
+
+    ResultVO read2007Excel(MultipartFile file) throws IOException {
+        Workbook xwb = new XSSFWorkbook(file.getInputStream());
+        Sheet sheet = xwb.getSheetAt(0);
+        return parseSheetToResultVO(sheet);
+    }
+    private ResultVO parseSheetToResultVO(Sheet sheet) {
+        List<HashMap<String,Object>> result = new ArrayList<>();
+        //获取行数
+        int nums = sheet.getPhysicalNumberOfRows();
+        for(int i = 0;i<nums;i++){
+            Row row = sheet.getRow(i);
+            Cell userNumberCell = row.getCell(0);
+            userNumberCell.setCellType(CellType.STRING);
+            Cell userNameCell = row.getCell(1);
+            userNameCell.setCellType(CellType.STRING);
+            Cell passwordCell = row.getCell(2);
+            passwordCell.setCellType(CellType.STRING);
+            //按照学号、学生姓名、初始密码
+            String userNumber = userNumberCell.getStringCellValue();
+            String userName = userNameCell.getStringCellValue();
+            String password = passwordCell.getStringCellValue();
+            HashMap<String,Object> map = new HashMap<>(3);
+            map.put("userNumber",userNumber);
+            map.put("userName",userName);
+            map.put("password",password);
+            result.add(map);
+        }
+        return ResultVOUtil.success(result);
     }
 }
