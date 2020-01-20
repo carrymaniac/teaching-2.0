@@ -304,7 +304,6 @@ public class TeacherCourseController {
             }).collect(Collectors.toList());
             achievementService.deleteAchievementByStudentList(form.getCourseId(), studentIdList);
         }
-        //todo  更新上课及其下属实验的人数
         courseService.updateNumber(form.getCourseId());
         return ResultVOUtil.success();
     }
