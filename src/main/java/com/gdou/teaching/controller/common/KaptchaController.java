@@ -25,9 +25,12 @@ import java.io.ByteArrayOutputStream;
 @Controller
 @Slf4j
 public class KaptchaController {
-    @Autowired
-    DefaultKaptcha kaptcha;
+    private final DefaultKaptcha kaptcha;
 
+    @Autowired
+    public KaptchaController(DefaultKaptcha kaptcha) {
+        this.kaptcha = kaptcha;
+    }
 
     @GetMapping("common/kaptcha")
     public void verifyCode(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {

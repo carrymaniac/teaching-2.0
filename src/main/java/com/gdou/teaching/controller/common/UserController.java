@@ -42,14 +42,16 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/user")
 @Slf4j
 public class UserController {
+    private final StringRedisTemplate stringRedisTemplate;
+    private final UserService userService;
+    private final HostHolder hostHolder;
+
     @Autowired
-    StringRedisTemplate stringRedisTemplate;
-    @Autowired
-    UserService userService;
-    @Autowired
-    HostHolder hostHolder;
-    @Autowired
-    CourseService courseService;
+    public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder) {
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.userService = userService;
+        this.hostHolder = hostHolder;
+    }
 
     /**
      * 登陆操作 参数校验在controller完成

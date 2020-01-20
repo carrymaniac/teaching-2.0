@@ -37,10 +37,15 @@ import java.util.Random;
 public class FileController {
     @Value("${server.servlet.context-path}")
     private String contextPath;
+    private final FileUtil fileUtil;
+    private final FileService fileService;
+
     @Autowired
-    FileUtil fileUtil;
-    @Autowired
-    FileService fileService;
+    public FileController(FileUtil fileUtil, FileService fileService) {
+        this.fileUtil = fileUtil;
+        this.fileService = fileService;
+    }
+
     @PostMapping("/upload")
     @ResponseBody
     private ResultVO uploadForFile(HttpServletRequest httpServletRequest, @RequestParam("file") MultipartFile file) throws URISyntaxException {

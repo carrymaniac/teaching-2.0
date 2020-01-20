@@ -1,6 +1,7 @@
 package com.gdou.teaching.controller.student;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.AnswerDTO;
@@ -12,6 +13,7 @@ import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.service.RecordService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 @Controller
 @Slf4j
 @RequestMapping("/student/experiment/")
+@Auth(user= UserIdentEnum.SUTUDENT)
 public class StudentExperimentController {
     @Autowired
     ExperimentService experimentService;

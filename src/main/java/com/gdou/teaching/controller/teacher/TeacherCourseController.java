@@ -47,6 +47,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/teacher/course")
+@Auth
 public class TeacherCourseController {
     @Autowired
     private CourseService courseService;
@@ -68,7 +69,6 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/list")
-    @Auth
     public ResultVO list(){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
@@ -101,7 +101,6 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/classSelectList")
-    @Auth
     public ResultVO classSelectList() {
         //获取班级列表
         List<TreeMap> clazzList =classService.getAllClazzList();
@@ -135,7 +134,6 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/manage/{courseId}")
-    @Auth
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String, Object> map = new HashMap<>();
         //获取所有的班级列表
@@ -226,7 +224,6 @@ public class TeacherCourseController {
      */
     //todo  课程封面非必传参数,需要在新增时设置一个默认封面
     @PostMapping("/save")
-    @Auth
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
         User user = hostHolder.getUser();
@@ -262,7 +259,6 @@ public class TeacherCourseController {
      * @return
      */
     @PostMapping("/updateCourseInfo")
-    @Auth
     public ResultVO updateCourseInfo(@RequestBody @Valid CourseInfoUpdateForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -314,7 +310,6 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/detail/{courseId}")
-    @Auth
     public ResultVO<CourseVO> detail(@PathVariable(value = "courseId") Integer courseId){
         CourseVO courseVO = new CourseVO();
         CourseDTO detail;
@@ -329,7 +324,6 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/resource/{courseId}")
-    @Auth
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关连的文件
@@ -349,7 +343,6 @@ public class TeacherCourseController {
 
 
     @GetMapping("/invalid/{courseId}")
-    @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
         if(courseService.invalid(courseId)){
             //删除课程下的选课记录
@@ -359,20 +352,17 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/unlock/{courseId}")
-    @Auth
     public ResultVO unlock(@PathVariable("courseId") Integer courseId) {
         courseService.unlock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/lock/{courseId}")
-    @Auth
     public ResultVO lock(@PathVariable("courseId") Integer courseId) {
         courseService.lock(courseId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/end/{courseId}")
-    @Auth
     public ResultVO end(@PathVariable("courseId") Integer courseId) {
         courseService.end(courseId);
         return ResultVOUtil.success();

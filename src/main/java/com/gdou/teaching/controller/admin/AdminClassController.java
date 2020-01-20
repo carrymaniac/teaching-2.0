@@ -119,7 +119,6 @@ public class AdminClassController {
     public ResultVO readFile(@RequestParam("file") MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
         String extension = fileName.lastIndexOf(".") == -1 ? "" : fileName.substring(fileName.lastIndexOf(".") + 1);
-        System.out.println(extension);
         if ("xls".equals(extension)) {
             return read2003Excel(file);
         } else if ("xlsx".equals(extension)) {
@@ -134,7 +133,6 @@ public class AdminClassController {
             Sheet sheet = workbook.getSheetAt(0);
         return parseSheetToResultVO(sheet);
     }
-
     ResultVO read2007Excel(MultipartFile file) throws IOException {
         Workbook xwb = new XSSFWorkbook(file.getInputStream());
         Sheet sheet = xwb.getSheetAt(0);
