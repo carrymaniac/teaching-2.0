@@ -138,4 +138,40 @@ public class MessageServiceImpl implements MessageService {
         message.setStatus(MessageStatusEnum.READ.getCode());
         return messageMapper.updateByExampleSelective(message,example);
     }
+
+    @Override
+    public int selectLetterUnreadCount(int userId, String conversationId) {
+        MessageExample example = new MessageExample();
+        if(conversationId!=null){
+            example.createCriteria().
+                    andToIdEqualTo(userId).
+                    andFromIdNotEqualTo(0).
+                    andStatusEqualTo(MessageStatusEnum.UNREAD.getCode()).
+                    andConversationIdEqualTo(conversationId);
+        }else {
+            example.createCriteria().
+                    andToIdEqualTo(userId).
+                    andStatusEqualTo(MessageStatusEnum.UNREAD.getCode()).
+                    andFromIdNotEqualTo(0);
+        }
+        return messageMapper.countByExample(example);
+    }
+
+    @Override
+    public int selectNoticeUnreadCount(int userId, String topic) {
+        MessageExample example = new MessageExample();
+        if(topic!=null){
+            example.createCriteria().
+                    andToIdEqualTo(userId).
+                    andFromIdEqualTo(0).
+                    andStatusEqualTo(MessageStatusEnum.UNREAD.getCode()).
+                    andConversationIdEqualTo(topic);
+        }else {
+            example.createCriteria().
+                    andToIdEqualTo(userId).
+                    andFromIdEqualTo(0).
+                    andStatusEqualTo(MessageStatusEnum.UNREAD.getCode());
+        }
+        return messageMapper.countByExample(example);
+    }
 }

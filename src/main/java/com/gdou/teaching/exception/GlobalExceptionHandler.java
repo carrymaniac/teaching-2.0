@@ -36,6 +36,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public ResultVO MissingServletRequestParameterException(HttpServletRequest httpServletRequest, MissingServletRequestParameterException e){
+        log.info("捕获到了错误:{},缺失的参数为",e.getMessage(),e.getParameterName());
         return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
     }
 

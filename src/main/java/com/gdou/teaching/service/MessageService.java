@@ -65,4 +65,23 @@ public interface MessageService {
      * @return
      */
     int setMessageRead(List<Integer> messageId);
+
+
+    /**
+     * 查询未读私信的数量
+     * @param userId 用户ID
+     * @param conversationId 会话ID，若为空则为查询用户所有的未读私信数量
+     * @return
+     */
+    int selectLetterUnreadCount(int userId, String conversationId);
+
+    /**
+     * 查询未读的通知的数量
+     * @param userId
+     * @param topic
+     * @return
+     */
+    int selectNoticeUnreadCount(int userId, String topic);
+
+
 }

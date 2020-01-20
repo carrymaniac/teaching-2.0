@@ -26,7 +26,8 @@
     </appender>
     <contextName>teaching</contextName>
     <logger name="com.gdou.teaching" level="info"/>
-
+    <logger name="com.gdou.teaching.mbg.mapper" level="debug"/>
+    <logger name="com.gdou.teaching.dao" level="debug"/>
     <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
