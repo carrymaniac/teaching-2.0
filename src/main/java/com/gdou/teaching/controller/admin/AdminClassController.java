@@ -75,7 +75,6 @@ public class AdminClassController {
         }
         return ResultVOUtil.success(map);
     }
-
     @ResponseBody
     @GetMapping("/info/{userId}")
     public ResultVO info(@PathVariable("userId")Integer userId) {
