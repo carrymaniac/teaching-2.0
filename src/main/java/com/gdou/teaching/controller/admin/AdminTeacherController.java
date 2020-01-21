@@ -46,22 +46,6 @@ public class AdminTeacherController {
     }
 
     @ResponseBody
-    @PostMapping("/resetPassword")
-//    @Auth(user=UserIdentEnum.ADMIN)
-    public ResultVO resetPassword(@RequestParam("userId")Integer userId,@RequestParam("password")String newPassword){
-        userService.resetPassword(userId,newPassword);
-        return ResultVOUtil.success();
-    }
-
-    @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
-    @PostMapping("/invalidTeacher")
-    public ResultVO invalidUser(@RequestParam("userId")List<Integer> userId){
-        userService.deleteUserByBatch(userId);
-        return ResultVOUtil.success();
-    }
-
-    @ResponseBody
 //    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/addTeacher")
     public ResultVO addTeacher(@RequestParam("userNumber")String userNumber,@RequestParam("password") String password,@RequestParam("nickName")String nickName){

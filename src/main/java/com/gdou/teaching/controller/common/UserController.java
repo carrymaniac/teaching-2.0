@@ -206,4 +206,20 @@ public class UserController {
         }
         hostHolder.clear();
     }
+
+    @ResponseBody
+    @PostMapping("/resetPassword")
+//    @Auth(user=UserIdentEnum.ADMIN)
+    public ResultVO resetPassword(@RequestParam("userId")Integer userId,@RequestParam("password")String newPassword){
+        userService.resetPassword(userId,newPassword);
+        return ResultVOUtil.success();
+    }
+
+    @ResponseBody
+//    @Auth(user=UserIdentEnum.ADMIN)
+    @PostMapping("/invalidUser")
+    public ResultVO invalidUser(@RequestParam("userId")List<Integer> userId){
+        userService.deleteUserByBatch(userId);
+        return ResultVOUtil.success();
+    }
 }
