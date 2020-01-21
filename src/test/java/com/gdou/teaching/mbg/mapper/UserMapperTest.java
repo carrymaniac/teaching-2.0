@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -54,7 +56,9 @@ class UserMapperTest {
 
     @Test
     void selectByExample() {
-
+        UserExample example = new UserExample();
+        example.createCriteria().andClassIdEqualTo(1).andNicknameEqualTo("233");
+        List<User> users = userMapper.selectByExample(example);
     }
 
     @Test

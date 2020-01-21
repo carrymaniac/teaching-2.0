@@ -82,13 +82,19 @@ public class AdminClassController {
         if (userId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
-        UserDTO userInfo = userService.getUserDetailByUserId(userId);
-        //查询用户的各课程成绩
-        List<CourseDTO> courseDTOS = courseService.listCourseForAdminByStudentId(userId);
-        HashMap map = new HashMap(2);
-        map.put("user",userInfo);
-        map.put("courseList",courseDTOS);
-        return ResultVOUtil.success(map);
+        User userById = userService.getUserById(userId);
+        if(userById.getUserIdent()==UserIdentEnum.SUTUDENT.getCode().byteValue()){
+            UserDTO userInfo = userService.getUserDetailByUserId(userId);
+            //查询用户的各课程成绩
+            List<CourseDTO> courseDTOS = courseService.listCourseForAdminByStudentId(userId);
+            HashMap map = new HashMap(2);
+            map.put("user",userInfo);
+            map.put("courseList",courseDTOS);
+            return ResultVOUtil.success(map);
+        }else {
+            return ResultVOUtil.fail(203,"查询的用户并非学生");
+        }
+
     }
 
     @ResponseBody

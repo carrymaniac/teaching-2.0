@@ -220,10 +220,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword) {
         UserExample userExample = new UserExample();
+        UserExample.Criteria criteria = userExample.createCriteria();
         if(classId!=0){
-            userExample.createCriteria().andClassIdEqualTo(classId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue()).andNicknameLike(keyword);
+            criteria.andClassIdEqualTo(classId)
+                    .andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue())
+                    .andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
         }else {
-            userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue()).andNicknameLike(keyword);
+            criteria.andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
+        }
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andNicknameLike(keyword);
         }
         PageHelper.startPage(page,size);
         List<User> users = userMapper.selectByExample(userExample);

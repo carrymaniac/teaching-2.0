@@ -383,7 +383,11 @@ public class CourseServiceImpl implements CourseService {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
-            courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction().substring(0, 15));
+            if(courseDetail.getCourseIntroduction().length()<=15){
+                courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction());
+            }else {
+                courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction().substring(0, 15));
+            }
             courseDTO.setAchievement(map.get(courseMaster.getCourseId()));
             return courseDTO;
         }).collect(Collectors.toList());
