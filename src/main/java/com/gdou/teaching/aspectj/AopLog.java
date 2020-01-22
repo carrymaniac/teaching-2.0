@@ -49,15 +49,16 @@ public class AopLog {
 	@Before("log()")
 	public void beforeLog(JoinPoint point) {
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
 		HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
-
 		log.info("【请求 URL】：{}", request.getRequestURL());
-		log.info("【请求 IP】：{}", request.getRemoteAddr());
+		if(request.getHeader("x-forwarded-for")==null){
+			log.info("【请求 IP】：{}", request.getRemoteAddr());
+		}else {
+			log.info("【请求 IP】：{}", request.getHeader("x-forwarded-for"));
+		}
 		log.info("【请求类名】：{}，【请求方法名】：{}", point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
-
 		Map<String, String[]> parameterMap = request.getParameterMap();
-		log.info("【请求参数】：{}，", JSONUtil.toJsonStr(parameterMap));
+		log.info("【请求参数】：{}，", JSONUtil.toJsonPrettyStr(parameterMap));
 		Long start = System.currentTimeMillis();
 		request.setAttribute(START_TIME, start);
 	}
@@ -72,7 +73,7 @@ public class AopLog {
 	@Around("log()")
 	public Object aroundLog(ProceedingJoinPoint point) throws Throwable {
 		Object result = point.proceed();
-		log.info("【返回值】：{}", JSONUtil.toJsonStr(result));
+		log.info("【返回值】：{}", JSONUtil.toJsonPrettyStr(result));
 		return result;
 	}
 

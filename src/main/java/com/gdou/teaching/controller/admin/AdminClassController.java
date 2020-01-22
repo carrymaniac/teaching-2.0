@@ -13,6 +13,7 @@ import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.UserService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
+import com.gdou.teaching.web.Auth;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -44,19 +45,23 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("admin/class")
 @Slf4j
+@Auth(user=UserIdentEnum.ADMIN)
 public class AdminClassController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    AchievementService achievementService;
+    private final AchievementService achievementService;
 
-    @Autowired
-    CourseService courseService;
+    private final CourseService courseService;
 
-    @Autowired
-    ClassService classService;
+    private final ClassService classService;
+
+    public AdminClassController(UserService userService, AchievementService achievementService, CourseService courseService, ClassService classService) {
+        this.userService = userService;
+        this.achievementService = achievementService;
+        this.courseService = courseService;
+        this.classService = classService;
+    }
 
     @ResponseBody
     @GetMapping("/list")
@@ -97,7 +102,6 @@ public class AdminClassController {
     }
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/addStudentByBatch")
     public ResultVO addStudentByBatch(@RequestBody @Valid ClazzRegisterForm form,
                                       BindingResult bindingResult){

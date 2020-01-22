@@ -29,24 +29,25 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("admin/teacher")
+@Auth(user=UserIdentEnum.ADMIN)
 public class AdminTeacherController {
 
+    private final UserService userService;
+    private final CourseService courseService;
 
-    @Autowired
-    UserService userService;
-    @Autowired
-    CourseService courseService;
+    public AdminTeacherController(UserService userService, CourseService courseService) {
+        this.userService = userService;
+        this.courseService = courseService;
+    }
 
     @ResponseBody
     @GetMapping("/teacherList")
-//    @Auth(user=UserIdentEnum.ADMIN)
     public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,@RequestParam(value = "size",defaultValue = "10",required = false) Integer size){
         PageInfo pageInfo = userService.selectTeacherListByPage(page, size);
         return ResultVOUtil.success(pageInfo);
     }
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/addTeacher")
     public ResultVO addTeacher(@RequestParam("userNumber")String userNumber,@RequestParam("password") String password,@RequestParam("nickName")String nickName){
         User user = new User();
@@ -58,7 +59,6 @@ public class AdminTeacherController {
     }
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/addTeacherByBatch")
     public ResultVO addTeacherByBatch(@RequestBody List<User> userList){
         userList.forEach(user->{
@@ -73,7 +73,6 @@ public class AdminTeacherController {
 
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
     @GetMapping("/teacherInfo")
     public ResultVO teacherInfo(@RequestParam("teacherId")Integer teacherId){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
