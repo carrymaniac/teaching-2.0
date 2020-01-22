@@ -3,8 +3,10 @@ package com.gdou.teaching.mbg.mapper;
 import com.gdou.teaching.mbg.model.CourseMaster;
 import com.gdou.teaching.mbg.model.CourseMasterExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+@Mapper
 public interface CourseMasterMapper {
     int countByExample(CourseMasterExample example);
 

@@ -3,8 +3,10 @@ package com.gdou.teaching.mbg.mapper;
 import com.gdou.teaching.mbg.model.UserReExperiment;
 import com.gdou.teaching.mbg.model.UserReExperimentExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+@Mapper
 public interface UserReExperimentMapper {
     int countByExample(UserReExperimentExample example);
 
