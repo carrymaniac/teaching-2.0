@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-@Mapper
+import org.springframework.stereotype.Repository;
+
+@Repository
 public interface ExperimentDetailMapper {
     int countByExample(ExperimentDetailExample example);
 
