@@ -381,19 +381,27 @@ public class TeacherAchievementController {
         CourseDTO detail = courseService.detail(courseId);
         response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(detail.getCourseName()+"成绩表.xls","UTF-8"));
         OutputStream outputStream = response.getOutputStream();
-        List<List<String>> collect = achievementService.exportAchievement(detail);
-        List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
-        List<String> experimentNameList =  experimentDTOList.stream().map(experimentDTO -> {
-            return experimentDTO.getExperimentName();
-        }).collect(Collectors.toList());
-        List<String> colunNames=new ArrayList<>();
-        colunNames.add("班级");
-        colunNames.add("学号");
-        colunNames.add("姓名");
-        colunNames.add("总成绩");
-        colunNames.addAll(experimentNameList);
-        Workbook sheet = poiUtil.createSheet(detail.getCourseName()+"成绩表",colunNames,collect);
-        sheet.write(outputStream);
+        try{
+            List<List<String>> collect = achievementService.exportAchievement(detail);
+            List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
+            List<String> experimentNameList =  experimentDTOList.stream().map(experimentDTO -> {
+                return experimentDTO.getExperimentName();
+            }).collect(Collectors.toList());
+            List<String> colunNames=new ArrayList<>();
+            colunNames.add("班级");
+            colunNames.add("学号");
+            colunNames.add("姓名");
+            colunNames.add("总成绩");
+            colunNames.addAll(experimentNameList);
+            Workbook sheet = poiUtil.createSheet(detail.getCourseName()+"成绩表",colunNames,collect);
+            sheet.write(outputStream);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }finally {
+            outputStream.close();
+        }
+
+
         System.out.println("success");
         return null;
     }

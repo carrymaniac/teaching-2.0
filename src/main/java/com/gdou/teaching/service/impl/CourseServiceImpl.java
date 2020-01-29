@@ -4,7 +4,6 @@ import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.CourseDTO;
-import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
@@ -134,6 +133,7 @@ public class CourseServiceImpl implements CourseService {
         BeanUtils.copyProperties(courseDetail,courseDTO);
         return courseDTO;
     }
+
 
 
     /**
@@ -395,3 +395,5 @@ public class CourseServiceImpl implements CourseService {
     }
 
 }
+
+

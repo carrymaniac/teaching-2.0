@@ -215,7 +215,7 @@ public class AchievementServiceImpl implements AchievementService {
         //通过审核的实验个数
         int num=0;
         Double result=0.0;
-        for(int i=0;i<recordList.size();i++){
+        for(int i=0,size= recordList.size();i<size;i++){
             if(recordList.get(i)!=null){
                 result+=recordList.get(i).getExperimentAchievement();
                 num++;

@@ -156,19 +156,23 @@ public class StudentCourseController {
         Double score = achievement.getCourseAchievement();
         //通过课程ID和用户ID获取提交记录列表
         List<RecordDTO> recordByUserIdAndCourseId = recordService.getRecordByUserIdAndCourseId(user.getUserId(), courseId);
-        //提取所需要的字段（实验名-实验ID-实验得分）返回
-        List<HashMap<String, String>> experiments = recordByUserIdAndCourseId.stream().map(r -> {
-            HashMap<String, String> ex = new HashMap<>(3);
-            ex.put("experimentName",r.getExperimentName());
-            ex.put("experimentId", r.getExperimentId().toString());
-            ex.put("experimentAchievement", r.getExperimentAchievement().toString());
-            return ex;
-        }).collect(Collectors.toList());
-        //获取课程成绩信息
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("experiments",experiments);
-        map.put("score",score);
-        return ResultVOUtil.success(map);
+        if(recordByUserIdAndCourseId!=null){
+            List<HashMap<String, String>> experiments = recordByUserIdAndCourseId.stream().map(r -> {
+                HashMap<String, String> ex = new HashMap<>(3);
+                ex.put("experimentName",r.getExperimentName());
+                ex.put("experimentId", r.getExperimentId().toString());
+                ex.put("experimentAchievement", r.getExperimentAchievement().toString());
+                return ex;
+            }).collect(Collectors.toList());
+            //提取所需要的字段（实验名-实验ID-实验得分）返回
+            //获取课程成绩信息
+            HashMap<String,Object> map = new HashMap<>();
+            map.put("experiments",experiments);
+            map.put("score",score);
+            return ResultVOUtil.success(map);
+        }else {
+            return ResultVOUtil.success();
+        }
     }
 
     @GetMapping("/resource/{courseId}")

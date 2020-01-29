@@ -5,6 +5,7 @@ import com.gdou.teaching.service.AchievementService;
 import com.gdou.teaching.util.PoiUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/dev")
+@Slf4j
 public class DevController {
 
     @Value("${spring.profiles.active}")
@@ -62,16 +64,23 @@ public class DevController {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode("学生成绩.xls","UTF-8"));
         OutputStream outputStream = response.getOutputStream();
-        List<AchievementDTO> achievementByCourseId = achievementService.getAchievementByCourseId(1);
-        List<List<String>> collect = achievementByCourseId.stream().map(achievementDTO -> {
-            List<String> list = new ArrayList<>();
-            list.add(achievementDTO.getUserName());
-            list.add(achievementDTO.getCourseAchievement().toString());
-            return list;
-        }).collect(Collectors.toList());
-        Workbook sheet = poiUtil.createSheet("学生成绩", Arrays.asList("学生姓名", "学生成绩"), collect);
-        sheet.write(outputStream);
-        System.out.println("success");
+        try{
+            List<AchievementDTO> achievementByCourseId = achievementService.getAchievementByCourseId(1);
+            List<List<String>> collect = achievementByCourseId.stream().map(achievementDTO -> {
+                List<String> list = new ArrayList<>();
+                list.add(achievementDTO.getUserName());
+                list.add(achievementDTO.getCourseAchievement().toString());
+                return list;
+            }).collect(Collectors.toList());
+            Workbook sheet = poiUtil.createSheet("学生成绩", Arrays.asList("学生姓名", "学生成绩"), collect);
+            sheet.write(outputStream);
+
+            System.out.println("success");
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            outputStream.close();
+        }
         return null;
     }
 }
