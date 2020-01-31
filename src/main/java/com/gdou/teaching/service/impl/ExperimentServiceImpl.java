@@ -168,7 +168,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
-        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId).andExperimentStatusNotEqualTo(ExperimentStatusEnum.INVALID.getCode().byteValue());
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
            return null;
@@ -220,7 +220,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     public boolean updateExperimentAnswer(ExperimentDTO experimentDTO) {
         ExperimentAnswer experimentAnswer=new ExperimentAnswer();
         BeanUtils.copyProperties(experimentDTO,experimentAnswer);
-        if (  experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
+        if (experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
             log.info("[ExperimentServiceImpl]-更新实验答案失败");
             throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
         }

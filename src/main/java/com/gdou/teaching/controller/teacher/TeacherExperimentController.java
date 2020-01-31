@@ -162,6 +162,8 @@ public class TeacherExperimentController {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         BeanUtils.copyProperties(form, experimentDTO);
         experimentService.updateExperimentAnswer(experimentDTO);
+        //更新答案阈值
+        experimentService.updateExperimentInfo(experimentDTO);
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswerFile")
