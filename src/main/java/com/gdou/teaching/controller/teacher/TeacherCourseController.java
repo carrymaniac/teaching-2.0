@@ -317,14 +317,14 @@ public class TeacherCourseController {
         return ResultVOUtil.success(courseVO);
     }
 
-    @PostMapping("/updateCourseFile")
-    public ResultVO updateCourseFile(@RequestBody @Valid CourseFileUpdateForm form,
+    @PostMapping("/addCourseFile")
+    public ResultVO addCourseFile(@RequestBody @Valid CourseFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        courseService.updateCourseFile(form.getCourseId(),form.getCourseFile());
+        courseService.addCourseFile(form.getCourseId(),form.getCourseFile());
         return ResultVOUtil.success();
     }
 

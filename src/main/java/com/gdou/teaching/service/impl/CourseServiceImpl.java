@@ -141,9 +141,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean updateCourseFile(Integer courseId,List<FileDTO> courseFile) {
-        //更新，先删除之前所有的文件记录，进行重新插入
-        fileService.deleteFiles(FileCategoryEnum.COURSE_FILE.getCode(),courseId);
+    public boolean addCourseFile(Integer courseId,List<FileDTO> courseFile) {
         if(courseFile!=null&&!courseFile.isEmpty()){
             fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),courseId,courseFile);
         }

@@ -2,6 +2,7 @@ package com.gdou.teaching.controller.common;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.constant.CookieConstant;
 import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
@@ -218,8 +219,12 @@ public class UserController {
     @ResponseBody
 //    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/invalidUser")
-    public ResultVO invalidUser(@RequestParam("userId")List<Integer> userId){
-        userService.deleteUserByBatch(userId);
-        return ResultVOUtil.success();
+    public ResultVO invalidUser(@RequestBody List<Integer> userId){
+        Boolean flag = userService.deleteUserByBatch(userId);
+        if (flag){
+            return ResultVOUtil.success();
+        }else{
+            return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
+        }
     }
 }

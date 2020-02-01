@@ -265,6 +265,7 @@ public class UserServiceImpl implements UserService {
         List<UserDTO> collect = teachers.stream().map(teacher -> {
             UserDTO userDTO = new UserDTO();
             userDTO.setUserId(teacher.getUserId());
+            userDTO.setUserNumber(teacher.getUserNumber());
             userDTO.setNickname(teacher.getNickname());
             return userDTO;
         }).collect(Collectors.toList());

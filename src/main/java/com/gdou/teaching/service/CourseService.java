@@ -72,12 +72,12 @@ public interface CourseService {
     List<CourseDTO> listCourseForAdminByStudentId(Integer userId);
 
     /**
-     * 更新课程资源文件
+     * 增加课程资源文件
      * @param courseId
      * @param courseFile
      * @return
      */
-    boolean updateCourseFile(Integer courseId, List<FileDTO> courseFile);
+    boolean addCourseFile(Integer courseId, List<FileDTO> courseFile);
 
     /**
      * 根据课程ID注销课程
