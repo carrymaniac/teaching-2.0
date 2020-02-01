@@ -2,6 +2,8 @@ package com.gdou.teaching.service;
 
 
 import com.gdou.teaching.dto.CourseDTO;
+import com.gdou.teaching.dto.ExperimentDTO;
+import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 
 import java.util.List;
@@ -69,6 +71,13 @@ public interface CourseService {
      */
     List<CourseDTO> listCourseForAdminByStudentId(Integer userId);
 
+    /**
+     * 更新课程资源文件
+     * @param courseId
+     * @param courseFile
+     * @return
+     */
+    boolean updateCourseFile(Integer courseId, List<FileDTO> courseFile);
 
     /**
      * 根据课程ID注销课程

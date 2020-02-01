@@ -1,13 +1,17 @@
 package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.Enum.CourseStatusEnum;
+import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.CourseDTO;
+import com.gdou.teaching.dto.ExperimentDTO;
+import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.service.CourseService;
+import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +42,8 @@ public class CourseServiceImpl implements CourseService {
     CourseMasterDao courseMasterDao;
     @Autowired
     ExperimentMasterMapper experimentMasterMapper;
+    @Autowired
+    FileService fileService;
 
 
     /**
@@ -134,7 +140,15 @@ public class CourseServiceImpl implements CourseService {
         return courseDTO;
     }
 
-
+    @Override
+    public boolean updateCourseFile(Integer courseId,List<FileDTO> courseFile) {
+        //更新，先删除之前所有的文件记录，进行重新插入
+        fileService.deleteFiles(FileCategoryEnum.COURSE_FILE.getCode(),courseId);
+        if(courseFile!=null&&!courseFile.isEmpty()){
+            fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),courseId,courseFile);
+        }
+        return true;
+    }
 
     /**
      * 注销课程操作 ----隶属老师端

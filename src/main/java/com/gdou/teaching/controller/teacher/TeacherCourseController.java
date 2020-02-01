@@ -8,14 +8,9 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.constant.CommonConstant;
 import com.gdou.teaching.dataobject.Evaluation;
 import com.gdou.teaching.dataobject.HostHolder;
-import com.gdou.teaching.dto.AchievementDTO;
-import com.gdou.teaching.dto.CourseDTO;
-import com.gdou.teaching.dto.FileDTO;
-import com.gdou.teaching.dto.UserDTO;
+import com.gdou.teaching.dto.*;
 import com.gdou.teaching.exception.TeachingException;
-import com.gdou.teaching.form.CourseForm;
-import com.gdou.teaching.form.CourseInfoUpdateForm;
-import com.gdou.teaching.form.CourseUpdateStuForm;
+import com.gdou.teaching.form.*;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
@@ -322,6 +317,17 @@ public class TeacherCourseController {
         return ResultVOUtil.success(courseVO);
     }
 
+    @PostMapping("/updateCourseFile")
+    public ResultVO updateCourseFile(@RequestBody @Valid CourseFileUpdateForm form,
+                                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("参数不正确：{}" + form);
+            throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
+        }
+        courseService.updateCourseFile(form.getCourseId(),form.getCourseFile());
+        return ResultVOUtil.success();
+    }
+
     @GetMapping("/resource/{courseId}")
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
@@ -339,6 +345,7 @@ public class TeacherCourseController {
         }
         return ResultVOUtil.success(new ArrayList<>());
     }
+
 
 
     @GetMapping("/invalid/{courseId}")
