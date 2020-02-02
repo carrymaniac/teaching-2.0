@@ -30,4 +30,14 @@ public interface UserDao {
      * @return
      */
     User selectByUserNumberLimitOne(@Param("userNumber") String UserNumber);
+
+    /**
+     * 通过班级Id和关键词模糊查询学生列表
+     * @param classId
+     * @param keyWord
+     * @param ident
+     * @return
+     */
+    List<User> selectByClassIdAndKeyWord(@Param("classId")Integer classId,@Param("keyWord")String keyWord,@Param("ident")Integer ident,@Param("status")Integer status);
+
 }

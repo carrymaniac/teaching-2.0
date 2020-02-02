@@ -218,23 +218,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword) {
-        UserExample userExample = new UserExample();
-        UserExample.Criteria criteria = userExample.createCriteria();
-        if(classId!=0){
-            criteria.andClassIdEqualTo(classId)
-                    .andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue())
-                    .andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
-        }else {
-            criteria.andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
-        }
-        if(!StringUtils.isEmpty(keyword)){
-            criteria.andNicknameLike(keyword);
-        }
+    public PageInfo getUserListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident,Integer status) {
         PageHelper.startPage(page,size);
-        List<User> users = userMapper.selectByExample(userExample);
+        List<User> users =  userDao.selectByClassIdAndKeyWord(classId,keyword,ident,status);
+        //todo 查询不到,是否需要报错, 待讨论
         if (users==null||users.isEmpty()){
-            log.info("[UserServiceImpl]-,根据classId查询学生列表,学生信息不存在,classId:{}",classId);
+            log.info("[UserServiceImpl]-,根据classId和关键词查询用户列表,用户信息不存在,classId:{}",classId);
             throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
         }
         List<UserDTO> userDTOS = users.stream().map(user -> {
@@ -244,8 +233,6 @@ public class UserServiceImpl implements UserService {
         }).collect(Collectors.toList());
         PageInfo pageInfo = new PageInfo(userDTOS);
         return pageInfo;
-
-
     }
 
     @Override

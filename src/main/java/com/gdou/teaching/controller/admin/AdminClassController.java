@@ -2,6 +2,7 @@ package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.form.ClazzRegisterForm;
@@ -71,7 +72,7 @@ public class AdminClassController {
                          @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword
     ){
         HashMap<String,Object> map = new HashMap<>(2);
-        PageInfo pageInfo = userService.getStudentListByClassIdAndKeywordInPage(classId, page, size,keyword);
+        PageInfo pageInfo = userService.getUserListByClassIdAndKeywordInPage(classId, page, size,keyword,UserIdentEnum.SUTUDENT.getCode(), UserStatusEnum.NORMAL.getCode());
         map.put("userList",pageInfo);
         if(classId==0){
             //查询一下班级列表供用户前端使用
@@ -80,6 +81,7 @@ public class AdminClassController {
         }
         return ResultVOUtil.success(map);
     }
+
     @ResponseBody
     @GetMapping("/info/{userId}")
     public ResultVO info(@PathVariable("userId")Integer userId) {

@@ -1,6 +1,7 @@
 package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
@@ -42,8 +43,10 @@ public class AdminTeacherController {
 
     @ResponseBody
     @GetMapping("/teacherList")
-    public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,@RequestParam(value = "size",defaultValue = "10",required = false) Integer size){
-        PageInfo pageInfo = userService.selectTeacherListByPage(page, size);
+    public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,
+                                @RequestParam(value = "size",defaultValue = "10",required = false) Integer size,
+                                @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword){
+        PageInfo pageInfo = userService.getUserListByClassIdAndKeywordInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode(), UserStatusEnum.NORMAL.getCode());
         return ResultVOUtil.success(pageInfo);
     }
 
