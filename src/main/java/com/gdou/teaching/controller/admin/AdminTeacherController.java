@@ -43,8 +43,20 @@ public class AdminTeacherController {
     @ResponseBody
     @GetMapping("/teacherList")
     public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,@RequestParam(value = "size",defaultValue = "10",required = false) Integer size){
-        PageInfo pageInfo = userService.selectTeacherListByPage(page, size);
-        return ResultVOUtil.success(pageInfo);
+        PageInfo<User> userPageInfo = userService.selectTeacherListByPage(page, size);
+        long total = userPageInfo.getTotal();
+        List<User> list = userPageInfo.getList();
+        List<UserDTO> collect = list.stream().map(teacher -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(teacher.getUserId());
+            userDTO.setUserNumber(teacher.getUserNumber());
+            userDTO.setNickname(teacher.getNickname());
+            return userDTO;
+        }).collect(Collectors.toList());
+        HashMap map = new HashMap(2);
+        map.put("total",total);
+        map.put("list",collect);
+        return ResultVOUtil.success(map);
     }
 
     @ResponseBody
@@ -74,12 +86,18 @@ public class AdminTeacherController {
 
     @ResponseBody
     @GetMapping("/teacherInfo")
-    public ResultVO teacherInfo(@RequestParam("teacherId")Integer teacherId){
+    public ResultVO teacherInfo(
+            @RequestParam("teacherId")int teacherId,
+            @RequestParam(value = "page",defaultValue = "1")int page,
+            @RequestParam(value = "size",defaultValue = "5")int size,
+            @RequestParam(value = "keyword",required = false)String keyword
+
+    ){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        List<CourseDTO> courseByUserId = courseService.listCourseForAdminByTeacherId(teacherId);
+        HashMap<String, Object> stringObjectHashMap = courseService.listCourseForAdminByTeacherIdAndKeywordForPage(teacherId, page, size, keyword);
         HashMap<String,Object> map= new HashMap<>(2);
         map.put("user",userDetailByUserId);
-        map.put("courseList",courseByUserId);
+        map.put("courseList",stringObjectHashMap);
         return ResultVOUtil.success(map);
     }
 

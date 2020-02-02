@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -71,8 +72,16 @@ public class AdminClassController {
                          @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword
     ){
         HashMap<String,Object> map = new HashMap<>(2);
-        PageInfo pageInfo = userService.getStudentListByClassIdAndKeywordInPage(classId, page, size,keyword);
-        map.put("userList",pageInfo);
+        PageInfo<User> pageInfo = userService.getStudentListByClassIdAndKeywordInPage(classId, page, size, keyword);
+        long total = pageInfo.getTotal();
+        List<User> list = pageInfo.getList();
+        List<UserDTO> userDTOS = list.stream().map(user -> {
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            return userDTO;
+        }).collect(Collectors.toList());
+        map.put("userList",userDTOS);
+        map.put("userListTotal",total);
         if(classId==0){
             //查询一下班级列表供用户前端使用
             List<TreeMap> allClazzList = classService.getAllClazzList();

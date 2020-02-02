@@ -95,7 +95,7 @@ public interface UserService {
      * @param size
      * @return
      */
-    PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword);
+    PageInfo<User> getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword);
 
     /**
      * 查询所有的教师列表
@@ -109,7 +109,7 @@ public interface UserService {
      * @param size
      * @return
      */
-    PageInfo selectTeacherListByPage(Integer page, Integer size);
+    PageInfo<User> selectTeacherListByPage(Integer page, Integer size);
 
 
     /**
