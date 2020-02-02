@@ -226,12 +226,7 @@ public class UserServiceImpl implements UserService {
             log.info("[UserServiceImpl]-,根据classId和关键词查询用户列表,用户信息不存在,classId:{}",classId);
             throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
         }
-        List<UserDTO> userDTOS = users.stream().map(user -> {
-            UserDTO userDTO = new UserDTO();
-            BeanUtils.copyProperties(user, userDTO);
-            return userDTO;
-        }).collect(Collectors.toList());
-        PageInfo pageInfo = new PageInfo(userDTOS);
+        PageInfo pageInfo = new PageInfo(users);
         return pageInfo;
     }
 
@@ -244,19 +239,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo selectTeacherListByPage(Integer page, Integer size) {
+    public PageInfo<User> selectTeacherListByPage(Integer page, Integer size) {
         PageHelper.startPage(page,size);
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
         List<User> teachers = userMapper.selectByExample(userExample);
-        List<UserDTO> collect = teachers.stream().map(teacher -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(teacher.getUserId());
-            userDTO.setUserNumber(teacher.getUserNumber());
-            userDTO.setNickname(teacher.getNickname());
-            return userDTO;
-        }).collect(Collectors.toList());
-        PageInfo<UserDTO> pageInfo = new PageInfo<>(collect);
+        PageInfo<User> pageInfo = new PageInfo<>(teachers);
         return pageInfo;
     }
 

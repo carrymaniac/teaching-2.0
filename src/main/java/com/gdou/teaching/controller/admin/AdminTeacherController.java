@@ -46,8 +46,20 @@ public class AdminTeacherController {
     public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,
                                 @RequestParam(value = "size",defaultValue = "10",required = false) Integer size,
                                 @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword){
-        PageInfo pageInfo = userService.getUserListByClassIdAndKeywordInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode(), UserStatusEnum.NORMAL.getCode());
-        return ResultVOUtil.success(pageInfo);
+        PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode(), UserStatusEnum.NORMAL.getCode());
+        long total = userPageInfo.getTotal();
+        List<User> list = userPageInfo.getList();
+        List<UserDTO> collect = list.stream().map(teacher -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserId(teacher.getUserId());
+            userDTO.setUserNumber(teacher.getUserNumber());
+            userDTO.setNickname(teacher.getNickname());
+            return userDTO;
+        }).collect(Collectors.toList());
+        HashMap map = new HashMap(2);
+        map.put("total",total);
+        map.put("list",collect);
+        return ResultVOUtil.success(map);
     }
 
     @ResponseBody
@@ -77,12 +89,16 @@ public class AdminTeacherController {
 
     @ResponseBody
     @GetMapping("/teacherInfo")
-    public ResultVO teacherInfo(@RequestParam("teacherId")Integer teacherId){
+    public ResultVO teacherInfo(
+            @RequestParam("teacherId")int teacherId,
+            @RequestParam(value = "page",defaultValue = "1")int page,
+            @RequestParam(value = "size",defaultValue = "5")int size,
+            @RequestParam(value = "keyword",required = false)String keyword
+
+    ){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        List<CourseDTO> courseByUserId = courseService.listCourseForAdminByTeacherId(teacherId);
-        HashMap<String,Object> map= new HashMap<>(2);
+        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordForPage(teacherId, page, size, keyword);
         map.put("user",userDetailByUserId);
-        map.put("courseList",courseByUserId);
         return ResultVOUtil.success(map);
     }
 

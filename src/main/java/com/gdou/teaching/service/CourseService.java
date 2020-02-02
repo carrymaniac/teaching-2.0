@@ -6,6 +6,7 @@ import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ public interface CourseService {
      * @param userId 教师ID
      * @return
      */
-    List<CourseDTO> listCourseForAdminByTeacherId(Integer userId);
+    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordForPage(Integer userId,Integer page,Integer size,String keyWord);
 
     /**
      * 展示对应学生所选修的所有的课程主表记录+副表记录（用于15字介绍）(管理员端)

@@ -113,7 +113,7 @@ public interface UserService {
      * @param size
      * @return
      */
-    PageInfo selectTeacherListByPage(Integer page, Integer size);
+    PageInfo<User> selectTeacherListByPage(Integer page, Integer size);
 
 
 

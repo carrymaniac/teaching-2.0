@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -73,7 +74,15 @@ public class AdminClassController {
     ){
         HashMap<String,Object> map = new HashMap<>(2);
         PageInfo pageInfo = userService.getUserListByClassIdAndKeywordInPage(classId, page, size,keyword,UserIdentEnum.SUTUDENT.getCode(), UserStatusEnum.NORMAL.getCode());
-        map.put("userList",pageInfo);
+        long total = pageInfo.getTotal();
+        List<User> list = pageInfo.getList();
+        List<UserDTO> userDTOS = list.stream().map(user -> {
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            return userDTO;
+        }).collect(Collectors.toList());
+        map.put("userList",userDTOS);
+        map.put("userListTotal",total);
         if(classId==0){
             //查询一下班级列表供用户前端使用
             List<TreeMap> allClazzList = classService.getAllClazzList();
@@ -81,7 +90,6 @@ public class AdminClassController {
         }
         return ResultVOUtil.success(map);
     }
-
     @ResponseBody
     @GetMapping("/info/{userId}")
     public ResultVO info(@PathVariable("userId")Integer userId) {

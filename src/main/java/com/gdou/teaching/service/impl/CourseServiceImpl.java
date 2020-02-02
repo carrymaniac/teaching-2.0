@@ -13,12 +13,15 @@ import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -355,22 +358,34 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<CourseDTO> listCourseForAdminByTeacherId(Integer userId) {
+    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordForPage(Integer userId,Integer page,Integer size,String keyWord) {
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        if(!StringUtils.isEmpty(keyWord)){
+            keyWord = "%"+keyWord+"%";
+            criteria.andCourseNameLike(keyWord);
+        }
+        PageHelper.startPage(page,size);
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
-        if(courseMasters==null||courseMasters.isEmpty()){
-            //说明该教师暂无授课
+
+        PageInfo<CourseMaster> pageInfo = new PageInfo(courseMasters);
+        List<CourseMaster> list = pageInfo.getList();
+        long total = pageInfo.getTotal();
+        if(list==null||list.isEmpty()){
+            //说明该教师暂无授课或分页最末
             return null;
         }
-        List<CourseDTO> collect = courseMasters.stream().map(courseMaster -> {
+        List<CourseDTO> collect = list.stream().map(courseMaster -> {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
             BeanUtils.copyProperties(courseDetail, courseDTO);
             return courseDTO;
         }).collect(Collectors.toList());
-        return collect;
+        HashMap<String,Object> map  = new HashMap<>(3);
+        map.put("list ",collect);
+        map.put("total ",total);
+        return map;
     }
 
     @Override
