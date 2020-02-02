@@ -382,7 +382,7 @@ public class CourseServiceImpl implements CourseService {
             BeanUtils.copyProperties(courseDetail, courseDTO);
             return courseDTO;
         }).collect(Collectors.toList());
-        HashMap<String,Object> map  = new HashMap<>();
+        HashMap<String,Object> map  = new HashMap<>(3);
         map.put("list ",collect);
         map.put("total ",total);
         return map;

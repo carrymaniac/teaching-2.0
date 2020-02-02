@@ -94,10 +94,8 @@ public class AdminTeacherController {
 
     ){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        HashMap<String, Object> stringObjectHashMap = courseService.listCourseForAdminByTeacherIdAndKeywordForPage(teacherId, page, size, keyword);
-        HashMap<String,Object> map= new HashMap<>(2);
+        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordForPage(teacherId, page, size, keyword);
         map.put("user",userDetailByUserId);
-        map.put("courseList",stringObjectHashMap);
         return ResultVOUtil.success(map);
     }
 
