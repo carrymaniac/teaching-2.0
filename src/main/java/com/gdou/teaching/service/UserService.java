@@ -89,15 +89,21 @@ public interface UserService {
     List<UserDTO> getStudentListByClassId(Integer classId);
 
     /**
-     * 根据班级Id和关键词查询用户列表, 若classId为0即全查,若keyword为null即全查,keyword不为空模糊查询Nickname和UserNumber 采用分页返回
+     *  For Admin
+     * 根据班级Id、用户身份和关键词查询用户列表,
+     *  若classId为0即全查,
+     *  若keyword为null即全查,keyword不为空模糊查询Nickname和UserNumber
+     *  采用分页返回
      * @param classId  班级id
-     * @param page
-     * @param size
+     * @param page 分页参数
+     * @param size 分页参数
      * @param keyword  关键词
      * @param ident    用户身份
      * @return
      */
-    PageInfo getUserListByClassIdAndKeywordAndIdentInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident);
+    PageInfo getUserListByClassIdAndKeywordAndIdentInPage(Integer classId, Integer page,
+                                                          Integer size,String keyword,
+                                                          Integer ident);
 
 
     /**

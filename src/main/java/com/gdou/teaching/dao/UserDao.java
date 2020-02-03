@@ -32,10 +32,10 @@ public interface UserDao {
     User selectByUserNumberLimitOne(@Param("userNumber") String UserNumber);
 
     /**
-     * 通过班级Id和关键词模糊查询用户列表
-     * @param classId
-     * @param keyWord
-     * @param ident
+     * 通过班级Id、身份、关键词模糊查询用户
+     * @param classId 班级ID
+     * @param keyWord 关键词
+     * @param ident 身份
      * @return
      */
     List<User> selectByClassIdAndKeyword(@Param("classId")Integer classId, @Param("keyWord")String keyWord, @Param("ident")Integer ident);

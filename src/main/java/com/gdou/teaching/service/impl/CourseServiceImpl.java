@@ -369,6 +369,8 @@ public class CourseServiceImpl implements CourseService {
         if(status!=null){
             criteria.andCourseStatusEqualTo(status.byteValue());
         }
+        List<CourseDTO> collect = new ArrayList<>(0);
+        HashMap<String,Object> result  = new HashMap<>(3);
         PageHelper.startPage(page,size);
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
         PageInfo<CourseMaster> pageInfo = new PageInfo(courseMasters);
@@ -376,19 +378,20 @@ public class CourseServiceImpl implements CourseService {
         long total = pageInfo.getTotal();
         if(list==null||list.isEmpty()){
             //说明该教师暂无授课或分页最末
-            return null;
+            result.put("list",collect);
+            result.put("total",total);
+            return result;
         }
-        List<CourseDTO> collect = list.stream().map(courseMaster -> {
+            collect = list.stream().map(courseMaster -> {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
             BeanUtils.copyProperties(courseDetail, courseDTO);
             return courseDTO;
         }).collect(Collectors.toList());
-        HashMap<String,Object> map  = new HashMap<>(3);
-        map.put("list",collect);
-        map.put("total",total);
-        return map;
+        result.put("list",collect);
+        result.put("total",total);
+        return result;
     }
 
     @Override

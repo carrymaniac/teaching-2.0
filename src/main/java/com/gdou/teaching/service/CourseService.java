@@ -59,15 +59,30 @@ public interface CourseService {
     List<CourseDTO> listCourseForTeacher(Integer userId);
 
     /**
-     * 展示对应教师的所有的课程主表记录+副表记录（用于15字介绍）(管理员端)
-     * @param userId 教师ID
+     * For Admin
+     * 展示对应教师的所有的负责的课程主表记录+副表记录（用于15字介绍）(管理员端)
+     *
+     * @param userId 用户ID
+     * @param page 分页参数
+     * @param size 分页参数
+     * @param keyWord 关键词
+     * @param status 状态筛选 有0（进行中），3（已结束）的筛选
      * @return
      */
     HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status);
 
+
+
     /**
-     * 展示对应学生所选修的所有的课程主表记录+副表记录（用于15字介绍）(管理员端)
-     * @param userId 学生ID
+     * For Admin
+     * 使用分页参数，对用户的选修课程进行查询，带有关键词模糊查询以及状态筛选的功能
+     * 展示对应学生所选修的所有的课程主表记录+副表记录（用于15字介绍），并带上成绩
+     *
+     * @param page 分页参数
+     * @param size 分页参数
+     * @param userId 用户ID
+     * @param keyword 关键词
+     * @param status 状态筛选 有0（进行中），3（已结束）的筛选
      * @return
      */
     HashMap<String,Object> listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status);
