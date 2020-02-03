@@ -91,9 +91,11 @@ public class AdminTeacherController {
             @RequestParam("teacherId")int teacherId,
             @RequestParam(value = "page",defaultValue = "1")int page,
             @RequestParam(value = "size",defaultValue = "5")int size,
-            @RequestParam(value = "keyword",required = false)String keyword){
+            @RequestParam(value = "keyword",required = false)String keyword,
+            @RequestParam(value = "status",required = false)Integer status
+    ){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        HashMap<String, Object> map = courseService.listCourseForAdminByStudentIdAndKeywordAndStatusInPage(teacherId, page, size, keyword,UserStatusEnum.NORMAL.getCode());
+        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordInPage(teacherId, page, size,keyword,status);
         map.put("user",userDetailByUserId);
         return ResultVOUtil.success(map);
     }
