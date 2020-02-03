@@ -95,10 +95,9 @@ public interface UserService {
      * @param size
      * @param keyword  关键词
      * @param ident    用户身份
-     * @param status   用户状态
      * @return
      */
-    PageInfo getUserListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident,Integer status);
+    PageInfo getUserListByClassIdAndKeywordAndIdentInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident);
 
 
     /**
@@ -106,15 +105,6 @@ public interface UserService {
      * @return
      */
     List<User> selectTeacherList();
-
-    /**
-     * 通过分页查询所有的教师列表
-     * @param page
-     * @param size
-     * @return
-     */
-    PageInfo<User> selectTeacherListByPage(Integer page, Integer size);
-
 
 
     /**

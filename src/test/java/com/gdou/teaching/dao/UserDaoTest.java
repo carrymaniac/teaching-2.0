@@ -7,11 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.Assert;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @ProjectName: teaching-2.0
@@ -40,7 +37,7 @@ class UserDaoTest {
 
     @Test
     void selectByClassIdAndKeyWord(){
-        List<User> userList = userDao.selectByClassIdAndKeyWord(null, null, UserIdentEnum.TEACHER.getCode(), UserStatusEnum.NORMAL.getCode());
+        List<User> userList = userDao.selectByClassIdAndKeyword(null, null, UserIdentEnum.TEACHER.getCode());
         System.out.println(userList.size());
     }
 }

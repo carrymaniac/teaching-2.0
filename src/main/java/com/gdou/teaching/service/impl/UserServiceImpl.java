@@ -21,14 +21,10 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -196,6 +192,7 @@ public class UserServiceImpl implements UserService {
         return userDTO;
     }
 
+    //todo 万一这个班级没学生呢？直接报错？
     @Override
     public List<UserDTO> getStudentListByClassId(Integer classId) {
         UserExample userExample = new UserExample();
@@ -218,14 +215,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo getUserListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident,Integer status) {
+    public PageInfo getUserListByClassIdAndKeywordAndIdentInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident) {
         PageHelper.startPage(page,size);
-        List<User> users =  userDao.selectByClassIdAndKeyWord(classId,keyword,ident,status);
-        //todo 查询不到,是否需要报错, 待讨论
-        if (users==null||users.isEmpty()){
-            log.info("[UserServiceImpl]-,根据classId和关键词查询用户列表,用户信息不存在,classId:{}",classId);
-            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
-        }
+        List<User> users =  userDao.selectByClassIdAndKeyword(classId,keyword,ident);
         PageInfo pageInfo = new PageInfo(users);
         return pageInfo;
     }
@@ -236,16 +228,6 @@ public class UserServiceImpl implements UserService {
         userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
         List<User> teachers = userMapper.selectByExample(userExample);
         return teachers;
-    }
-
-    @Override
-    public PageInfo<User> selectTeacherListByPage(Integer page, Integer size) {
-        PageHelper.startPage(page,size);
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
-        List<User> teachers = userMapper.selectByExample(userExample);
-        PageInfo<User> pageInfo = new PageInfo<>(teachers);
-        return pageInfo;
     }
 
     @Override

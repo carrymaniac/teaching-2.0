@@ -1,5 +1,7 @@
 package com.gdou.teaching.service.impl;
 
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.exception.TeachingException;
@@ -86,7 +88,6 @@ class UserServiceImplTest {
     @Test
     void addUserInfoByBatch() {
         Boolean flag = userService.addUserInfoByBatch(Arrays.asList(3, 9, 10), "数学与计算机学院", "物联网工程系", "信息管理与信息系统");
-        Assert.isTrue(flag);
     }
 
     @Test
@@ -106,8 +107,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    void selectTeacherListByPage(){
-        PageInfo pageInfo = userService.selectTeacherListByPage(1, 10);
-        log.info("pageInfo:{}",pageInfo);
+    void getUserListByClassIdAndKeywordInPage(){
+        PageInfo page = userService.getUserListByClassIdAndKeywordAndIdentInPage(0, 1, 10, "测试", UserIdentEnum.TEACHER.getCode());
+        log.info("result:{}",JSONUtil.toJsonPrettyStr(page));
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -358,16 +359,18 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordForPage(Integer userId,Integer page,Integer size,String keyWord) {
+    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status) {
         CourseMasterExample courseMasterExample = new CourseMasterExample();
         CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
         if(!StringUtils.isEmpty(keyWord)){
             keyWord = "%"+keyWord+"%";
             criteria.andCourseNameLike(keyWord);
         }
+        if(status!=null){
+            criteria.andCourseStatusEqualTo(status.byteValue());
+        }
         PageHelper.startPage(page,size);
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
-
         PageInfo<CourseMaster> pageInfo = new PageInfo(courseMasters);
         List<CourseMaster> list = pageInfo.getList();
         long total = pageInfo.getTotal();
@@ -383,30 +386,48 @@ public class CourseServiceImpl implements CourseService {
             return courseDTO;
         }).collect(Collectors.toList());
         HashMap<String,Object> map  = new HashMap<>(3);
-        map.put("list ",collect);
-        map.put("total ",total);
+        map.put("list",collect);
+        map.put("total",total);
         return map;
     }
 
     @Override
-    public List<CourseDTO> listCourseForAdminByStudentId(Integer userId) {
+    public HashMap listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status) {
+        HashMap result = new HashMap(3);
+        List<CourseDTO> collect = new ArrayList<>(0);
         AchievementExample achievementExample = new AchievementExample();
-        achievementExample.createCriteria().andUserIdEqualTo(userId);
+        AchievementExample.Criteria criteria = achievementExample.createCriteria().andUserIdEqualTo(userId);
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andCourseNameLike("%"+keyword+"%");
+        }
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
             //说明该学生无报任何课程
-            return null;
+            //返回total=0，list=null的map
+            result.put("total",0);
+            result.put("list",collect);
+            return result;
         }
         Map<Integer, Double> map = achievements.stream().collect(Collectors.toMap(Achievement::getCourseId, Achievement::getCourseAchievement));
         List<Integer> courseIds = achievements.stream().map(achievement -> {
             Integer courseId = achievement.getCourseId();
             return courseId;
         }).collect(Collectors.toList());
-        //获取选修的班级主表ID
+
+        //拼装数据
+        //获取选修的课程主表ID
+        //这里做分页
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andCourseIdIn(courseIds);
+        CourseMasterExample.Criteria criteria1 = courseMasterExample.createCriteria().andCourseIdIn(courseIds);
+        if(status!=null){
+            criteria1.andCourseStatusEqualTo(status.byteValue());
+        }
+        PageHelper.startPage(page,size);
         List<CourseMaster> courseMasterList = courseMasterMapper.selectByExample(courseMasterExample);
-        List<CourseDTO> collect = courseMasterList.stream().map(courseMaster -> {
+        PageInfo<CourseMaster> pageInfo = new PageInfo<>(courseMasterList);
+        long total = pageInfo.getTotal();
+        courseMasterList = pageInfo.getList();
+        collect = courseMasterList.stream().map(courseMaster -> {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
@@ -418,7 +439,9 @@ public class CourseServiceImpl implements CourseService {
             courseDTO.setAchievement(map.get(courseMaster.getCourseId()));
             return courseDTO;
         }).collect(Collectors.toList());
-        return collect;
+        result.put("total",total);
+        result.put("list",collect);
+        return result;
     }
 
 }

@@ -1,8 +1,6 @@
 package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.UserIdentEnum;
-import com.gdou.teaching.Enum.UserStatusEnum;
-import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.CourseService;
@@ -11,10 +9,10 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.web.Auth;
 import com.github.pagehelper.PageInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,21 +42,25 @@ public class AdminTeacherController {
     @ResponseBody
     @GetMapping("/teacherList")
     public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,
-                                @RequestParam(value = "size",defaultValue = "10",required = false) Integer size,
+                                @RequestParam(value = "size",defaultValue = "5",required = false) Integer size,
                                 @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword){
-        PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode(), UserStatusEnum.NORMAL.getCode());
+        PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordAndIdentInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode());
         long total = userPageInfo.getTotal();
-        List<User> list = userPageInfo.getList();
-        List<UserDTO> collect = list.stream().map(teacher -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(teacher.getUserId());
-            userDTO.setUserNumber(teacher.getUserNumber());
-            userDTO.setNickname(teacher.getNickname());
-            return userDTO;
-        }).collect(Collectors.toList());
         HashMap map = new HashMap(2);
         map.put("total",total);
-        map.put("list",collect);
+        List<User> list = userPageInfo.getList();
+        if(list==null||list.isEmpty()){
+            map.put("list",new ArrayList<>(0));
+        }else {
+            List<UserDTO> collect = list.stream().map(teacher -> {
+                UserDTO userDTO = new UserDTO();
+                userDTO.setUserId(teacher.getUserId());
+                userDTO.setUserNumber(teacher.getUserNumber());
+                userDTO.setNickname(teacher.getNickname());
+                return userDTO;
+            }).collect(Collectors.toList());
+            map.put("list",collect);
+        }
         return ResultVOUtil.success(map);
     }
 
@@ -87,17 +89,27 @@ public class AdminTeacherController {
     }
 
 
+    /**
+     *
+     * @param teacherId
+     * @param page
+     * @param size
+     * @param status 可选参数，若为0，则返回"进行中"的课程;若为3，则返回"已结束"的课程
+     * @param keyword
+     * @return
+     */
     @ResponseBody
     @GetMapping("/teacherInfo")
     public ResultVO teacherInfo(
             @RequestParam("teacherId")int teacherId,
             @RequestParam(value = "page",defaultValue = "1")int page,
             @RequestParam(value = "size",defaultValue = "5")int size,
+            @RequestParam(value = "status",required = false)Integer status,
             @RequestParam(value = "keyword",required = false)String keyword
 
     ){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordForPage(teacherId, page, size, keyword);
+        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordInPage(teacherId, page, size, keyword,status);
         map.put("user",userDetailByUserId);
         return ResultVOUtil.success(map);
     }

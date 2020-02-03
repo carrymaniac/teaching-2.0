@@ -63,14 +63,14 @@ public interface CourseService {
      * @param userId 教师ID
      * @return
      */
-    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordForPage(Integer userId,Integer page,Integer size,String keyWord);
+    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status);
 
     /**
      * 展示对应学生所选修的所有的课程主表记录+副表记录（用于15字介绍）(管理员端)
      * @param userId 学生ID
      * @return
      */
-    List<CourseDTO> listCourseForAdminByStudentId(Integer userId);
+    HashMap<String,Object> listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status);
 
     /**
      * 增加课程资源文件

@@ -25,7 +25,7 @@
         limit 1
     </select>
 
-    <select id="selectByClassIdAndKeyWord" resultType="com.gdou.teaching.mbg.model.User">
+    <select id="selectByClassIdAndKeyword" resultType="com.gdou.teaching.mbg.model.User">
         SELECT distinct <include refid="selectFields"/>FROM
         <include refid="table"/>
         <where>
@@ -39,7 +39,7 @@
         </if>
             user_ident = #{ident}
             and
-            user_status = #{status}
+            user_status !=2
         </where>
 
     </select>

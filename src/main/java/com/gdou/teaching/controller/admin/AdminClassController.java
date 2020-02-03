@@ -72,17 +72,21 @@ public class AdminClassController {
                          @RequestParam(value = "classId",required = false,defaultValue = "0")Integer classId,
                          @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword
     ){
-        HashMap<String,Object> map = new HashMap<>(2);
-        PageInfo pageInfo = userService.getUserListByClassIdAndKeywordInPage(classId, page, size,keyword,UserIdentEnum.SUTUDENT.getCode(), UserStatusEnum.NORMAL.getCode());
+        HashMap<String,Object> map = new HashMap<>(3);
+        PageInfo pageInfo = userService.getUserListByClassIdAndKeywordAndIdentInPage(classId, page, size,keyword,UserIdentEnum.SUTUDENT.getCode());
         long total = pageInfo.getTotal();
         List<User> list = pageInfo.getList();
-        List<UserDTO> userDTOS = list.stream().map(user -> {
-            UserDTO userDTO = new UserDTO();
-            BeanUtils.copyProperties(user, userDTO);
-            return userDTO;
-        }).collect(Collectors.toList());
-        map.put("userList",userDTOS);
-        map.put("userListTotal",total);
+        map.put("total",total);
+        if(list!=null&&!list.isEmpty()){
+            List<UserDTO> userDTOS = list.stream().map(user -> {
+                UserDTO userDTO = new UserDTO();
+                BeanUtils.copyProperties(user, userDTO);
+                return userDTO;
+            }).collect(Collectors.toList());
+            map.put("list",userDTOS);
+        }else {
+            map.put("list",new ArrayList<>(0));
+        }
         if(classId==0){
             //查询一下班级列表供用户前端使用
             List<TreeMap> allClazzList = classService.getAllClazzList();
@@ -90,9 +94,16 @@ public class AdminClassController {
         }
         return ResultVOUtil.success(map);
     }
+
     @ResponseBody
     @GetMapping("/info/{userId}")
-    public ResultVO info(@PathVariable("userId")Integer userId) {
+    public ResultVO info(
+            @PathVariable("userId")Integer userId,
+            @RequestParam(value = "page", required = false,defaultValue = "1")Integer page,
+            @RequestParam(value = "size", required = false,defaultValue = "10")Integer size,
+            @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword,
+            @RequestParam(value = "status",required = false)Integer status
+    ) {
         if (userId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
@@ -100,10 +111,8 @@ public class AdminClassController {
         if(userById.getUserIdent()==UserIdentEnum.SUTUDENT.getCode().byteValue()){
             UserDTO userInfo = userService.getUserDetailByUserId(userId);
             //查询用户的各课程成绩
-            List<CourseDTO> courseDTOS = courseService.listCourseForAdminByStudentId(userId);
-            HashMap map = new HashMap(2);
+            HashMap<String, Object> map = courseService.listCourseForAdminByStudentIdAndKeywordAndStatusInPage(page, size, userId, keyword, status);
             map.put("user",userInfo);
-            map.put("courseList",courseDTOS);
             return ResultVOUtil.success(map);
         }else {
             return ResultVOUtil.fail(203,"查询的用户并非学生");
