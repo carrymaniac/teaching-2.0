@@ -1,13 +1,14 @@
 package com.gdou.teaching.dao;
 
+import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.mbg.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.Assert;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 /**
  * @ProjectName: teaching-2.0
@@ -32,5 +33,11 @@ class UserDaoTest {
     void selectByUserNumberLimitOne() {
         User user = userDao.selectByUserNumberLimitOne("201611671309");
         log.info("user is {}",user);
+    }
+
+    @Test
+    void selectByClassIdAndKeyWord(){
+        List<User> userList = userDao.selectByClassIdAndKeyword(null, null, UserIdentEnum.TEACHER.getCode());
+        System.out.println(userList.size());
     }
 }

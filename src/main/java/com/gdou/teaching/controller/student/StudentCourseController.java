@@ -15,6 +15,7 @@ import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ExperimentVO;
 import com.gdou.teaching.vo.ResultVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/student/course")
 @Slf4j
+@Auth(user=UserIdentEnum.SUTUDENT)
 public class StudentCourseController {
     @Autowired
     private CourseService courseService;
@@ -152,38 +154,27 @@ public class StudentCourseController {
         Double score = achievement.getCourseAchievement();
         //通过课程ID和用户ID获取提交记录列表
         List<RecordDTO> recordByUserIdAndCourseId = recordService.getRecordByUserIdAndCourseId(user.getUserId(), courseId);
-        //提取所需要的字段（实验名-实验ID-实验得分）返回
-        List<HashMap<String, String>> experiments = recordByUserIdAndCourseId.stream().map(r -> {
-            HashMap<String, String> ex = new HashMap<>(3);
-            ex.put("experimentName",r.getExperimentName());
-            ex.put("experimentId", r.getExperimentId().toString());
-            ex.put("experimentAchievement", r.getExperimentAchievement().toString());
-            return ex;
-        }).collect(Collectors.toList());
-        //获取课程成绩信息
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("experiments",experiments);
-        map.put("score",score);
-        return ResultVOUtil.success(map);
+        if(recordByUserIdAndCourseId!=null){
+            List<HashMap<String, String>> experiments = recordByUserIdAndCourseId.stream().map(r -> {
+                HashMap<String, String> ex = new HashMap<>(3);
+                ex.put("experimentName",r.getExperimentName());
+                ex.put("experimentId", r.getExperimentId().toString());
+                ex.put("experimentAchievement", r.getExperimentAchievement().toString());
+                return ex;
+            }).collect(Collectors.toList());
+            //提取所需要的字段（实验名-实验ID-实验得分）返回
+            //获取课程成绩信息
+            HashMap<String,Object> map = new HashMap<>();
+            map.put("experiments",experiments);
+            map.put("score",score);
+            return ResultVOUtil.success(map);
+        }else {
+            return ResultVOUtil.success();
+        }
     }
 
     @GetMapping("/resource/{courseId}")
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
-//        if(StringUtils.isEmpty(keyword)){
-//            //通过课程ID获取课程关连的文件
-//            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId);
-//            if(result!=null&&!result.isEmpty()){
-//                return ResultVOUtil.success(result);
-//            }
-//        }else {
-//            List<FileDTO> result = fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword);
-//            //通过关键字和课程ID获取关联的文件
-//            if(result!=null&&!result.isEmpty()){
-//                return ResultVOUtil.success(result);
-//            }
-//        }
-//        return ResultVOUtil.success(new ArrayList<>());
-
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关连的文件
                 return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId));

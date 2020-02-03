@@ -34,10 +34,14 @@ import java.util.*;
 @Service
 @Slf4j
 public class ClassServiceImpl implements ClassService {
-    @Autowired
-    ClassMapper classMapper;
-    @Autowired
-    UserMapper userMapper;
+    private final ClassMapper classMapper;
+    private final UserMapper userMapper;
+
+    public ClassServiceImpl(ClassMapper classMapper, UserMapper userMapper) {
+        this.classMapper = classMapper;
+        this.userMapper = userMapper;
+    }
+
     @Override
     public Class registerClass(String clazzName,Integer classSize) {
         Class clazz = new Class();

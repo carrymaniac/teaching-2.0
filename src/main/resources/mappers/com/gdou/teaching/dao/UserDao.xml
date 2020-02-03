@@ -24,4 +24,24 @@
         WHERE  user_number = #{userNumber}
         limit 1
     </select>
+
+    <select id="selectByClassIdAndKeyword" resultType="com.gdou.teaching.mbg.model.User">
+        SELECT distinct <include refid="selectFields"/>FROM
+        <include refid="table"/>
+        <where>
+        <if test="classId != 0">
+            class_id = #{classId}
+            and
+        </if>
+        <if test="keyWord != null">
+            (nickname like "%"#{keyWord}"%" or user_number like "%"#{keyWord}"%")
+            and
+        </if>
+            user_ident = #{ident}
+            and
+            user_status !=2
+        </where>
+
+    </select>
+
 </mapper>

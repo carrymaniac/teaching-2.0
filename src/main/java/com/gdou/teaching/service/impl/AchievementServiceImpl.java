@@ -39,25 +39,24 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class AchievementServiceImpl implements AchievementService {
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    CourseMasterMapper courseMasterMapper;
-    @Autowired
-    AchievementDao achievementDao;
-    @Autowired
-    AchievementMapper achievementMapper;
-    @Autowired
-    ClassMapper classMapper;
-    @Autowired
-    ExperimentMasterMapper experimentMasterMapper;
-    @Autowired
-    UserReExperimentMapper userReExperimentMapper;
-    @Autowired
-    ExperimentService experimentService;
-    @Override
-    public boolean addAchievementByClazzId(Integer courseId, Integer clazzId) {
-        return false;
+    private final UserMapper userMapper;
+    private final CourseMasterMapper courseMasterMapper;
+    private final AchievementDao achievementDao;
+    private final AchievementMapper achievementMapper;
+    private final ClassMapper classMapper;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final UserReExperimentMapper userReExperimentMapper;
+    private final ExperimentService experimentService;
+
+    public AchievementServiceImpl(UserMapper userMapper, CourseMasterMapper courseMasterMapper, AchievementDao achievementDao, AchievementMapper achievementMapper, ClassMapper classMapper, ExperimentMasterMapper experimentMasterMapper, UserReExperimentMapper userReExperimentMapper, ExperimentService experimentService) {
+        this.userMapper = userMapper;
+        this.courseMasterMapper = courseMasterMapper;
+        this.achievementDao = achievementDao;
+        this.achievementMapper = achievementMapper;
+        this.classMapper = classMapper;
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.userReExperimentMapper = userReExperimentMapper;
+        this.experimentService = experimentService;
     }
 
     @Override
@@ -136,8 +135,6 @@ public class AchievementServiceImpl implements AchievementService {
         return achievements.get(0);
     }
 
-
-    //todo 考虑不存在成绩表的情况
     @Override
     public List<AchievementDTO> getAchievementByCourseId(Integer courseId) {
         AchievementExample achievementExample = new AchievementExample();
@@ -213,11 +210,10 @@ public class AchievementServiceImpl implements AchievementService {
             }
         }).collect(Collectors.toList());
 
-
         //通过审核的实验个数
         int num=0;
         Double result=0.0;
-        for(int i=0;i<recordList.size();i++){
+        for(int i=0,size= recordList.size();i<size;i++){
             if(recordList.get(i)!=null){
                 result+=recordList.get(i).getExperimentAchievement();
                 num++;
@@ -238,13 +234,24 @@ public class AchievementServiceImpl implements AchievementService {
 
 
     @Override
-    //todo 未对该方法做异常处理
     public List<List<String>> exportAchievement(CourseDTO courseDTO) {
         List<AchievementDTO> achievementList = getAchievementByCourseId(courseDTO.getCourseId());
+        if (achievementList==null||achievementList.isEmpty()){
+            log.info("[AchievementServiceImpl]-exportAchievement,成绩表信息不存在,courseId:{}",courseDTO.getCourseId());
+            throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
+        }
         List<ExperimentDTO> experimentDTOList = experimentService.list(courseDTO.getCourseId());
-        List<Integer> experimentIdList=experimentDTOList.stream().map(experimentDTO -> {
-            return experimentDTO.getExperimentId();
-        }).collect(Collectors.toList());
+        //获取实验列表
+        List<Integer> experimentIdList;
+        if (experimentDTOList==null||experimentDTOList.isEmpty()){
+            log.info("[AchievementServiceImpl]-exportAchievement,实验信息不存在,courseId:{}",courseDTO.getCourseId());
+            experimentIdList=new ArrayList<>();
+        }else{
+            experimentIdList=experimentDTOList.stream().map(experimentDTO -> {
+                return experimentDTO.getExperimentId();
+            }).collect(Collectors.toList());
+        }
+
         HashMap<Integer,String> classMap=new HashMap<>();
         List<List<String>> collect=achievementList.stream().map(achievement -> {
             List<String> list = new ArrayList<>();
@@ -271,7 +278,6 @@ public class AchievementServiceImpl implements AchievementService {
                     list.add(userReExperiments.get(0).getExperimentAchievement().toString());
                 }
             }
-
             return list;
         }).collect(Collectors.toList());
         return collect;

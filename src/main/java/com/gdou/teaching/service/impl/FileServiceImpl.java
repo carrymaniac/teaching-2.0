@@ -24,10 +24,14 @@ import java.util.stream.Collectors;
  */
 @Service
 public class FileServiceImpl implements FileService {
-    @Autowired
-    FileMapper fileMapper;
-    @Autowired
-    FileDao fileDao;
+    private final FileMapper fileMapper;
+    private final FileDao fileDao;
+
+    public FileServiceImpl(FileMapper fileMapper, FileDao fileDao) {
+        this.fileMapper = fileMapper;
+        this.fileDao = fileDao;
+    }
+
     @Override
     public FileDTO selectFileById(Integer fileId) {
         File file = fileMapper.selectByPrimaryKey(fileId);
@@ -43,6 +47,10 @@ public class FileServiceImpl implements FileService {
     public List<FileDTO> selectFileByCategoryAndFileCategoryId(Integer fileCategory, Integer fileCategoryId) {
         FileExample fileExample = new FileExample();
         fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
+        return getFileDTOS(fileExample);
+    }
+
+    private List<FileDTO> getFileDTOS(FileExample fileExample) {
         List<File> files = fileMapper.selectByExample(fileExample);
         if(files==null||files.isEmpty()){
             return null;
@@ -59,16 +67,7 @@ public class FileServiceImpl implements FileService {
     public List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory, Integer fileCategoryId, String keyword) {
         FileExample fileExample = new FileExample();
         fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId).andFileNameLike(keyword);
-        List<File> files = fileMapper.selectByExample(fileExample);
-        if(files==null||files.isEmpty()){
-            return null;
-        }
-        List<FileDTO> FileDTOs = files.stream().map(file -> {
-            FileDTO fileDTO = new FileDTO();
-            BeanUtils.copyProperties(file, fileDTO);
-            return fileDTO;
-        }).collect(Collectors.toList());
-        return FileDTOs;
+        return getFileDTOS(fileExample);
     }
 
     @Override

@@ -14,11 +14,15 @@ import java.util.List;
  **/
 @Data
 public class ExperimentAnswerUpdateForm {
-
+    //实验Id
+    @NotNull(message = "实验Id必填")
+    private Integer experimentId;
+    //实验答案阈值
+    @NotNull(message = "实验答案阈值必填")
+    private Float punishment;
     //实验答案Id
     @NotNull(message = "实验答案Id必填")
     private Integer experimentAnswerId;
-
     //实验答案文本
     private String experimentAnswerContent;
 

@@ -89,27 +89,28 @@ public interface UserService {
     List<UserDTO> getStudentListByClassId(Integer classId);
 
     /**
-     * 根据班级Id查询学生列表, 若classId为0即全查,采用分页返回
-     * @param classId
-     * @param page
-     * @param size
+     *  For Admin
+     * 根据班级Id、用户身份和关键词查询用户列表,
+     *  若classId为0即全查,
+     *  若keyword为null即全查,keyword不为空模糊查询Nickname和UserNumber
+     *  采用分页返回
+     * @param classId  班级id
+     * @param page 分页参数
+     * @param size 分页参数
+     * @param keyword  关键词
+     * @param ident    用户身份
      * @return
      */
-    PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword);
+    PageInfo getUserListByClassIdAndKeywordAndIdentInPage(Integer classId, Integer page,
+                                                          Integer size,String keyword,
+                                                          Integer ident);
+
 
     /**
      * 查询所有的教师列表
      * @return
      */
     List<User> selectTeacherList();
-
-    /**
-     * 通过分页查询所有的教师列表
-     * @param page
-     * @param size
-     * @return
-     */
-    PageInfo selectTeacherListByPage(Integer page, Integer size);
 
 
     /**
@@ -128,6 +129,7 @@ public interface UserService {
      * @return
      */
     Boolean resetPassword(Integer userId,String newPassword);
+
 
 
 }

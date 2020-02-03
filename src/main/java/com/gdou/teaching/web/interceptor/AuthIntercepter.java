@@ -37,6 +37,10 @@ public class AuthIntercepter implements HandlerInterceptor {
         }
         Auth annotation = ((HandlerMethod) handler).getMethod().getAnnotation(Auth.class);
         if(annotation==null){
+            //如果方法上的注解为空的话，尝试获取类的注解
+            annotation = ((HandlerMethod) handler).getMethod().getDeclaringClass().getAnnotation(Auth.class);
+        }
+        if(annotation==null){
             log.debug("can't find @Auth in this uri: {}",request.getRequestURI());
             return true;
         }

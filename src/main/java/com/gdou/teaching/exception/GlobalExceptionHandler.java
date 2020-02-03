@@ -29,7 +29,15 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public ResultVO exceptionHandler(HttpServletRequest httpServletRequest, Exception e){
-        log.error("服务错误:", e);
+        StackTraceElement[] stackTrace = e.getStackTrace();
+        StackTraceElement stackTraceElement = stackTrace[0];
+        log.error("服务报错:报错类为:{},报错文件为:{},报错的方法为:{},报错的行数为{}",
+                stackTraceElement.getClassName(),
+                stackTraceElement.getFileName(),
+                stackTraceElement.getMethodName(),
+                stackTraceElement.getLineNumber()
+                );
+        log.error("完整报错:", e);
         return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
     }
 

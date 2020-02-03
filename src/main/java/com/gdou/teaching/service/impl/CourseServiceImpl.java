@@ -1,44 +1,58 @@
 package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.Enum.CourseStatusEnum;
+import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.CourseDTO;
-import com.gdou.teaching.dto.UserDTO;
+import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.service.CourseService;
+import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author carrymaniac
+ */
 @Service
 @Slf4j
 public class CourseServiceImpl implements CourseService {
-    @Autowired
-    CourseMasterMapper courseMasterMapper;
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    CourseDetailMapper courseDetailMapper;
-    @Autowired
-    AchievementMapper achievementMapper;
-    @Autowired
-    UserService userService;
-    @Autowired
-    CourseMasterDao courseMasterDao;
-    @Autowired
-    ExperimentMasterMapper experimentMasterMapper;
+    private final CourseMasterMapper courseMasterMapper;
+    private final UserMapper userMapper;
+    private final CourseDetailMapper courseDetailMapper;
+    private final AchievementMapper achievementMapper;
+    private final UserService userService;
+    private final CourseMasterDao courseMasterDao;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final FileService fileService;
+
+    public CourseServiceImpl(CourseMasterMapper courseMasterMapper, UserMapper userMapper, CourseDetailMapper courseDetailMapper, AchievementMapper achievementMapper, UserService userService, CourseMasterDao courseMasterDao, ExperimentMasterMapper experimentMasterMapper, FileService fileService) {
+        this.courseMasterMapper = courseMasterMapper;
+        this.userMapper = userMapper;
+        this.courseDetailMapper = courseDetailMapper;
+        this.achievementMapper = achievementMapper;
+        this.userService = userService;
+        this.courseMasterDao = courseMasterDao;
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.fileService = fileService;
+    }
 
 
     /**
@@ -135,6 +149,13 @@ public class CourseServiceImpl implements CourseService {
         return courseDTO;
     }
 
+    @Override
+    public boolean addCourseFile(Integer courseId,List<FileDTO> courseFile) {
+        if(courseFile!=null&&!courseFile.isEmpty()){
+            fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),courseId,courseFile);
+        }
+        return true;
+    }
 
     /**
      * 注销课程操作 ----隶属老师端
@@ -343,51 +364,94 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<CourseDTO> listCourseForAdminByTeacherId(Integer userId) {
+    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status) {
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
-        List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
-        if(courseMasters==null||courseMasters.isEmpty()){
-            //说明该教师暂无授课
-            return null;
+        CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        if(!StringUtils.isEmpty(keyWord)){
+            keyWord = "%"+keyWord+"%";
+            criteria.andCourseNameLike(keyWord);
         }
-        List<CourseDTO> collect = courseMasters.stream().map(courseMaster -> {
+        if(status!=null){
+            criteria.andCourseStatusEqualTo(status.byteValue());
+        }
+        List<CourseDTO> collect = new ArrayList<>(0);
+        HashMap<String,Object> result  = new HashMap<>(3);
+        PageHelper.startPage(page,size);
+        List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
+        PageInfo<CourseMaster> pageInfo = new PageInfo(courseMasters);
+        List<CourseMaster> list = pageInfo.getList();
+        long total = pageInfo.getTotal();
+        if(list==null||list.isEmpty()){
+            //说明该教师暂无授课或分页最末
+            result.put("list",collect);
+            result.put("total",total);
+            return result;
+        }
+            collect = list.stream().map(courseMaster -> {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
             BeanUtils.copyProperties(courseDetail, courseDTO);
             return courseDTO;
         }).collect(Collectors.toList());
-        return collect;
+        result.put("list",collect);
+        result.put("total",total);
+        return result;
     }
 
     @Override
-    public List<CourseDTO> listCourseForAdminByStudentId(Integer userId) {
+    public HashMap listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status) {
+        HashMap result = new HashMap(3);
+        List<CourseDTO> collect = new ArrayList<>(0);
         AchievementExample achievementExample = new AchievementExample();
-        achievementExample.createCriteria().andUserIdEqualTo(userId);
+        AchievementExample.Criteria criteria = achievementExample.createCriteria().andUserIdEqualTo(userId);
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andCourseNameLike("%"+keyword+"%");
+        }
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
             //说明该学生无报任何课程
-            return null;
+            //返回total=0，list=null的map
+            result.put("total",0);
+            result.put("list",collect);
+            return result;
         }
         Map<Integer, Double> map = achievements.stream().collect(Collectors.toMap(Achievement::getCourseId, Achievement::getCourseAchievement));
         List<Integer> courseIds = achievements.stream().map(achievement -> {
             Integer courseId = achievement.getCourseId();
             return courseId;
         }).collect(Collectors.toList());
-        //获取选修的班级主表ID
+
+        //拼装数据
+        //获取选修的课程主表ID
+        //这里做分页
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andCourseIdIn(courseIds);
+        CourseMasterExample.Criteria criteria1 = courseMasterExample.createCriteria().andCourseIdIn(courseIds);
+        if(status!=null){
+            criteria1.andCourseStatusEqualTo(status.byteValue());
+        }
+        PageHelper.startPage(page,size);
         List<CourseMaster> courseMasterList = courseMasterMapper.selectByExample(courseMasterExample);
-        List<CourseDTO> collect = courseMasterList.stream().map(courseMaster -> {
+        PageInfo<CourseMaster> pageInfo = new PageInfo<>(courseMasterList);
+        long total = pageInfo.getTotal();
+        courseMasterList = pageInfo.getList();
+        collect = courseMasterList.stream().map(courseMaster -> {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
-            courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction().substring(0, 15));
+            if(courseDetail.getCourseIntroduction().length()<=15){
+                courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction());
+            }else {
+                courseDTO.setCourseIntroduction(courseDetail.getCourseIntroduction().substring(0, 15));
+            }
             courseDTO.setAchievement(map.get(courseMaster.getCourseId()));
             return courseDTO;
         }).collect(Collectors.toList());
-        return collect;
+        result.put("total",total);
+        result.put("list",collect);
+        return result;
     }
 
 }
+
+

@@ -2,6 +2,7 @@ package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.form.ClazzRegisterForm;
@@ -13,16 +14,22 @@ import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.UserService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
+import com.gdou.teaching.web.Auth;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -40,19 +47,23 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("admin/class")
 @Slf4j
+@Auth(user=UserIdentEnum.ADMIN)
 public class AdminClassController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    AchievementService achievementService;
+    private final AchievementService achievementService;
 
-    @Autowired
-    CourseService courseService;
+    private final CourseService courseService;
 
-    @Autowired
-    ClassService classService;
+    private final ClassService classService;
+
+    public AdminClassController(UserService userService, AchievementService achievementService, CourseService courseService, ClassService classService) {
+        this.userService = userService;
+        this.achievementService = achievementService;
+        this.courseService = courseService;
+        this.classService = classService;
+    }
 
     @ResponseBody
     @GetMapping("/list")
@@ -61,9 +72,21 @@ public class AdminClassController {
                          @RequestParam(value = "classId",required = false,defaultValue = "0")Integer classId,
                          @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword
     ){
-        HashMap<String,Object> map = new HashMap<>(2);
-        PageInfo pageInfo = userService.getStudentListByClassIdAndKeywordInPage(classId, page, size,keyword);
-        map.put("userList",pageInfo);
+        HashMap<String,Object> map = new HashMap<>(3);
+        PageInfo pageInfo = userService.getUserListByClassIdAndKeywordAndIdentInPage(classId, page, size,keyword,UserIdentEnum.SUTUDENT.getCode());
+        long total = pageInfo.getTotal();
+        List<User> list = pageInfo.getList();
+        map.put("total",total);
+        if(list!=null&&!list.isEmpty()){
+            List<UserDTO> userDTOS = list.stream().map(user -> {
+                UserDTO userDTO = new UserDTO();
+                BeanUtils.copyProperties(user, userDTO);
+                return userDTO;
+            }).collect(Collectors.toList());
+            map.put("list",userDTOS);
+        }else {
+            map.put("list",new ArrayList<>(0));
+        }
         if(classId==0){
             //查询一下班级列表供用户前端使用
             List<TreeMap> allClazzList = classService.getAllClazzList();
@@ -74,21 +97,29 @@ public class AdminClassController {
 
     @ResponseBody
     @GetMapping("/info/{userId}")
-    public ResultVO info(@PathVariable("userId")Integer userId) {
+    public ResultVO info(
+            @PathVariable("userId")Integer userId,
+            @RequestParam(value = "page", required = false,defaultValue = "1")Integer page,
+            @RequestParam(value = "size", required = false,defaultValue = "10")Integer size,
+            @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword,
+            @RequestParam(value = "status",required = false)Integer status
+    ) {
         if (userId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
-        UserDTO userInfo = userService.getUserDetailByUserId(userId);
-        //查询用户的各课程成绩
-        List<CourseDTO> courseDTOS = courseService.listCourseForAdminByStudentId(userId);
-        HashMap map = new HashMap(2);
-        map.put("user",userInfo);
-        map.put("courseList",courseDTOS);
-        return ResultVOUtil.success(map);
+        User userById = userService.getUserById(userId);
+        if(userById.getUserIdent()==UserIdentEnum.SUTUDENT.getCode().byteValue()){
+            UserDTO userInfo = userService.getUserDetailByUserId(userId);
+            //查询用户的各课程成绩
+            HashMap<String, Object> map = courseService.listCourseForAdminByStudentIdAndKeywordAndStatusInPage(page, size, userId, keyword, status);
+            map.put("user",userInfo);
+            return ResultVOUtil.success(map);
+        }else {
+            return ResultVOUtil.fail(203,"查询的用户并非学生");
+        }
     }
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/addStudentByBatch")
     public ResultVO addStudentByBatch(@RequestBody @Valid ClazzRegisterForm form,
                                       BindingResult bindingResult){
@@ -98,10 +129,9 @@ public class AdminClassController {
         }
         List<User> userList = form.getUserList();
         //注册班级
-        Class aClass = classService.registerClass(form.getClassName(),userList.size());
-
+        Class registerClass = classService.registerClass(form.getClassName(),userList.size());
         userList.forEach(user->{
-            user.setClassId(aClass.getClassId());
+            user.setClassId(registerClass.getClassId());
             user.setUserIdent(UserIdentEnum.SUTUDENT.getCode().byteValue());
         });
         userService.addUserByBatch(userList);

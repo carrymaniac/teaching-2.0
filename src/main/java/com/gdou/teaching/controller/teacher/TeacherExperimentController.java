@@ -1,10 +1,12 @@
 package com.gdou.teaching.controller.teacher;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.*;
+import com.gdou.teaching.service.AnswerService;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.util.ResultVOUtil;
@@ -20,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,19 +34,20 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/teacher/experiment")
 @Slf4j
+@Auth
 public class TeacherExperimentController {
     @Autowired
     private ExperimentService experimentService;
     @Autowired
     private CourseService courseService;
-
+    @Autowired
+    private AnswerService answerService;
     /**
      * 实验列表
      * @param courseId
      * @return
      */
     @GetMapping(path = "/list/{courseId}")
-    @Auth
     public ResultVO<CourseMainPageVO> list(@PathVariable(value = "courseId") Integer courseId) {
         //查询课程基本信息
         CourseDTO  courseDTO= courseService.info(courseId);
@@ -73,17 +77,22 @@ public class TeacherExperimentController {
      * @return
      */
     @GetMapping("/detail/{experimentId}")
-    @Auth
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
+        if(experimentDTO.getExperimentAnswerId()!=null){
+            AnswerDTO answerDTO = answerService.detail(experimentDTO.getExperimentAnswerId());
+            experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList()==null?new ArrayList<>():answerDTO.getExperimentAnswerFileList());
+            experimentDTO.setExperimentAnswerContent(answerDTO.getExperimentAnswerContent());
+        }else{
+            experimentDTO.setExperimentAnswerFile(new ArrayList<>());
+        }
         //将不需要的字段置空
         experimentDTO.setExperimentIntro(null);
         return ResultVOUtil.success(experimentDTO);
     }
 
     @GetMapping("/index")
-    @Auth
     public ResultVO<ExperimentDTO> index(@RequestParam(value = "experimentId", required = false) Integer experimentId) {
         ExperimentDTO experimentDTO=null;
         //如果传入courseId不为空,为更新操作
@@ -94,7 +103,6 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/add")
-    @Auth
     public ResultVO add(@RequestBody @Valid ExperimentForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -107,7 +115,6 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentInfo")
-    @Auth
     public ResultVO updateExperimentInfo(@RequestBody @Valid ExperimentInfoUpdateForm form,
                                      BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -121,7 +128,6 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/updateExperimentDetail")
-    @Auth
     public ResultVO updateExperimentDetail(@RequestBody @Valid ExperimentDetailUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -135,7 +141,6 @@ public class TeacherExperimentController {
     }
 
     @PostMapping("/updateExperimentFile")
-    @Auth
     public ResultVO updateExperimentFile(@RequestBody @Valid ExperimentFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -148,7 +153,6 @@ public class TeacherExperimentController {
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswer")
-    @Auth
     public ResultVO updateExperimentAnswer(@RequestBody @Valid ExperimentAnswerUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -158,10 +162,11 @@ public class TeacherExperimentController {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         BeanUtils.copyProperties(form, experimentDTO);
         experimentService.updateExperimentAnswer(experimentDTO);
+        //更新答案阈值
+        experimentService.updateExperimentInfo(experimentDTO);
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswerFile")
-    @Auth
     public ResultVO updateExperimentAnswerFile(@RequestBody @Valid ExperimentAnswerFileUpdateForm form,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -177,28 +182,24 @@ public class TeacherExperimentController {
 
 
     @GetMapping("/invalid/{experimentId}")
-    @Auth
     public ResultVO invalid(@PathVariable("experimentId") Integer experimentId) {
         experimentService.invalid(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/end/{experimentId}")
-    @Auth
     public ResultVO end(@PathVariable("experimentId") Integer experimentId) {
         experimentService.end(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/lock/{experimentId}")
-    @Auth
     public ResultVO lock(@PathVariable("experimentId") Integer experimentId) {
         experimentService.lock(experimentId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/unlock/{experimentId}")
-    @Auth
     public ResultVO unlock(@PathVariable("experimentId") Integer experimentId) {
         experimentService.unlock(experimentId);
         return ResultVOUtil.success();

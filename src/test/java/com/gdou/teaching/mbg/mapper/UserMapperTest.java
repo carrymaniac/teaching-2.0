@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -38,15 +40,17 @@ class UserMapperTest {
     @Test
     void insert() {
         User user = new User();
-        user.setUserNumber("201611671309");
         user.setUserIdent((byte) 0);
         user.setClassId(2);
         user.setHeadUrl("http://images.nowcoder.com/head/325t.png");
         user.setSalt("81f59");
         user.setPassword("4a600be270e2b8e1321adc4cc99f125f");
-        user.setNickname("john wick");
         user.setUserStatus((byte) 0);
-        userMapper.insert(user);
+        for(int i = 0;i<1024;i++){
+            user.setUserNumber("20771024"+i);
+            user.setNickname("测试学生用户"+i);
+            userMapper.insert(user);
+        }
     }
 
     @Test
@@ -56,7 +60,9 @@ class UserMapperTest {
 
     @Test
     void selectByExample() {
-
+        UserExample example = new UserExample();
+        example.createCriteria().andClassIdEqualTo(1).andNicknameEqualTo("233");
+        List<User> users = userMapper.selectByExample(example);
     }
 
     @Test

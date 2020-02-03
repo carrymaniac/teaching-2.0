@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/teacher/achievement")
 @Slf4j
+@Auth
 public class TeacherAchievementController {
     @Autowired
     AchievementService achievementService;
@@ -62,12 +63,14 @@ public class TeacherAchievementController {
 
     //todo  根据classId进行筛选,待完成
     @GetMapping("/list/{courseId}")
-    @Auth
     public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId,
                                   @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
         //根据courseId查出所有AchievementDTO
         List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
+        if (achievementDTOList==null||achievementDTOList.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
         //班级列表
         Set<Integer> classIdSet=new HashSet<>();
         for(AchievementDTO achievementDTO:achievementDTOList){
@@ -116,7 +119,6 @@ public class TeacherAchievementController {
      * @return 该课程下的实验分数。
      */
     @GetMapping("/score/{courseId}")
-    @Auth
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId,
                               @RequestParam(value = "userId") Integer userId){
         //获取学生信息
@@ -143,14 +145,15 @@ public class TeacherAchievementController {
     }
 
     @GetMapping("/judge/{courseId}")
-    @Auth
     public ResultVO<HashMap> judge(@PathVariable(value = "courseId", required = true) Integer courseId,
                                    @RequestParam(value = "experimentId", required = false) Integer experimentId,
                                    @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
         //根据课程id  获取实验列表
         List<ExperimentDTO> experimentDTOList= experimentService.list(courseId);
-
+        if(experimentDTOList==null||experimentDTOList.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
         //首次访问--获取实验列表
         if (experimentId==null){
             List<HashMap> experimentList=new ArrayList<>();
@@ -166,21 +169,12 @@ public class TeacherAchievementController {
                 experimentId=(Integer) experimentList.get(0).get("experimentId");
             }
         }
-        List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
+        List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
+        if (achievementDTOList==null||achievementDTOList.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
         //班级列表
-        Set<Integer> classIdSet=recordDTOS.stream().map(recordDTO -> recordDTO.getClassId()).collect(Collectors.toSet());
-        //获取学生列表
-        List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
-            JudgeVO judgeVO=new JudgeVO();
-            User user = userService.getUserById(recordDTO.getUserId());
-            judgeVO.setClassId(user.getClassId());
-            judgeVO.setUserId(user.getUserId());
-            judgeVO.setUserNumber(user.getUserNumber());
-            judgeVO.setNickName(user.getNickname());
-            judgeVO.setUserExperimentId(recordDTO.getUserExperimentId());
-            judgeVO.setStatus(recordDTO.getStatus().intValue());
-            return judgeVO;
-        }).collect(Collectors.toList());
+        Set<Integer> classIdSet=achievementDTOList.stream().map(achievement -> achievement.getClassId()).collect(Collectors.toSet());
         //获取班级列表
         List<HashMap> classList=new ArrayList<>();
         if(classId==null||classId==0){
@@ -202,6 +196,25 @@ public class TeacherAchievementController {
             clazzMap.put("className",classByClazzId.getClassName());
             classList.add(clazzMap);
         }
+
+
+        List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
+        if (recordDTOS==null||recordDTOS.isEmpty()){
+            return ResultVOUtil.success(map);
+        }
+        //获取学生列表
+        List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
+            JudgeVO judgeVO=new JudgeVO();
+            User user = userService.getUserById(recordDTO.getUserId());
+            judgeVO.setClassId(user.getClassId());
+            judgeVO.setUserId(user.getUserId());
+            judgeVO.setUserNumber(user.getUserNumber());
+            judgeVO.setNickName(user.getNickname());
+            judgeVO.setUserExperimentId(recordDTO.getUserExperimentId());
+            judgeVO.setStatus(recordDTO.getStatus().intValue());
+            return judgeVO;
+        }).collect(Collectors.toList());
+
         //按班级分割
         List<HashMap> classData=new ArrayList<>(classList.size());
         for(HashMap clazz:classList) {
@@ -220,7 +233,6 @@ public class TeacherAchievementController {
     }
 
     @GetMapping("/judge/detail/{experimentId}")
-    @Auth
     public ResultVO<RecordVO> detail(@PathVariable(value = "experimentId") Integer experimentId,
                                      @RequestParam(value = "userId") Integer userId) {
         RecordVO recordVO=new RecordVO();
@@ -236,7 +248,6 @@ public class TeacherAchievementController {
     }
 
     @PostMapping("/judge/save")
-    @Auth
     public ResultVO save(@RequestBody @Valid JudgeForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -268,7 +279,6 @@ public class TeacherAchievementController {
      * @return
      */
     @GetMapping("/judge/batch/{experimentId}")
-    @Auth
     public ResultVO<HashMap> batch(@PathVariable(value = "experimentId") Integer experimentId,
                                    @RequestParam(value = "classId", required = false) Integer classId) {
         HashMap<String,Object> map=new HashMap<>();
@@ -328,7 +338,6 @@ public class TeacherAchievementController {
 
 
     @PostMapping("/judge/batch/save")
-    @Auth
     public ResultVO batchSave(@RequestBody @Valid BatchJudgeForm form,
                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -366,26 +375,33 @@ public class TeacherAchievementController {
      * @throws IOException
      */
     @GetMapping("/export/{courseId}")
-    @Auth
     public String export(HttpServletResponse response,@PathVariable(value = "courseId") Integer courseId) throws IOException {
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
         CourseDTO detail = courseService.detail(courseId);
         response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(detail.getCourseName()+"成绩表.xls","UTF-8"));
         OutputStream outputStream = response.getOutputStream();
-        List<List<String>> collect = achievementService.exportAchievement(detail);
-        List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
-        List<String> experimentNameList =  experimentDTOList.stream().map(experimentDTO -> {
-            return experimentDTO.getExperimentName();
-        }).collect(Collectors.toList());
-        List<String> colunNames=new ArrayList<>();
-        colunNames.add("班级");
-        colunNames.add("学号");
-        colunNames.add("姓名");
-        colunNames.add("总成绩");
-        colunNames.addAll(experimentNameList);
-        Workbook sheet = poiUtil.createSheet(detail.getCourseName()+"成绩表",colunNames,collect);
-        sheet.write(outputStream);
+        try{
+            List<List<String>> collect = achievementService.exportAchievement(detail);
+            List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
+            List<String> experimentNameList =  experimentDTOList.stream().map(experimentDTO -> {
+                return experimentDTO.getExperimentName();
+            }).collect(Collectors.toList());
+            List<String> colunNames=new ArrayList<>();
+            colunNames.add("班级");
+            colunNames.add("学号");
+            colunNames.add("姓名");
+            colunNames.add("总成绩");
+            colunNames.addAll(experimentNameList);
+            Workbook sheet = poiUtil.createSheet(detail.getCourseName()+"成绩表",colunNames,collect);
+            sheet.write(outputStream);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }finally {
+            outputStream.close();
+        }
+
+
         System.out.println("success");
         return null;
     }

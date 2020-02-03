@@ -38,23 +38,25 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ExperimentServiceImpl implements ExperimentService {
-    @Autowired
-    ExperimentMasterMapper experimentMasterMapper;
-    @Autowired
-    ExperimentDetailMapper experimentDetailMapper;
-    @Autowired
-    FileMapper fileMapper;
-    @Autowired
-    FileService fileService;
-    @Autowired
-    CourseMasterMapper courseMasterMapper;
-    @Autowired
-    ExperimentAnswerMapper answerMapper;
-    @Autowired
-    UserReExperimentMapper userReExperimentMapper;
-    @Autowired
-    ExperimentAnswerMapper experimentAnswerMapper;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final ExperimentDetailMapper experimentDetailMapper;
+    private final FileMapper fileMapper;
+    private final FileService fileService;
+    private final CourseMasterMapper courseMasterMapper;
+    private final ExperimentAnswerMapper answerMapper;
+    private final UserReExperimentMapper userReExperimentMapper;
+    private final ExperimentAnswerMapper experimentAnswerMapper;
 
+    public ExperimentServiceImpl(ExperimentMasterMapper experimentMasterMapper, ExperimentDetailMapper experimentDetailMapper, FileMapper fileMapper, FileService fileService, CourseMasterMapper courseMasterMapper, ExperimentAnswerMapper answerMapper, UserReExperimentMapper userReExperimentMapper, ExperimentAnswerMapper experimentAnswerMapper) {
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.experimentDetailMapper = experimentDetailMapper;
+        this.fileMapper = fileMapper;
+        this.fileService = fileService;
+        this.courseMasterMapper = courseMasterMapper;
+        this.answerMapper = answerMapper;
+        this.userReExperimentMapper = userReExperimentMapper;
+        this.experimentAnswerMapper = experimentAnswerMapper;
+    }
 
     @Value("${caffeine.course.expire-seconds}")
     private int courseExpireSeconds;
@@ -95,7 +97,6 @@ public class ExperimentServiceImpl implements ExperimentService {
                 //在这里的方法可以加入二级缓存
                 .build((experimentId)-> detailFromDB(experimentId));
     }
-
     @Override
     public ExperimentDTO detail(Integer experimentId){
         return experimentCache.get(experimentId);
@@ -223,7 +224,6 @@ public class ExperimentServiceImpl implements ExperimentService {
         return true;
     }
 
-
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
 //        return listFromDB(courseId);
@@ -244,7 +244,9 @@ public class ExperimentServiceImpl implements ExperimentService {
             return experimentDTO;
         }).collect(Collectors.toList());
         return experimentDTOList;
+
     }
+
 
     @Override
     public boolean updateExperimentInfo(ExperimentDTO experimentDTO) {
@@ -283,7 +285,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     public boolean updateExperimentAnswer(ExperimentDTO experimentDTO) {
         ExperimentAnswer experimentAnswer=new ExperimentAnswer();
         BeanUtils.copyProperties(experimentDTO,experimentAnswer);
-        if (  experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
+        if (experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
             log.info("[ExperimentServiceImpl]-更新实验答案失败");
             throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
         }

@@ -17,13 +17,6 @@ import java.util.List;
 public interface AchievementService {
 
     /**
-     * 根据课程id、班级id批量增加成绩记录.
-     * @param courseId
-     * @param clazzId
-     */
-    boolean addAchievementByClazzId(Integer courseId, Integer clazzId);
-
-    /**
      * 根据课程id,学生列表id增加成绩记录
      * @param courseId
      * @param studentIdList

@@ -21,14 +21,10 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -48,16 +44,36 @@ import static com.gdou.teaching.Enum.ResultEnum.USER_NOT_EXIST;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    @Autowired
+    private final
     UserMapper userMapper;
-    @Autowired
+    private final
     UserDao userDao;
-    @Autowired
+    private final
     UserInfoDao userInfoDao;
-    @Autowired
+    private final
     UserInfoMapper userInfoMapper;
-    @Autowired
+    private final
     ClassMapper classMapper;
+
+    public UserServiceImpl(UserMapper userMapper, UserDao userDao, UserInfoDao userInfoDao, UserInfoMapper userInfoMapper, ClassMapper classMapper) {
+        this.userMapper = userMapper;
+        this.userDao = userDao;
+        this.userInfoDao = userInfoDao;
+        this.userInfoMapper = userInfoMapper;
+        this.classMapper = classMapper;
+    }
+
+    /**
+     * 对user对象进行盐值加密、生成头像、设置用户状态
+     * @param user
+     */
+    private void genUser(User user) {
+        String salt = UUID.randomUUID().toString().substring(0,5);
+        user.setSalt(salt);
+        user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+        user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+        user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+    }
 
     @Override
     public User getUserById(int id) {
@@ -79,14 +95,9 @@ public class UserServiceImpl implements UserService {
         if(users!=null&&!users.isEmpty()){
             return false;
         }
-        String salt = UUID.randomUUID().toString().substring(0,5);
-        user.setSalt(salt);
-        user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
-        user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
-        user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+        genUser(user);
         return userMapper.insert(user)>0;
     }
-
 
     @Override
     public User login(String username, String password) {
@@ -133,19 +144,11 @@ public class UserServiceImpl implements UserService {
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
         userList.forEach(user -> {
-            String salt = UUID.randomUUID().toString().substring(0,5);
-            user.setSalt(salt);
-            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
-            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
-            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+            genUser(user);
         });
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
         userList.forEach(user -> {
-            String salt = UUID.randomUUID().toString().substring(0,5);
-            user.setSalt(salt);
-            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png",new Random().nextInt(1000)));
-            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
-            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+            genUser(user);
         });
         return userDao.insertList(userList)==userList.size();
     }
@@ -196,6 +199,7 @@ public class UserServiceImpl implements UserService {
         return userDTO;
     }
 
+    //todo 万一这个班级没学生呢？直接报错？
     @Override
     public List<UserDTO> getStudentListByClassId(Integer classId) {
         UserExample userExample = new UserExample();
@@ -218,28 +222,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo getStudentListByClassIdAndKeywordInPage(Integer classId,Integer page,Integer size,String keyword) {
-        UserExample userExample = new UserExample();
-        if(classId!=0){
-            userExample.createCriteria().andClassIdEqualTo(classId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue()).andNicknameLike(keyword);
-        }else {
-            userExample.createCriteria().andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue()).andNicknameLike(keyword);
-        }
+    public PageInfo getUserListByClassIdAndKeywordAndIdentInPage(Integer classId,Integer page,Integer size,String keyword,Integer ident) {
         PageHelper.startPage(page,size);
-        List<User> users = userMapper.selectByExample(userExample);
-        if (users==null||users.isEmpty()){
-            log.info("[UserServiceImpl]-,根据classId查询学生列表,学生信息不存在,classId:{}",classId);
-            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
-        }
-        List<UserDTO> userDTOS = users.stream().map(user -> {
-            UserDTO userDTO = new UserDTO();
-            BeanUtils.copyProperties(user, userDTO);
-            return userDTO;
-        }).collect(Collectors.toList());
-        PageInfo pageInfo = new PageInfo(userDTOS);
+        List<User> users =  userDao.selectByClassIdAndKeyword(classId,keyword,ident);
+        PageInfo pageInfo = new PageInfo(users);
         return pageInfo;
-
-
     }
 
     @Override
@@ -248,22 +235,6 @@ public class UserServiceImpl implements UserService {
         userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
         List<User> teachers = userMapper.selectByExample(userExample);
         return teachers;
-    }
-
-    @Override
-    public PageInfo selectTeacherListByPage(Integer page, Integer size) {
-        PageHelper.startPage(page,size);
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
-        List<User> teachers = userMapper.selectByExample(userExample);
-        List<UserDTO> collect = teachers.stream().map(teacher -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(teacher.getUserId());
-            userDTO.setNickname(teacher.getNickname());
-            return userDTO;
-        }).collect(Collectors.toList());
-        PageInfo<UserDTO> pageInfo = new PageInfo<>(collect);
-        return pageInfo;
     }
 
     @Override

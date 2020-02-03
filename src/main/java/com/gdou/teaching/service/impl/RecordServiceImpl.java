@@ -38,16 +38,20 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class RecordServiceImpl implements RecordService {
-    @Autowired
-    private ExperimentMasterMapper experimentMasterMapper;
-    @Autowired
-    private UserReExperimentMapper userReExperimentMapper;
-    @Autowired
-    UserReExperimentDao userReExperimentDao;
-    @Autowired
-    FileService fileService;
-    @Autowired
-    AchievementService achievementService;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final UserReExperimentMapper userReExperimentMapper;
+    private final UserReExperimentDao userReExperimentDao;
+    private final FileService fileService;
+    private final AchievementService achievementService;
+
+    public RecordServiceImpl(UserReExperimentMapper userReExperimentMapper, ExperimentMasterMapper experimentMasterMapper, UserReExperimentDao userReExperimentDao, FileService fileService, AchievementService achievementService) {
+        this.userReExperimentMapper = userReExperimentMapper;
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.userReExperimentDao = userReExperimentDao;
+        this.fileService = fileService;
+        this.achievementService = achievementService;
+    }
+
     @Override
     public RecordDTO save(RecordDTO recordDTO) {
         //查询该实验的状态。
@@ -88,16 +92,16 @@ public class RecordServiceImpl implements RecordService {
             }
         }
         else{
-            //进行新增存储记录
+            //没提交过,进行新增存储记录
             int insert = userReExperimentMapper.insert(userReExperiment);
             if (insert<=0){
                 log.error("保存记录,保存实验记录失败,record={}",userReExperiment);
                 throw new TeachingException(ResultEnum.SUBMIT_RECORD_ERROR);
             }
-        }
-        //存储文件
-        if(fileDTOList!=null&&!fileDTOList.isEmpty()) {
-            fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId(), fileDTOList);
+            //存储文件
+            if(fileDTOList!=null&&!fileDTOList.isEmpty()) {
+                fileService.saveFile(FileCategoryEnum.RECORD_FILE.getCode(), userReExperiment.getUserExperimentId(), fileDTOList);
+            }
         }
         recordDTO.setUserExperimentId(userReExperiment.getUserExperimentId());
         return recordDTO;
@@ -153,8 +157,8 @@ public class RecordServiceImpl implements RecordService {
         experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if (experimentMasters==null||experimentMasters.isEmpty()){
-            log.error("[RecordServiceImpl]-getRecordByUserIdAndCourseId,实验主表信息不存在,courseId={}",courseId);
-            throw new TeachingException(ResultEnum.EXPERIMENT_NOT_EXIST);
+            //说明这个课程暂时还没有任何实验，直接返回为空即可。
+            return null;
         }
         List<Integer> experimentIds = experimentMasters.stream().map(ExperimentMaster::getExperimentId).collect(Collectors.toList());
 
@@ -163,8 +167,8 @@ public class RecordServiceImpl implements RecordService {
         userReExperimentExample.createCriteria().andExperimentIdIn(experimentIds).andUserIdEqualTo(userId);
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
         if (userReExperiments==null||experimentMasters.isEmpty()){
-            log.info("[RecordServiceImpl]-getRecordByUserIdAndCourseId,实验提交表信息不存在,experimentIds={},userId={}",experimentIds,userId);
-            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
+            //说明用户没有提交过，直接返回空即可
+            return null;
         }
         List<RecordDTO> collect = userReExperiments.stream().map(userReExperiment -> {
             RecordDTO recordDTO = new RecordDTO();
@@ -182,7 +186,7 @@ public class RecordServiceImpl implements RecordService {
         List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
         if (userReExperiments==null||userReExperiments.isEmpty()){
             log.info("[RecordServiceImpl]-getRecordListByExperimentId,实验提交表信息不存在,experimentId={}",experimentId);
-            throw new TeachingException(ResultEnum.RECORD_NOT_EXIST);
+            return null;
         }
         List<RecordDTO> recordDTOList = userReExperiments.stream().map(record -> {
             RecordDTO recordDTO = new RecordDTO();

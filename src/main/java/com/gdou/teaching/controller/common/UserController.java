@@ -2,6 +2,7 @@ package com.gdou.teaching.controller.common;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.constant.CookieConstant;
 import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
@@ -42,14 +43,16 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/user")
 @Slf4j
 public class UserController {
+    private final StringRedisTemplate stringRedisTemplate;
+    private final UserService userService;
+    private final HostHolder hostHolder;
+
     @Autowired
-    StringRedisTemplate stringRedisTemplate;
-    @Autowired
-    UserService userService;
-    @Autowired
-    HostHolder hostHolder;
-    @Autowired
-    CourseService courseService;
+    public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder) {
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.userService = userService;
+        this.hostHolder = hostHolder;
+    }
 
     /**
      * 登陆操作 参数校验在controller完成
@@ -74,7 +77,7 @@ public class UserController {
             //判断身份
             if (user.getUserIdent().intValue() == ident) {
                 addToken(user, response);
-                HashMap map = new HashMap();
+                HashMap map = new HashMap(3);
                 map.put("userId", user.getUserId());
                 map.put("nickname", user.getNickname());
                 map.put("headUrl", user.getHeadUrl());
@@ -203,5 +206,25 @@ public class UserController {
             hostHolder.clear();
         }
         hostHolder.clear();
+    }
+
+    @ResponseBody
+    @PostMapping("/resetPassword")
+//    @Auth(user=UserIdentEnum.ADMIN)
+    public ResultVO resetPassword(@RequestParam("userId")Integer userId,@RequestParam("password")String newPassword){
+        userService.resetPassword(userId,newPassword);
+        return ResultVOUtil.success();
+    }
+
+    @ResponseBody
+//    @Auth(user=UserIdentEnum.ADMIN)
+    @PostMapping("/invalidUser")
+    public ResultVO invalidUser(@RequestBody List<Integer> userId){
+        Boolean flag = userService.deleteUserByBatch(userId);
+        if (flag){
+            return ResultVOUtil.success();
+        }else{
+            return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
+        }
     }
 }

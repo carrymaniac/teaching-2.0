@@ -46,7 +46,7 @@ mybatis:
    - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml
    - classpath:mappers/com/gdou/teaching/dao/*.xml
 teaching:
-  uploadPath: /Users/27362/upload/
+  uploadPath: /Users/carrymaniac/upload/
 
 logging:
   config: classpath:logback-dev.xml

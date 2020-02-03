@@ -18,20 +18,33 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class FileDTO {
-    //文件ID
+    /**
+     * 文件ID
+     */
     private Integer fileId;
-    //文件名
+    /**
+     * 文件名
+     */
     @NotEmpty
     private String fileName;
-    //文件的路径
+    /**
+     * 文件的路径
+     */
     @NotEmpty
     private String filePath;
-    //文件格式
+    /**
+     * 文件格式
+     */
     @NotEmpty
     private String fileType;
+    /**
+     * 文件大小
+     */
     @NotEmpty
     private String fileSize;
-    //文件创建时间
+    /**
+     * 文件创建时间
+     */
     private Date createTime;
 
 }

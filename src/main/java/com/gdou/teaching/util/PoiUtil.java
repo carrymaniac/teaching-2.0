@@ -25,15 +25,15 @@ public class PoiUtil {
         Sheet sheet = workbook.createSheet(sheetName);
         //设置列名
         Row head = sheet.createRow(0);
-        for(int i = 0;i<colunNames.size();i++){
+        for(int i = 0,size=colunNames.size();i<size;i++){
             Cell cell = head.createCell(i);
             cell.setCellValue(colunNames.get(i));
         }
         //设置列值
-        for(int i = 0;i<data.size();i++){
+        for(int i = 0,size=data.size();i<size;i++){
             Row row = sheet.createRow(i+1);
             List<String> rowList = data.get(i);
-            for(int j = 0;j<rowList.size();j++){
+            for(int j = 0,rsize=rowList.size();j<rsize;j++){
                 Cell cell = row.createCell(j);
                 cell.setCellValue(rowList.get(j));
             }

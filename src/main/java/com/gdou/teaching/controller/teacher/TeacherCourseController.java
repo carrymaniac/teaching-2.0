@@ -8,13 +8,9 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.constant.CommonConstant;
 import com.gdou.teaching.dataobject.Evaluation;
 import com.gdou.teaching.dataobject.HostHolder;
-import com.gdou.teaching.dto.AchievementDTO;
-import com.gdou.teaching.dto.CourseDTO;
-import com.gdou.teaching.dto.FileDTO;
-import com.gdou.teaching.dto.UserDTO;
+import com.gdou.teaching.dto.*;
 import com.gdou.teaching.exception.TeachingException;
-import com.gdou.teaching.form.CourseForm;
-import com.gdou.teaching.form.CourseUpdateStuForm;
+import com.gdou.teaching.form.*;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
@@ -46,6 +42,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/teacher/course")
+@Auth
 public class TeacherCourseController {
     @Autowired
     private CourseService courseService;
@@ -67,7 +64,6 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/list")
-    @Auth
     public ResultVO list(){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
@@ -100,7 +96,6 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/classSelectList")
-    @Auth
     public ResultVO classSelectList() {
         //获取班级列表
         List<TreeMap> clazzList =classService.getAllClazzList();
@@ -134,7 +129,6 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/manage/{courseId}")
-    @Auth
     public ResultVO manage(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String, Object> map = new HashMap<>();
         //获取所有的班级列表
@@ -218,14 +212,49 @@ public class TeacherCourseController {
     }
 
     /**
-     * 保存课程信息
+     * 新增课程  保存信息
      * @param form
      * @param bindingResult
      * @return
      */
+    //todo  课程封面非必传参数,需要在新增时设置一个默认封面
     @PostMapping("/save")
-    @Auth
     public ResultVO save(@RequestBody @Valid CourseForm form,
+                         BindingResult bindingResult) {
+        User user = hostHolder.getUser();
+        if (bindingResult.hasErrors()) {
+            log.error("参数格式错误：{}" + form);
+            return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
+        }
+        CourseDTO courseDTO = new CourseDTO();
+        courseDTO.setTeacherId(user.getUserId());
+        BeanUtils.copyProperties(form, courseDTO);
+        courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
+        courseDTO.setCourseNumber(0);
+        courseService.save(courseDTO);
+        //  todo 异步更新成绩表 addAchievementByClazzId
+        List<String> addStudentIdList = form.getAddStudentIdList();
+        //过滤多余的字符
+        List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
+            String[] split = studentId.trim().split("-");
+            return Integer.parseInt(split[split.length-1]);
+        }).collect(Collectors.toList());
+        if(studentIdList!=null&&!studentIdList.isEmpty()){
+            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+            // 异步更新课程及其下属实验的上课人数
+            courseService.updateNumber(courseDTO.getCourseId());
+        }
+        return ResultVOUtil.success();
+    }
+
+    /**
+     * 更新课程基本信息
+     * @param form
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("/updateCourseInfo")
+    public ResultVO updateCourseInfo(@RequestBody @Valid CourseInfoUpdateForm form,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数格式错误：{}" + form);
@@ -233,29 +262,9 @@ public class TeacherCourseController {
         }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(form, courseDTO);
-        if(form.getCourseId()==null){
-            courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
-            courseDTO.setCourseNumber(0);
-        }
         courseService.save(courseDTO);
-         // 新增课程课程时执行
-        if (form.getCourseId()==null){
-            //  todo 异步更新成绩表 addAchievementByClazzId
-            List<String> addStudentIdList = form.getAddStudentIdList();
-            //过滤多余的字符
-            List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
-                String[] split = studentId.trim().split("-");
-                return Integer.parseInt(split[split.length-1]);
-            }).collect(Collectors.toList());
-            if(studentIdList!=null&&!studentIdList.isEmpty()){
-                achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
-                // 异步更新课程及其下属实验的上课人数
-                courseService.updateNumber(courseDTO.getCourseId());
-            }
-        }
         return ResultVOUtil.success();
     }
-
     /**
      * 更新课程人员
      * @param form
@@ -290,13 +299,11 @@ public class TeacherCourseController {
             }).collect(Collectors.toList());
             achievementService.deleteAchievementByStudentList(form.getCourseId(), studentIdList);
         }
-        //todo  更新上课及其下属实验的人数
         courseService.updateNumber(form.getCourseId());
         return ResultVOUtil.success();
     }
 
     @GetMapping("/detail/{courseId}")
-    @Auth
     public ResultVO<CourseVO> detail(@PathVariable(value = "courseId") Integer courseId){
         CourseVO courseVO = new CourseVO();
         CourseDTO detail;
@@ -310,8 +317,18 @@ public class TeacherCourseController {
         return ResultVOUtil.success(courseVO);
     }
 
+    @PostMapping("/addCourseFile")
+    public ResultVO addCourseFile(@RequestBody @Valid CourseFileUpdateForm form,
+                                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("参数不正确：{}" + form);
+            throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
+        }
+        courseService.addCourseFile(form.getCourseId(),form.getCourseFile());
+        return ResultVOUtil.success();
+    }
+
     @GetMapping("/resource/{courseId}")
-    @Auth
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关连的文件
@@ -330,8 +347,8 @@ public class TeacherCourseController {
     }
 
 
+
     @GetMapping("/invalid/{courseId}")
-    @Auth
     public ResultVO invalid(@PathVariable("courseId") Integer courseId) {
         if(courseService.invalid(courseId)){
             //删除课程下的选课记录
@@ -341,20 +358,17 @@ public class TeacherCourseController {
     }
 
     @GetMapping("/unlock/{courseId}")
-    @Auth
     public ResultVO unlock(@PathVariable("courseId") Integer courseId) {
         courseService.unlock(courseId);
         return ResultVOUtil.success();
     }
     @GetMapping("/lock/{courseId}")
-    @Auth
     public ResultVO lock(@PathVariable("courseId") Integer courseId) {
         courseService.lock(courseId);
         return ResultVOUtil.success();
     }
 
     @GetMapping("/end/{courseId}")
-    @Auth
     public ResultVO end(@PathVariable("courseId") Integer courseId) {
         courseService.end(courseId);
         return ResultVOUtil.success();

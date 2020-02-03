@@ -3,8 +3,11 @@ package com.gdou.teaching.mbg.mapper;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.AchievementExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+@Repository
 public interface AchievementMapper {
     int countByExample(AchievementExample example);
 
