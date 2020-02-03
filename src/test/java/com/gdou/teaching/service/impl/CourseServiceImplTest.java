@@ -72,7 +72,7 @@ class  CourseServiceImplTest {
 
     @Test
     void list() {
-        List<CourseDTO> list = courseService.listCourseForStudent(17);
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(17,"");
         log.info("list is {}",list);
         Assert.notNull(list,"list is null");
     }

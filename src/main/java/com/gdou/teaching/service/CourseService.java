@@ -55,10 +55,11 @@ public interface CourseService {
 
     /**
      * 展示所有的课程主表记录(教师端)
-     * @param userId 教师ID
+     * @param userId 用户ID
+     * @param keyword 关键词
      * @return
      */
-    List<CourseDTO> listCourseForTeacher(Integer userId);
+    List<CourseDTO> listCourseByUserIdAndKeywordForTeacher(Integer userId,String keyword);
 
     /**
      * For Admin

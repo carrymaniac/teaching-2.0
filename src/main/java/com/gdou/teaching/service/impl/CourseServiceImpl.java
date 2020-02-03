@@ -314,14 +314,17 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<CourseDTO> listCourseForTeacher(Integer userId) {
+    public List<CourseDTO> listCourseByUserIdAndKeywordForTeacher(Integer userId,String keyword) {
         User user = userMapper.selectByPrimaryKey(userId);
         if(user==null) {
             throw new TeachingException(ResultEnum.USER_NOT_EXIST);
         }
         //查询课程主表记录
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andCourseNameLike("%"+keyword+"%");
+        }
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
         if(courseMasters==null||courseMasters.isEmpty()){
             //说明该教师暂无授课
