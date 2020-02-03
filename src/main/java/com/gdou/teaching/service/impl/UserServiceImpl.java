@@ -183,19 +183,19 @@ public class UserServiceImpl implements UserService {
         if(user==null){
             throw new TeachingException(USER_NOT_EXIST);
         }
-        UserInfoExample userInfoExample = new UserInfoExample();
-        userInfoExample.createCriteria().andUserIdEqualTo(user.getUserId());
-        List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
-        if(userInfos==null||userInfos.isEmpty()){
-            throw new TeachingException(USER_NOT_EXIST);
-        }
-        UserInfo userInfo = userInfos.get(0);
+        BeanUtils.copyProperties(user,userDTO);
         if(user.getClassId()!=0){
             Class aClass = classMapper.selectByPrimaryKey(user.getClassId());
             userDTO.setClassName(aClass.getClassName());
         }
+        UserInfoExample userInfoExample = new UserInfoExample();
+        userInfoExample.createCriteria().andUserIdEqualTo(user.getUserId());
+        List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
+        if(userInfos==null||userInfos.isEmpty()){
+           return userDTO;
+        }
+        UserInfo userInfo = userInfos.get(0);
         BeanUtils.copyProperties(userInfo,userDTO);
-        BeanUtils.copyProperties(user,userDTO);
         return userDTO;
     }
 
