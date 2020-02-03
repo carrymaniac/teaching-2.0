@@ -44,12 +44,14 @@ public interface CourseService {
 
 
     /**
+     * 学生端
      * 展示学生的所有的选修的课程主表记录
      * 不需要副表
-     * @param userId 学生端
+     * @param userId 用户ID
+     * @param keyword 关键词
      * @return
      */
-    List<CourseDTO> listCourseForStudent(Integer userId);
+    List<CourseDTO> listCourseByUserIdAndKeywordForStudent(Integer userId,String keyword);
 
     /**
      * 展示所有的课程主表记录(教师端)

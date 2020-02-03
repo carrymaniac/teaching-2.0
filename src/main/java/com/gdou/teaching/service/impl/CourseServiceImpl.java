@@ -259,10 +259,13 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public List<CourseDTO> listCourseForStudent(Integer userId) {
+    public List<CourseDTO> listCourseByUserIdAndKeywordForStudent(Integer userId,String keyword) {
         //查询课程主表记录
         AchievementExample achievementExample = new AchievementExample();
-        achievementExample.createCriteria().andUserIdEqualTo(userId);
+        AchievementExample.Criteria criteria = achievementExample.createCriteria().andUserIdEqualTo(userId);
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andCourseNameLike("%"+keyword+"%");
+        }
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
             //说明该学生无报任何课程

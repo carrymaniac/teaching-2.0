@@ -122,10 +122,10 @@ public class StudentCourseController {
      * @return
      */
     @GetMapping("/listForNoPage")
-    public ResultVO listForNoPage(){
+    public ResultVO listForNoPage(@RequestParam(value = "keyword",required = false)String keyword){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
-        List<CourseDTO> list = courseService.listCourseForStudent(user.getUserId());
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(user.getUserId(),keyword);
         if(list==null){
             return ResultVOUtil.success();
         }
