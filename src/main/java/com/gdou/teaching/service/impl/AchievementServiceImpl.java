@@ -39,25 +39,24 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class AchievementServiceImpl implements AchievementService {
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    CourseMasterMapper courseMasterMapper;
-    @Autowired
-    AchievementDao achievementDao;
-    @Autowired
-    AchievementMapper achievementMapper;
-    @Autowired
-    ClassMapper classMapper;
-    @Autowired
-    ExperimentMasterMapper experimentMasterMapper;
-    @Autowired
-    UserReExperimentMapper userReExperimentMapper;
-    @Autowired
-    ExperimentService experimentService;
-    @Override
-    public boolean addAchievementByClazzId(Integer courseId, Integer clazzId) {
-        return false;
+    private final UserMapper userMapper;
+    private final CourseMasterMapper courseMasterMapper;
+    private final AchievementDao achievementDao;
+    private final AchievementMapper achievementMapper;
+    private final ClassMapper classMapper;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final UserReExperimentMapper userReExperimentMapper;
+    private final ExperimentService experimentService;
+
+    public AchievementServiceImpl(UserMapper userMapper, CourseMasterMapper courseMasterMapper, AchievementDao achievementDao, AchievementMapper achievementMapper, ClassMapper classMapper, ExperimentMasterMapper experimentMasterMapper, UserReExperimentMapper userReExperimentMapper, ExperimentService experimentService) {
+        this.userMapper = userMapper;
+        this.courseMasterMapper = courseMasterMapper;
+        this.achievementDao = achievementDao;
+        this.achievementMapper = achievementMapper;
+        this.classMapper = classMapper;
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.userReExperimentMapper = userReExperimentMapper;
+        this.experimentService = experimentService;
     }
 
     @Override
@@ -211,7 +210,6 @@ public class AchievementServiceImpl implements AchievementService {
             }
         }).collect(Collectors.toList());
 
-
         //通过审核的实验个数
         int num=0;
         Double result=0.0;
@@ -280,7 +278,6 @@ public class AchievementServiceImpl implements AchievementService {
                     list.add(userReExperiments.get(0).getExperimentAchievement().toString());
                 }
             }
-
             return list;
         }).collect(Collectors.toList());
         return collect;

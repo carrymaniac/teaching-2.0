@@ -28,14 +28,18 @@ import java.util.List;
 @Service
 @Slf4j
 public class AnswerServiceImpl implements AnswerService {
-    @Autowired
-    ExperimentAnswerMapper answerMapper;
-    @Autowired
-    FileService fileService;
-    @Autowired
-    FileMapper fileMapper;
-    @Autowired
-    ExperimentMasterMapper experimentMasterMapper;
+    private final ExperimentAnswerMapper answerMapper;
+    private final FileService fileService;
+    private final FileMapper fileMapper;
+    private final ExperimentMasterMapper experimentMasterMapper;
+
+    public AnswerServiceImpl(ExperimentAnswerMapper answerMapper, FileService fileService, FileMapper fileMapper, ExperimentMasterMapper experimentMasterMapper) {
+        this.answerMapper = answerMapper;
+        this.fileService = fileService;
+        this.fileMapper = fileMapper;
+        this.experimentMasterMapper = experimentMasterMapper;
+    }
+
     @Override
     public AnswerDTO detail(Integer experimentAnswerId) {
         ExperimentAnswer experimentAnswer = answerMapper.selectByPrimaryKey(experimentAnswerId);
@@ -62,7 +66,7 @@ public class AnswerServiceImpl implements AnswerService {
                 throw new TeachingException(ResultEnum.PARAM_ERROR);
             }
 
-            //需要对experiemnt主表进行更新AnswerID操作
+            //需要对experiment主表进行更新AnswerID操作
             ExperimentMaster experimentMaster = new ExperimentMaster();
             experimentMaster.setExperimentId(answerDTO.getExperimentId());
             experimentMaster.setExperimentAnswerId(experimentAnswer.getExperimentAnswerId());

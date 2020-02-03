@@ -44,10 +44,15 @@ public class DevController {
     @Value("${teaching.uploadPath}")
     public String uploadPath;
 
-    @Autowired
+    final
     PoiUtil poiUtil;
-    @Autowired
+    final
     AchievementService achievementService;
+
+    public DevController(PoiUtil poiUtil, AchievementService achievementService) {
+        this.poiUtil = poiUtil;
+        this.achievementService = achievementService;
+    }
 
     @GetMapping("/info")
     @ResponseBody

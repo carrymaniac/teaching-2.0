@@ -117,7 +117,6 @@ public class AdminClassController {
         }else {
             return ResultVOUtil.fail(203,"查询的用户并非学生");
         }
-
     }
 
     @ResponseBody
@@ -130,10 +129,9 @@ public class AdminClassController {
         }
         List<User> userList = form.getUserList();
         //注册班级
-        Class aClass = classService.registerClass(form.getClassName(),userList.size());
-
+        Class registerClass = classService.registerClass(form.getClassName(),userList.size());
         userList.forEach(user->{
-            user.setClassId(aClass.getClassId());
+            user.setClassId(registerClass.getClassId());
             user.setUserIdent(UserIdentEnum.SUTUDENT.getCode().byteValue());
         });
         userService.addUserByBatch(userList);

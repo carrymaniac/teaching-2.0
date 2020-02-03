@@ -44,16 +44,36 @@ import static com.gdou.teaching.Enum.ResultEnum.USER_NOT_EXIST;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    @Autowired
+    private final
     UserMapper userMapper;
-    @Autowired
+    private final
     UserDao userDao;
-    @Autowired
+    private final
     UserInfoDao userInfoDao;
-    @Autowired
+    private final
     UserInfoMapper userInfoMapper;
-    @Autowired
+    private final
     ClassMapper classMapper;
+
+    public UserServiceImpl(UserMapper userMapper, UserDao userDao, UserInfoDao userInfoDao, UserInfoMapper userInfoMapper, ClassMapper classMapper) {
+        this.userMapper = userMapper;
+        this.userDao = userDao;
+        this.userInfoDao = userInfoDao;
+        this.userInfoMapper = userInfoMapper;
+        this.classMapper = classMapper;
+    }
+
+    /**
+     * 对user对象进行盐值加密、生成头像、设置用户状态
+     * @param user
+     */
+    private void genUser(User user) {
+        String salt = UUID.randomUUID().toString().substring(0,5);
+        user.setSalt(salt);
+        user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+        user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+        user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+    }
 
     @Override
     public User getUserById(int id) {
@@ -75,14 +95,9 @@ public class UserServiceImpl implements UserService {
         if(users!=null&&!users.isEmpty()){
             return false;
         }
-        String salt = UUID.randomUUID().toString().substring(0,5);
-        user.setSalt(salt);
-        user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
-        user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
-        user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+        genUser(user);
         return userMapper.insert(user)>0;
     }
-
 
     @Override
     public User login(String username, String password) {
@@ -129,19 +144,11 @@ public class UserServiceImpl implements UserService {
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
         userList.forEach(user -> {
-            String salt = UUID.randomUUID().toString().substring(0,5);
-            user.setSalt(salt);
-            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
-            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
-            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+            genUser(user);
         });
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
         userList.forEach(user -> {
-            String salt = UUID.randomUUID().toString().substring(0,5);
-            user.setSalt(salt);
-            user.setHeadUrl(String.format("http://images.nowcoder.com/head/%dt.png",new Random().nextInt(1000)));
-            user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
-            user.setPassword(DigestUtils.md5DigestAsHex((user.getPassword()+salt).getBytes()));
+            genUser(user);
         });
         return userDao.insertList(userList)==userList.size();
     }

@@ -5,7 +5,6 @@ import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.CourseDTO;
-import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.*;
@@ -29,25 +28,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author carrymaniac
+ */
 @Service
 @Slf4j
 public class CourseServiceImpl implements CourseService {
-    @Autowired
-    CourseMasterMapper courseMasterMapper;
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    CourseDetailMapper courseDetailMapper;
-    @Autowired
-    AchievementMapper achievementMapper;
-    @Autowired
-    UserService userService;
-    @Autowired
-    CourseMasterDao courseMasterDao;
-    @Autowired
-    ExperimentMasterMapper experimentMasterMapper;
-    @Autowired
-    FileService fileService;
+    private final CourseMasterMapper courseMasterMapper;
+    private final UserMapper userMapper;
+    private final CourseDetailMapper courseDetailMapper;
+    private final AchievementMapper achievementMapper;
+    private final UserService userService;
+    private final CourseMasterDao courseMasterDao;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final FileService fileService;
+
+    public CourseServiceImpl(CourseMasterMapper courseMasterMapper, UserMapper userMapper, CourseDetailMapper courseDetailMapper, AchievementMapper achievementMapper, UserService userService, CourseMasterDao courseMasterDao, ExperimentMasterMapper experimentMasterMapper, FileService fileService) {
+        this.courseMasterMapper = courseMasterMapper;
+        this.userMapper = userMapper;
+        this.courseDetailMapper = courseDetailMapper;
+        this.achievementMapper = achievementMapper;
+        this.userService = userService;
+        this.courseMasterDao = courseMasterDao;
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.fileService = fileService;
+    }
 
 
     /**

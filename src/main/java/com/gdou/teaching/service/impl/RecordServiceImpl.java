@@ -38,16 +38,20 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class RecordServiceImpl implements RecordService {
-    @Autowired
-    private ExperimentMasterMapper experimentMasterMapper;
-    @Autowired
-    private UserReExperimentMapper userReExperimentMapper;
-    @Autowired
-    UserReExperimentDao userReExperimentDao;
-    @Autowired
-    FileService fileService;
-    @Autowired
-    AchievementService achievementService;
+    private final ExperimentMasterMapper experimentMasterMapper;
+    private final UserReExperimentMapper userReExperimentMapper;
+    private final UserReExperimentDao userReExperimentDao;
+    private final FileService fileService;
+    private final AchievementService achievementService;
+
+    public RecordServiceImpl(UserReExperimentMapper userReExperimentMapper, ExperimentMasterMapper experimentMasterMapper, UserReExperimentDao userReExperimentDao, FileService fileService, AchievementService achievementService) {
+        this.userReExperimentMapper = userReExperimentMapper;
+        this.experimentMasterMapper = experimentMasterMapper;
+        this.userReExperimentDao = userReExperimentDao;
+        this.fileService = fileService;
+        this.achievementService = achievementService;
+    }
+
     @Override
     public RecordDTO save(RecordDTO recordDTO) {
         //查询该实验的状态。
