@@ -2,7 +2,6 @@ package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
-import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.CourseService;
@@ -11,7 +10,6 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.web.Auth;
 import com.github.pagehelper.PageInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,7 +44,7 @@ public class AdminTeacherController {
     public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,
                                 @RequestParam(value = "size",defaultValue = "10",required = false) Integer size,
                                 @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword){
-        PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode(), UserStatusEnum.NORMAL.getCode());
+        PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordAndIdentInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode());
         long total = userPageInfo.getTotal();
         List<User> list = userPageInfo.getList();
         List<UserDTO> collect = list.stream().map(teacher -> {
@@ -95,7 +93,7 @@ public class AdminTeacherController {
             @RequestParam(value = "size",defaultValue = "5")int size,
             @RequestParam(value = "keyword",required = false)String keyword){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordForPage(teacherId, page, size, keyword);
+        HashMap<String, Object> map = courseService.listCourseForAdminByStudentIdAndKeywordAndStatusInPage(teacherId, page, size, keyword,UserStatusEnum.NORMAL.getCode());
         map.put("user",userDetailByUserId);
         return ResultVOUtil.success(map);
     }

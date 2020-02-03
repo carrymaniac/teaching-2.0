@@ -129,8 +129,7 @@ public class AchievementServiceImpl implements AchievementService {
         achievementExample.createCriteria().andUserIdEqualTo(userId).andCourseIdEqualTo(courseId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
-            log.info("[AchievementServiceImpl]-getAchievementByUserIdAndCourseId,成绩表信息不存在,userId:{},courseId:{}",userId,courseId);
-            throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
+           return null;
         }
         return achievements.get(0);
     }
@@ -147,11 +146,14 @@ public class AchievementServiceImpl implements AchievementService {
         //获取老师名字
         Integer teacherId = achievements.get(0).getTeacherId();
         User teacher = userMapper.selectByPrimaryKey(teacherId);
+        String teacherName;
         if (teacher==null){
+            teacherName="";
             log.info("[AchievementServiceImpl]-getAchievementByCourseId,教师信息不存在,teacherId:{}",teacherId);
-            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }else{
+            teacherName = teacher.getNickname();
         }
-        String teacherName = teacher.getNickname();
+
         //获取班级信息
         HashSet<Integer> classIds = new HashSet<>();
         achievements.stream().forEach(achievement -> {

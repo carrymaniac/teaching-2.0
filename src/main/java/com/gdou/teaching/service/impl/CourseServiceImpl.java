@@ -132,18 +132,17 @@ public class CourseServiceImpl implements CourseService {
         }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(courseMaster,courseDTO);
-        User user = userMapper.selectByPrimaryKey(courseMaster.getTeacherId());
-        if (user==null){
+        User teacher = userMapper.selectByPrimaryKey(courseMaster.getTeacherId());
+        if (teacher==null){
             log.info("[CourseServiceImpl]-查询课程课程详情 用户ID错误,UserId={}",courseMaster.getTeacherId());
-            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }else{
+            courseDTO.setTeacherNickname(teacher.getNickname());
+            courseDTO.setTeacherId(teacher.getUserId());
         }
-        courseDTO.setTeacherNickname(user.getNickname());
-        courseDTO.setTeacherId(user.getUserId());
         //查询课程详情表
         CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
         if (courseDetail==null){
-            log.error("[CourseServiceImpl]-查询课程 该课程详情不存在,courseDetailId={}",courseMaster.getCourseDetailId());
-            throw new TeachingException(ResultEnum.COURSE_DETAIL_NOT_EXIST);
+           return courseDTO;
         }
         BeanUtils.copyProperties(courseDetail,courseDTO);
         return courseDTO;

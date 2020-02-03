@@ -199,7 +199,6 @@ public class UserServiceImpl implements UserService {
         return userDTO;
     }
 
-    //todo 万一这个班级没学生呢？直接报错？
     @Override
     public List<UserDTO> getStudentListByClassId(Integer classId) {
         UserExample userExample = new UserExample();
@@ -210,8 +209,7 @@ public class UserServiceImpl implements UserService {
         }
         List<User> users = userMapper.selectByExample(userExample);
         if (users==null||users.isEmpty()){
-            log.info("[UserServiceImpl]-,根据classId查询学生列表,学生信息不存在,classId:{}",classId);
-            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+            return null;
         }
         List<UserDTO> userDTOS = users.stream().map(user -> {
             UserDTO userDTO = new UserDTO();

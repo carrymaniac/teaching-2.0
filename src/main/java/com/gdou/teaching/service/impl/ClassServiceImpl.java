@@ -91,8 +91,7 @@ public class ClassServiceImpl implements ClassService {
         classExample.createCriteria().andClassStatusEqualTo(ClazzStatusEnum.NORMAL.getCode().byteValue());
         List<Class> classes = classMapper.selectByExample(classExample);
         if(classes==null||classes.isEmpty()){
-            log.info("[ClassServiceImpl]-获取班级列表,班级信息不存在");
-            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+            return null;
         }
         classes.forEach(clazz -> {
             TreeMap<String,Object> map = new TreeMap<>();
