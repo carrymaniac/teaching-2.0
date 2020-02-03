@@ -22,11 +22,4 @@ public interface AnswerService {
      */
     AnswerDTO save(AnswerDTO answerDTO);
 
-//    /**
-//     * 根据实验ID删除实验答案
-//     * @param experimentId
-//     * @return
-//     */
-//    boolean invalid(Integer experimentId);
-
 }
