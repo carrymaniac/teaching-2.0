@@ -13,6 +13,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,17 +47,21 @@ public class AdminTeacherController {
                                 @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword){
         PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordAndIdentInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode());
         long total = userPageInfo.getTotal();
-        List<User> list = userPageInfo.getList();
-        List<UserDTO> collect = list.stream().map(teacher -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUserId(teacher.getUserId());
-            userDTO.setUserNumber(teacher.getUserNumber());
-            userDTO.setNickname(teacher.getNickname());
-            return userDTO;
-        }).collect(Collectors.toList());
         HashMap map = new HashMap(2);
         map.put("total",total);
-        map.put("list",collect);
+        List<User> list = userPageInfo.getList();
+        if(list==null||list.isEmpty()){
+            map.put("list",new ArrayList<>(0));
+        }else {
+            List<UserDTO> collect = list.stream().map(teacher -> {
+                UserDTO userDTO = new UserDTO();
+                userDTO.setUserId(teacher.getUserId());
+                userDTO.setUserNumber(teacher.getUserNumber());
+                userDTO.setNickname(teacher.getNickname());
+                return userDTO;
+            }).collect(Collectors.toList());
+            map.put("list",collect);
+        }
         return ResultVOUtil.success(map);
     }
 
@@ -85,15 +90,27 @@ public class AdminTeacherController {
     }
 
 
+    /**
+     *
+     * @param teacherId
+     * @param page
+     * @param size
+     * @param status 可选参数，若为0，则返回"进行中"的课程;若为3，则返回"已结束"的课程
+     * @param keyword
+     * @return
+     */
     @ResponseBody
     @GetMapping("/teacherInfo")
     public ResultVO teacherInfo(
             @RequestParam("teacherId")int teacherId,
             @RequestParam(value = "page",defaultValue = "1")int page,
             @RequestParam(value = "size",defaultValue = "5")int size,
-            @RequestParam(value = "keyword",required = false)String keyword){
+            @RequestParam(value = "status",required = false)Integer status,
+            @RequestParam(value = "keyword",required = false)String keyword
+
+    ){
         UserDTO userDetailByUserId = userService.getUserDetailByUserId(teacherId);
-        HashMap<String, Object> map = courseService.listCourseForAdminByStudentIdAndKeywordAndStatusInPage(teacherId, page, size, keyword,UserStatusEnum.NORMAL.getCode());
+        HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordInPage(teacherId, page, size, keyword,status);
         map.put("user",userDetailByUserId);
         return ResultVOUtil.success(map);
     }
