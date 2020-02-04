@@ -37,6 +37,13 @@ public interface UserService {
     User getUserById(int id);
 
     /**
+     * 更新用户主表信息
+     * @param user
+     * @return
+     */
+    boolean updateUserMaster(User user);
+
+    /**
      * 通过用户工号获取用户
      * @param userNumber
      * @return

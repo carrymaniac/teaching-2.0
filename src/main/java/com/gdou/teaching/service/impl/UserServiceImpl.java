@@ -76,6 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean updateUserMaster(User user){
+        return userMapper.updateByPrimaryKeySelective(user)>0;
+    }
+
+    @Override
     public User getUserById(int id) {
         User user = userMapper.selectByPrimaryKey(id);
         if (user==null){

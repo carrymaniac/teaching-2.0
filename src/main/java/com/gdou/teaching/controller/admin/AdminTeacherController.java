@@ -1,5 +1,6 @@
 package com.gdou.teaching.controller.admin;
 
+import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dto.UserDTO;
@@ -113,6 +114,45 @@ public class AdminTeacherController {
         HashMap<String, Object> map = courseService.listCourseForAdminByTeacherIdAndKeywordInPage(teacherId, page, size, keyword,status);
         map.put("user",userDetailByUserId);
         return ResultVOUtil.success(map);
+    }
+
+    @PostMapping("/banUser")
+    @ResponseBody
+    public ResultVO banUser(@RequestParam("userId")Integer userId){
+        User userById = userService.getUserById(userId);
+        if(!userById.getUserIdent().equals(UserIdentEnum.TEACHER.getCode().byteValue())){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        if(userById.getUserStatus().equals(UserStatusEnum.NORMAL.getCode().byteValue())){
+            //状态正常的用户,进行禁用操作
+            userById.setUserStatus(UserStatusEnum.BAN.getCode().byteValue());
+            boolean b = userService.updateUserMaster(userById);
+            return b?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+    }
+
+
+    @PostMapping("/delUser")
+    @ResponseBody
+    public ResultVO delUser(@RequestParam("userId")Integer userId){
+        User userById = userService.getUserById(userId);
+        if(!userById.getUserIdent().equals(UserIdentEnum.TEACHER.getCode().byteValue())){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        if(userById.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue())){
+            //状态正常的用户,进行禁用操作
+            userById.setUserStatus(UserStatusEnum.INVALID.getCode().byteValue());
+            boolean b = userService.updateUserMaster(userById);
+            return b?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else if (userById.getUserStatus().equals(UserStatusEnum.NORMAL.getCode().byteValue())){
+            return ResultVOUtil.fail(203,"请先禁用该用户再进行删除");
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
     }
 
 }

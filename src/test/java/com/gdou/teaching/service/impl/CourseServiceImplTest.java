@@ -1,5 +1,6 @@
 package com.gdou.teaching.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -72,9 +73,9 @@ class  CourseServiceImplTest {
 
     @Test
     void list() {
-        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(17,"");
-        log.info("list is {}",list);
-        Assert.notNull(list,"list is null");
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(3,"数据");
+        log.info("list is {}", JSONUtil.toJsonPrettyStr(list));
+//        Assert.notNull(list,"list is null");
     }
 
     @Test
