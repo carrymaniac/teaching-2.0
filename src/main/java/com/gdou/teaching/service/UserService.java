@@ -138,5 +138,18 @@ public interface UserService {
     Boolean resetPassword(Integer userId,String newPassword);
 
 
+    /**
+     *
+     * @param userIds
+     * @return
+     */
+    Boolean banUserByBatch(List<Integer> userIds);
+
+    /**
+     *
+     * @param userIds
+     * @return
+     */
+    Boolean recoverUserByBatch(List<Integer> userIds);
 
 }

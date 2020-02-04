@@ -16,6 +16,7 @@ import com.gdou.teaching.util.CookieUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.vo.UserVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -210,21 +212,86 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/resetPassword")
-//    @Auth(user=UserIdentEnum.ADMIN)
+    @Auth(user=UserIdentEnum.ADMIN)
     public ResultVO resetPassword(@RequestParam("userId")Integer userId,@RequestParam("password")String newPassword){
         userService.resetPassword(userId,newPassword);
         return ResultVOUtil.success();
     }
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
+    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/invalidUser")
-    public ResultVO invalidUser(@RequestBody List<Integer> userId){
-        Boolean flag = userService.deleteUserByBatch(userId);
-        if (flag){
-            return ResultVOUtil.success();
-        }else{
-            return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
+    public ResultVO invalidUser(@RequestBody List<Integer> userIds){
+        List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        //检查身份是否符合要求
+        long adminCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
+                .count();
+        if(adminCount>0){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        long BANCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue()))
+                .count();
+        if(BANCount==usersByUserId.size()){
+            return userService.deleteUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+    }
+
+    @PostMapping("/banUsers")
+    @ResponseBody
+    @Auth(user=UserIdentEnum.ADMIN)
+    public ResultVO banUser(@RequestBody List<Integer> userIds){
+        List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        int findSize = usersByUserId.size();
+        if(findSize!=userIds.size()){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查身份是否符合要求
+        long adminCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
+                .count();
+        if(adminCount>0){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        long NormalCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.NORMAL.getCode().byteValue()))
+                .count();
+        if(NormalCount==usersByUserId.size()){
+            return userService.banUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+    }
+
+    @PostMapping("/recoverUsers")
+    @ResponseBody
+    @Auth(user=UserIdentEnum.ADMIN)
+    public ResultVO recoverUser(@RequestBody List<Integer> userIds){
+        List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        int findSize = usersByUserId.size();
+        if(findSize!=userIds.size()){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查身份是否符合要求
+        long adminCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
+                .count();
+        if(adminCount>0){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        long BANCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue()))
+                .count();
+        if(BANCount==usersByUserId.size()){
+            return userService.recoverUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
     }
 }

@@ -20,7 +20,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -172,16 +171,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean deleteUserByBatch(List<Integer> userIds) {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdIn(userIds);
-        User user = new User();
-        user.setUserStatus(UserStatusEnum.INVALID.getCode().byteValue());
-        int i = userMapper.updateByExampleSelective(user, userExample);
-        return i==userIds.size();
-    }
-
-    @Override
     public UserDTO getUserDetailByUserId(Integer userId) {
         UserDTO userDTO = new UserDTO();
         User user = userMapper.selectByPrimaryKey(userId);
@@ -283,5 +272,29 @@ public class UserServiceImpl implements UserService {
         user.setSalt(salt);
         user.setPassword(DigestUtils.md5DigestAsHex((newPassword+salt).getBytes()));
         return userMapper.updateByPrimaryKey(user)>0;
+    }
+
+    @Override
+    public Boolean banUserByBatch(List<Integer> userIds){
+        return updateStatusByUserIds(userIds, UserStatusEnum.BAN);
+    }
+
+    @Override
+    public Boolean recoverUserByBatch(List<Integer> userIds){
+        return updateStatusByUserIds(userIds, UserStatusEnum.NORMAL);
+    }
+
+    @Override
+    public Boolean deleteUserByBatch(List<Integer> userIds) {
+        return updateStatusByUserIds(userIds, UserStatusEnum.INVALID);
+    }
+
+    private Boolean updateStatusByUserIds(List<Integer> userIds, UserStatusEnum stauts) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserIdIn(userIds);
+        User user = new User();
+        user.setUserStatus(stauts.getCode().byteValue());
+        int i = userMapper.updateByExampleSelective(user, userExample);
+        return i==userIds.size();
     }
 }
