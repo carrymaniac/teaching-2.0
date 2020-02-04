@@ -55,10 +55,11 @@ public interface CourseService {
 
     /**
      * 展示所有的课程主表记录(教师端)
-     * @param userId 教师ID
+     * @param userId 用户ID
+     * @param keyword 关键词
      * @return
      */
-    List<CourseDTO> listCourseForTeacher(Integer userId);
+    List<CourseDTO> listCourseByUserIdAndKeywordForTeacher(Integer userId,String keyword);
 
     /**
      * For Admin
@@ -67,11 +68,11 @@ public interface CourseService {
      * @param userId 用户ID
      * @param page 分页参数
      * @param size 分页参数
-     * @param keyWord 关键词
+     * @param keyword 关键词
      * @param status 状态筛选 有0（进行中），3（已结束）的筛选
      * @return
      */
-    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status);
+    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyword, Integer status);
 
 
 

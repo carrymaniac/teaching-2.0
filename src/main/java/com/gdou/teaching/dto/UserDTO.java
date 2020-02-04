@@ -9,7 +9,6 @@ import lombok.Data;
  * @description user和userInfo和class的结合体
  **/
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private Integer userId;
     private String nickname;

@@ -64,10 +64,10 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/list")
-    public ResultVO list(){
+    public ResultVO list(@RequestParam(value = "keyword",required = false)String keyword){
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
-        List<CourseDTO> list = courseService.listCourseForTeacher(user.getUserId());
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForTeacher(user.getUserId(),keyword);
         if(list==null){
             return ResultVOUtil.success();
         }
