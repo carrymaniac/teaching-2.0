@@ -75,12 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUserMaster(User user){
-        return userMapper.updateByPrimaryKeySelective(user)>0;
-    }
-
-    @Override
-    public User getUserById(int id) {
+    public User selectOne(int id) {
         User user = userMapper.selectByPrimaryKey(id);
         if (user==null){
             log.info("[UserServiceImpl]-,getUserById,学生信息不存在,userId:{}",id);
@@ -119,7 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUserNumber(String userNumber) {
+    public User selectOne(String userNumber) {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberEqualTo(userNumber);
         List<User> users = userMapper.selectByExample(userExample);
@@ -221,13 +216,6 @@ public class UserServiceImpl implements UserService {
         return pageInfo;
     }
 
-    @Override
-    public List<User> selectTeacherList() {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
-        List<User> teachers = userMapper.selectByExample(userExample);
-        return teachers;
-    }
 
     @Override
     public List<UserDTO> getUsersByUserId(List<Integer> userIds) {

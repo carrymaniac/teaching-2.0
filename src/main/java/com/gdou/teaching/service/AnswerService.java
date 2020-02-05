@@ -13,7 +13,7 @@ public interface AnswerService {
      * @param experimentAnswerId
      * @return
      */
-    AnswerDTO detail(Integer experimentAnswerId);
+    AnswerDTO selectOne(Integer experimentAnswerId);
 
     /**
      * 新增或修改实验答案
@@ -21,12 +21,5 @@ public interface AnswerService {
      * @return
      */
     AnswerDTO save(AnswerDTO answerDTO);
-
-//    /**
-//     * 根据实验ID删除实验答案
-//     * @param experimentId
-//     * @return
-//     */
-//    boolean invalid(Integer experimentId);
 
 }

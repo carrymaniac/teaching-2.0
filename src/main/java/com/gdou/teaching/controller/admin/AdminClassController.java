@@ -2,8 +2,6 @@ package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
-import com.gdou.teaching.Enum.UserStatusEnum;
-import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.form.ClazzRegisterForm;
 import com.gdou.teaching.mbg.model.Class;
@@ -17,18 +15,12 @@ import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.web.Auth;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +99,7 @@ public class AdminClassController {
         if (userId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
-        User userById = userService.getUserById(userId);
+        User userById = userService.selectOne(userId);
         if(userById.getUserIdent()==UserIdentEnum.SUTUDENT.getCode().byteValue()){
             UserDTO userInfo = userService.getUserDetailByUserId(userId);
             //查询用户的各课程成绩

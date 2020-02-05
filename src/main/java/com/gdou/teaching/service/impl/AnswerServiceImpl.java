@@ -41,7 +41,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public AnswerDTO detail(Integer experimentAnswerId) {
+    public AnswerDTO selectOne(Integer experimentAnswerId) {
         ExperimentAnswer experimentAnswer = answerMapper.selectByPrimaryKey(experimentAnswerId);
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(), experimentAnswerId);
         if(experimentAnswer!=null){

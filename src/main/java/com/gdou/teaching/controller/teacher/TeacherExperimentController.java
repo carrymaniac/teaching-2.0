@@ -50,7 +50,7 @@ public class TeacherExperimentController {
     @GetMapping(path = "/list/{courseId}")
     public ResultVO<CourseMainPageVO> list(@PathVariable(value = "courseId") Integer courseId) {
         //查询课程基本信息
-        CourseDTO  courseDTO= courseService.info(courseId);
+        CourseDTO  courseDTO= courseService.selectOne(courseId);
         CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
         BeanUtils.copyProperties(courseDTO,courseMainPageVO);
         // 查询实验列表信息
@@ -81,7 +81,7 @@ public class TeacherExperimentController {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
         if(experimentDTO.getExperimentAnswerId()!=null){
-            AnswerDTO answerDTO = answerService.detail(experimentDTO.getExperimentAnswerId());
+            AnswerDTO answerDTO = answerService.selectOne(experimentDTO.getExperimentAnswerId());
             experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList()==null?new ArrayList<>():answerDTO.getExperimentAnswerFileList());
             experimentDTO.setExperimentAnswerContent(answerDTO.getExperimentAnswerContent());
         }else{

@@ -42,7 +42,7 @@ public class UserIntercepter implements HandlerInterceptor {
         if(StringUtils.isEmpty(tokenValue)){
             return true;
         }
-        User user = userService.getUserById(Integer.parseInt(tokenValue));
+        User user = userService.selectOne(Integer.parseInt(tokenValue));
         user.setPassword(null);
         log.info("【UserIntercepter】此刻注入用户：user:{}",user);
         hostHolder.setUser(user);

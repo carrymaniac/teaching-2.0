@@ -29,26 +29,22 @@ public interface UserService {
      */
     User login(String username, String password);
 
+
+    //todo 将返回值改为UserDTO
     /**
      * 通过ID获取用户
      * @param id
      * @return
      */
-    User getUserById(int id);
+    User selectOne(int id);
 
-    /**
-     * 更新用户主表信息
-     * @param user
-     * @return
-     */
-    boolean updateUserMaster(User user);
-
+    //todo 将返回值改为UserDTO
     /**
      * 通过用户工号获取用户
      * @param userNumber
      * @return
      */
-    User getUserByUserNumber(String userNumber);
+    User selectOne(String userNumber);
 
     /**
      * 通过用户ID查询用户详细信息
@@ -82,13 +78,6 @@ public interface UserService {
     Boolean addUserInfoByBatch(List<Integer> userIdList,String college,String series,String major);
 
     /**
-     * 通过用户工号学号，批量注销用户
-     * @param userId
-     * @return
-     */
-    Boolean deleteUserByBatch(List<Integer> userId);
-
-    /**
      * 根据班级Id查询学生列表, 若classId为0即全查
      * @param classId
      * @return
@@ -114,13 +103,6 @@ public interface UserService {
 
 
     /**
-     * 查询所有的教师列表
-     * @return
-     */
-    List<User> selectTeacherList();
-
-
-    /**
      * 更新密码
      * @param userId 用户ID
      * @param oldPassword 旧密码
@@ -139,17 +121,24 @@ public interface UserService {
 
 
     /**
-     *
+     * 通过用户工号学号，将用户状态设置为停用
      * @param userIds
      * @return
      */
     Boolean banUserByBatch(List<Integer> userIds);
 
     /**
-     *
+     * 通过用户工号学号，恢复用户的状态
      * @param userIds
      * @return
      */
     Boolean recoverUserByBatch(List<Integer> userIds);
+
+    /**
+     * 通过用户工号学号，批量删除用户
+     * @param userId
+     * @return
+     */
+    Boolean deleteUserByBatch(List<Integer> userId);
 
 }

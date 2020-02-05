@@ -52,12 +52,6 @@ class RecordServiceImplTest {
     }
 
     @Test
-    @Transactional
-    void updateExperimentCommitNumber() {
-        recordService.updateExperimentCommitNumber(4);
-    }
-
-    @Test
     void getRecordByUserIdAndCourseId() {
         List<RecordDTO> recordByUserIdAndCourseId = recordService.getRecordByUserIdAndCourseId(17,4);
         Assert.notNull(recordByUserIdAndCourseId,"error");

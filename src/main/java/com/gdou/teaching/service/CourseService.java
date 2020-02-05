@@ -22,7 +22,15 @@ public interface CourseService {
      * @param courseId
      * @return
      */
-    CourseDTO info(Integer courseId) throws TeachingException;
+    CourseDTO selectOne(Integer courseId);
+
+    /**
+     * 根据课程ID展示课程详情
+     * 需要查询主表和副表
+     * @param courseId
+     * @return
+     */
+    CourseDTO detail(Integer courseId);
 
 
     /**
@@ -31,16 +39,6 @@ public interface CourseService {
      * @return
      */
     CourseDTO save(CourseDTO courseDTO);
-
-
-
-    /**
-     * 根据课程ID展示课程详情
-     * 需要查询主表和副表
-     * @param courseId
-     * @return
-     */
-    CourseDTO detail(Integer courseId) throws TeachingException;
 
 
     /**
@@ -90,6 +88,12 @@ public interface CourseService {
      */
     HashMap<String,Object> listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status);
 
+    /**
+     *todo
+     * 这是文件操作，应该放到FileService去，而不是在这里
+     * 第二，只有增加没有删除？把文件删除也独立出来放做方法。或者考虑把多类文件操作统一成两个方法（删除、增加）
+     * [2020.2.5 16:47 hgh留]
+     */
     /**
      * 增加课程资源文件
      * @param courseId

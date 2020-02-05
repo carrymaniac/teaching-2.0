@@ -61,7 +61,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public CourseDTO info(Integer courseId) throws TeachingException{
+    public CourseDTO selectOne(Integer courseId) {
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if(courseMaster==null){
             log.info("[CourseServiceImpl]-获取课程基本信息,课程主表不存在,courseId={}",courseId);

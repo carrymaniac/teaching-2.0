@@ -89,7 +89,7 @@ public class StudentExperimentController {
     @ResponseBody
     public ResultVO answer(@PathVariable("experimentAnswerId")Integer experimentAnswerId){
         User user = hostHolder.getUser();
-        AnswerDTO detail = answerService.detail(experimentAnswerId);
+        AnswerDTO detail = answerService.selectOne(experimentAnswerId);
         if(detail!=null){
             //将用户ID和实验ID在Redis中进行一次标记，之后在Record的时候进行查看答案标记
             String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, experimentAnswerId);

@@ -4,8 +4,6 @@ package com.gdou.teaching.controller.teacher;
 import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
-import com.gdou.teaching.Enum.UserIdentEnum;
-import com.gdou.teaching.constant.CommonConstant;
 import com.gdou.teaching.dataobject.Evaluation;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.*;
@@ -16,7 +14,6 @@ import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ResultVO;
-import com.gdou.teaching.vo.UserVO;
 import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -279,7 +276,7 @@ public class TeacherCourseController {
             throw new TeachingException(ResultEnum.PARAM_ERROR);
         }
         //检查主表是否存在
-        courseService.info(form.getCourseId());
+        courseService.selectOne(form.getCourseId());
         List<String> addStudentIdList = form.getAddStudentIdList();
         List<String> deleteStudentIdList = form.getDeleteStudentIdList();
         //修改

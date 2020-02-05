@@ -40,6 +40,10 @@ public interface FileService {
     List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory, Integer fileCategoryId, String keyword);
 
     /**
+     *TODO
+     * 这里已经有方法了，那各个Service里面的其他File操作可以精简删除
+     */
+    /**
      * 增加
      * @param fileCategory
      * @param fileCategoryId

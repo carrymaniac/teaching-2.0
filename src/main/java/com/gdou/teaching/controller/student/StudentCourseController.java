@@ -5,7 +5,6 @@ import com.gdou.teaching.Enum.*;
 import com.gdou.teaching.dataobject.*;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
-import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.Achievement;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +65,7 @@ public class StudentCourseController {
         User user = hostHolder.getUser();
         try {
             //查询课程基本信息
-            CourseDTO courseDTO = courseService.info(courseId);
+            CourseDTO courseDTO = courseService.selectOne(courseId);
             CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
             BeanUtils.copyProperties(courseDTO, courseMainPageVO);
             //查询实验列表信息
@@ -126,7 +124,7 @@ public class StudentCourseController {
         User user = hostHolder.getUser();
         //通过ID获取到用户课程数据
         List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(user.getUserId(),keyword);
-        if(list==null){
+        if(list==null||list.isEmpty()){
             return ResultVOUtil.success();
         }
         //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分

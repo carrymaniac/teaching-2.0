@@ -7,13 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @ProjectName: teaching-2.0
@@ -32,7 +29,7 @@ class  CourseServiceImplTest {
     CourseServiceImpl courseService;
     @Test
     void info() {
-        CourseDTO info = courseService.info(1);
+        CourseDTO info = courseService.selectOne(1);
         log.info("info is {}",info);
         Assert.notNull(info,"error");
     }
