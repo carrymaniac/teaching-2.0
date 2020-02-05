@@ -70,9 +70,12 @@ public class AdminClassController {
         List<User> list = pageInfo.getList();
         map.put("total",total);
         if(list!=null&&!list.isEmpty()){
-            List<UserDTO> userDTOS = list.stream().map(user -> {
-                UserDTO userDTO = new UserDTO();
-                BeanUtils.copyProperties(user, userDTO);
+            List<HashMap<String, Object>> userDTOS = list.stream().map(user -> {
+                HashMap<String, Object> userDTO = new HashMap(4);
+                userDTO.put("userId", user.getUserId());
+                userDTO.put("userNumber", user.getUserNumber());
+                userDTO.put("nickname", user.getNickname());
+                userDTO.put("userStatus", user.getUserStatus());
                 return userDTO;
             }).collect(Collectors.toList());
             map.put("list",userDTOS);
