@@ -64,9 +64,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory, Integer fileCategoryId, String keyword) {
+    public List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory,Integer fileCategoryId,String keyword) {
         FileExample fileExample = new FileExample();
-        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId).andFileNameLike(keyword);
+        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue())
+                .andFileCategoryIdEqualTo(fileCategoryId).andFileNameLike("%"+keyword+"%");
         return getFileDTOS(fileExample);
     }
 
