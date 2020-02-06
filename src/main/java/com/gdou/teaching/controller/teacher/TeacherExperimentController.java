@@ -1,5 +1,6 @@
 package com.gdou.teaching.controller.teacher;
 
+import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.CourseDTO;
@@ -9,6 +10,7 @@ import com.gdou.teaching.form.*;
 import com.gdou.teaching.service.AnswerService;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
+import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.ExperimentVO;
@@ -42,6 +44,8 @@ public class TeacherExperimentController {
     private CourseService courseService;
     @Autowired
     private AnswerService answerService;
+    @Autowired
+    private FileService fileService;
     /**
      * 实验列表
      * @param courseId
@@ -147,9 +151,7 @@ public class TeacherExperimentController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        ExperimentDTO experimentDTO = new ExperimentDTO();
-        BeanUtils.copyProperties(form, experimentDTO);
-        experimentService.updateExperimentFile(experimentDTO);
+        fileService.saveFile(FileCategoryEnum.EXPERIMENT_FILE.getCode(),form.getExperimentId(),form.getExperimentDetailFile());
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentAnswer")
@@ -161,7 +163,7 @@ public class TeacherExperimentController {
         }
         ExperimentDTO experimentDTO = new ExperimentDTO();
         BeanUtils.copyProperties(form, experimentDTO);
-        experimentService.updateExperimentAnswer(experimentDTO);
+        answerService.updateExperimentAnswer(experimentDTO);
         //更新答案阈值
         experimentService.updateExperimentInfo(experimentDTO);
         return ResultVOUtil.success();
@@ -173,9 +175,7 @@ public class TeacherExperimentController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        ExperimentDTO experimentDTO = new ExperimentDTO();
-        BeanUtils.copyProperties(form, experimentDTO);
-        experimentService.updateExperimentAnswerFile(experimentDTO);
+        fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId(),form.getExperimentAnswerFile());
         return ResultVOUtil.success();
     }
 

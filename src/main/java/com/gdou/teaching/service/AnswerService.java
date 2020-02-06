@@ -1,6 +1,7 @@
 package com.gdou.teaching.service;
 
 import com.gdou.teaching.dto.AnswerDTO;
+import com.gdou.teaching.dto.ExperimentDTO;
 
 /**
  * @author bo
@@ -22,4 +23,10 @@ public interface AnswerService {
      */
     AnswerDTO save(AnswerDTO answerDTO);
 
+    /**
+     * 更新实验答案
+     * @param experimentDTO
+     * @return
+     */
+    boolean updateExperimentAnswer(ExperimentDTO experimentDTO);
 }

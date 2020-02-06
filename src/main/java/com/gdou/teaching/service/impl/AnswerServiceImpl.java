@@ -3,6 +3,7 @@ package com.gdou.teaching.service.impl;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dto.AnswerDTO;
+import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.ExperimentAnswerMapper;
@@ -92,5 +93,16 @@ public class AnswerServiceImpl implements AnswerService {
             }
         }
         return answerDTO;
+    }
+
+    @Override
+    public boolean updateExperimentAnswer(ExperimentDTO experimentDTO) {
+        ExperimentAnswer experimentAnswer=new ExperimentAnswer();
+        BeanUtils.copyProperties(experimentDTO,experimentAnswer);
+        if (answerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
+            log.info("[ExperimentServiceImpl]-更新实验答案失败");
+            throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
+        }
+        return true;
     }
 }

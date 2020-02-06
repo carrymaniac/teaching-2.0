@@ -102,7 +102,7 @@ public class AdminClassController {
         if (userId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
-        User userById = userService.selectOne(userId);
+        UserDTO userById = userService.selectOne(userId);
         if(userById.getUserIdent()==UserIdentEnum.SUTUDENT.getCode().byteValue()){
             UserDTO userInfo = userService.getUserDetailByUserId(userId);
             //查询用户的各课程成绩

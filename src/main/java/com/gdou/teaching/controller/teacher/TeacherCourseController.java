@@ -62,7 +62,7 @@ public class TeacherCourseController {
      */
     @GetMapping("/list")
     public ResultVO list(@RequestParam(value = "keyword",required = false)String keyword){
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         //通过ID获取到用户课程数据
         List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForTeacher(user.getUserId(),keyword);
         if(list==null){
@@ -218,7 +218,7 @@ public class TeacherCourseController {
     @PostMapping("/save")
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         if (bindingResult.hasErrors()) {
             log.error("参数格式错误：{}" + form);
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -321,7 +321,7 @@ public class TeacherCourseController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        courseService.addCourseFile(form.getCourseId(),form.getCourseFile());
+        fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),form.getCourseId(),form.getCourseFile());
         return ResultVOUtil.success();
     }
 

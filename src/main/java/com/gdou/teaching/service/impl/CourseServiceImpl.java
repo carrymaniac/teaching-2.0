@@ -148,13 +148,6 @@ public class CourseServiceImpl implements CourseService {
         return courseDTO;
     }
 
-    @Override
-    public boolean addCourseFile(Integer courseId,List<FileDTO> courseFile) {
-        if(courseFile!=null&&!courseFile.isEmpty()){
-            fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),courseId,courseFile);
-        }
-        return true;
-    }
 
     /**
      * 注销课程操作 ----隶属老师端

@@ -138,7 +138,7 @@ public class UserController {
     @PostMapping("/updatePassWord")
     @ResponseBody
     public ResultVO updatePassWord(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         Boolean updatePassword = userService.updatePassword(user.getUserId(), oldPassword, newPassword);
         if (updatePassword) {
             return ResultVOUtil.success();

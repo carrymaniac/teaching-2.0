@@ -69,44 +69,6 @@ public interface ExperimentService {
 
 
     /**
-     * 更新实验文件
-     *
-     * @param experimentDTO
-     * @return
-     */
-    /**
-     *todo
-     * 第一。考虑一下统一逻辑，和课程文件一样 变为删除和增加，没必要每次都直接全部删了重新插入；
-     * 第二。这是文件操作，应该放到FileService中去，而不是在这里
-     * [2020.2.5 16:47 hgh留]
-     */
-    boolean updateExperimentFile(ExperimentDTO experimentDTO);
-
-    /**
-     *todo
-     * 第一。这是答案操作，应该放到AnswerService去，而不是在这里
-     * [2020.2.5 16:47 hgh留]
-     */
-    /**
-     * 更新实验答案
-     * @param experimentDTO
-     * @return
-     */
-    boolean updateExperimentAnswer(ExperimentDTO experimentDTO);
-
-    /**
-     *todo
-     * 同上面
-     * [2020.2.5 16:47 hgh留]
-     */
-    /**
-     * 更新实验答案文件
-     * @param experimentDTO
-     * @return
-     */
-    boolean updateExperimentAnswerFile(ExperimentDTO experimentDTO);
-
-    /**
      * 根据experimentId逻辑删除实验主表记录
      * @param experimentId
      * @return

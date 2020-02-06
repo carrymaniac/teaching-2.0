@@ -75,13 +75,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectOne(int id) {
+    public UserDTO selectOne(int id) {
         User user = userMapper.selectByPrimaryKey(id);
         if (user==null){
             log.info("[UserServiceImpl]-,getUserById,学生信息不存在,userId:{}",id);
             throw new TeachingException(USER_NOT_EXIST);
         }
-        return user;
+        UserDTO userDTO=new UserDTO();
+        BeanUtils.copyProperties(user,userDTO);
+        return userDTO;
     }
 
     @Override
@@ -114,14 +116,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User selectOne(String userNumber) {
+    public UserDTO selectOne(String userNumber) {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberEqualTo(userNumber);
         List<User> users = userMapper.selectByExample(userExample);
         if(users==null||users.isEmpty()){
             return null;
         }
-        return users.get(0);
+        UserDTO userDTO=new UserDTO();
+        BeanUtils.copyProperties(users.get(0),userDTO);
+        return userDTO;
     }
 
     @Override
