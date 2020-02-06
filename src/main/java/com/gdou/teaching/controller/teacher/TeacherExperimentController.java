@@ -151,6 +151,8 @@ public class TeacherExperimentController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
+        //先删除后新增 todo 等待前端协调
+        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_FILE.getCode(),form.getExperimentId());
         fileService.saveFile(FileCategoryEnum.EXPERIMENT_FILE.getCode(),form.getExperimentId(),form.getExperimentDetailFile());
         return ResultVOUtil.success();
     }
@@ -175,6 +177,8 @@ public class TeacherExperimentController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
+        //先删除后增加 todo 等待前端协调
+        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId());
         fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId(),form.getExperimentAnswerFile());
         return ResultVOUtil.success();
     }
