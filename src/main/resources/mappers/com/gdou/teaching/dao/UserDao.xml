@@ -41,7 +41,7 @@
             and
             user_status !=2
         </where>
-
+        order by class_id,user_number
     </select>
 
 </mapper>

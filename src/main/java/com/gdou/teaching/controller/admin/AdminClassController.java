@@ -69,6 +69,7 @@ public class AdminClassController {
         long total = pageInfo.getTotal();
         List<User> list = pageInfo.getList();
         map.put("total",total);
+        HashMap<Integer,String> classMap=new HashMap<>();
         if(list!=null&&!list.isEmpty()){
             List<HashMap<String, Object>> userDTOS = list.stream().map(user -> {
                 HashMap<String, Object> userDTO = new HashMap(4);
@@ -76,6 +77,13 @@ public class AdminClassController {
                 userDTO.put("userNumber", user.getUserNumber());
                 userDTO.put("nickname", user.getNickname());
                 userDTO.put("userStatus", user.getUserStatus());
+                Integer clazzId = user.getClassId();
+                if (classMap.containsKey(clazzId)){
+                    userDTO.put("className", classMap.get(clazzId));
+                }else{
+                    classMap.put(clazzId, classService.selectOne(clazzId).getClassName());
+                    userDTO.put("className", classMap.get(clazzId));
+                }
                 return userDTO;
             }).collect(Collectors.toList());
             map.put("list",userDTOS);
