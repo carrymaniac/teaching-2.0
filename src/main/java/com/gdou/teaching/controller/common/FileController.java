@@ -182,7 +182,7 @@ public class FileController {
             String password = passwordCell.getStringCellValue();
             HashMap<String,Object> map = new HashMap<>(3);
             map.put("userNumber",userNumber);
-            map.put("nickName",nickName);
+            map.put("nickname",nickName);
             map.put("password",password);
             result.add(map);
         }

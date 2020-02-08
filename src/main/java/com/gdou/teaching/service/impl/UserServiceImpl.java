@@ -142,9 +142,7 @@ public class UserServiceImpl implements UserService {
             sb.append(" 已存在,请检查数据是否有误");
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
-        userList.forEach(user -> {
-            genUser(user);
-        });
+
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
         userList.forEach(user -> {
             genUser(user);

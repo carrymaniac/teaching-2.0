@@ -11,6 +11,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Objects;
 
@@ -47,7 +50,7 @@ public class AopLog {
 	 * @param point 切入点
 	 */
 	@Before("log()")
-	public void beforeLog(JoinPoint point) {
+	public void beforeLog(JoinPoint point) throws IOException {
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
 		log.info("【请求 URL】：{}", request.getRequestURL());
