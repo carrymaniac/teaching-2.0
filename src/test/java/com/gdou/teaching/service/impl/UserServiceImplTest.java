@@ -3,6 +3,7 @@ package com.gdou.teaching.service.impl;
 import cn.hutool.json.JSONUtil;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.UserService;
@@ -33,7 +34,7 @@ class UserServiceImplTest {
     UserService userService;
     @Test
     void getUserById() {
-        User userById = userService.selectOne(17);
+        UserDTO userById = userService.selectOne(17);
         Assert.notNull(userById,"error");
         log.info("user:{}",userById);
     }
@@ -59,7 +60,7 @@ class UserServiceImplTest {
 
     @Test
     void getUserByUserNumber() {
-        User userByUserNumber = userService.selectOne("201611671309");
+        UserDTO userByUserNumber = userService.selectOne("201611671309");
         Assert.notNull(userByUserNumber,"userNumberFor 201611671309");
         log.info("userNumberFor 201611671309 is : {}",userByUserNumber);
     }

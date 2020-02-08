@@ -88,19 +88,7 @@ public interface CourseService {
      */
     HashMap<String,Object> listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status);
 
-    /**
-     *todo
-     * 这是文件操作，应该放到FileService去，而不是在这里
-     * 第二，只有增加没有删除？把文件删除也独立出来放做方法。或者考虑把多类文件操作统一成两个方法（删除、增加）
-     * [2020.2.5 16:47 hgh留]
-     */
-    /**
-     * 增加课程资源文件
-     * @param courseId
-     * @param courseFile
-     * @return
-     */
-    boolean addCourseFile(Integer courseId, List<FileDTO> courseFile);
+
 
     /**
      * 根据课程ID注销课程

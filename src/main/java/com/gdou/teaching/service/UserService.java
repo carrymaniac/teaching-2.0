@@ -30,21 +30,19 @@ public interface UserService {
     User login(String username, String password);
 
 
-    //todo 将返回值改为UserDTO
     /**
      * 通过ID获取用户
      * @param id
      * @return
      */
-    User selectOne(int id);
+    UserDTO selectOne(int id);
 
-    //todo 将返回值改为UserDTO
     /**
      * 通过用户工号获取用户
      * @param userNumber
      * @return
      */
-    User selectOne(String userNumber);
+    UserDTO selectOne(String userNumber);
 
     /**
      * 通过用户ID查询用户详细信息

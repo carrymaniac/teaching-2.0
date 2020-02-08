@@ -53,10 +53,8 @@ public class TeacherAchievementController {
     @Autowired
     PoiUtil poiUtil;
 
-    //todo  根据classId进行筛选,待完成
     @GetMapping("/list/{courseId}")
-    public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId,
-                                  @RequestParam(value = "classId", required = false) Integer classId) {
+    public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String,Object> map=new HashMap<>();
         //根据courseId查出所有AchievementDTO
         List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
@@ -81,7 +79,7 @@ public class TeacherAchievementController {
         List<AchievementVO> achievementVOList =achievementDTOList.stream().map(achievementDTO -> {
             AchievementVO achievementVO = new AchievementVO();
             achievementVO.setCourseAchievement(achievementDTO.getCourseAchievement());
-            User userById = userService.selectOne(achievementDTO.getUserId());
+            UserDTO userById = userService.selectOne(achievementDTO.getUserId());
             achievementVO.setUserId(userById.getUserId());
             achievementVO.setUserNumber(userById.getUserNumber());
             achievementVO.setNickName(userById.getNickname());
@@ -114,7 +112,7 @@ public class TeacherAchievementController {
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId,
                               @RequestParam(value = "userId") Integer userId){
         //获取学生信息
-        User user = userService.selectOne(userId);
+        UserDTO user = userService.selectOne(userId);
         //获取课程成绩信息
         Achievement achievement = achievementService.getAchievementByUserIdAndCourseId(userId, courseId);
         Double score = achievement.getCourseAchievement();
@@ -197,7 +195,7 @@ public class TeacherAchievementController {
         //获取学生列表
         List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
             JudgeVO judgeVO=new JudgeVO();
-            User user = userService.selectOne(recordDTO.getUserId());
+            UserDTO user = userService.selectOne(recordDTO.getUserId());
             judgeVO.setClassId(user.getClassId());
             judgeVO.setUserId(user.getUserId());
             judgeVO.setUserNumber(user.getUserNumber());
@@ -228,7 +226,7 @@ public class TeacherAchievementController {
     public ResultVO<RecordVO> detail(@PathVariable(value = "experimentId") Integer experimentId,
                                      @RequestParam(value = "userId") Integer userId) {
         RecordVO recordVO=new RecordVO();
-        User user = userService.selectOne(userId);
+        UserDTO user = userService.selectOne(userId);
         RecordDTO recordDTO = recordService.selectOne(experimentId, userId);
         if (recordDTO!=null){
             BeanUtils.copyProperties(recordDTO,recordVO);
@@ -300,7 +298,7 @@ public class TeacherAchievementController {
 
         judgeVOList = recordList.stream().map(record -> {
             JudgeVO judgeVO=new JudgeVO();
-            User user = userService.selectOne(record.getUserId());
+            UserDTO user = userService.selectOne(record.getUserId());
             judgeVO.setClassId(user.getClassId());
             judgeVO.setUserId(user.getUserId());
             judgeVO.setUserNumber(user.getUserNumber());

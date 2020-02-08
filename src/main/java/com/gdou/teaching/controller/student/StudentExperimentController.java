@@ -7,6 +7,7 @@ import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.RecordDTO;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.AnswerService;
 import com.gdou.teaching.service.ExperimentService;
@@ -58,7 +59,7 @@ public class StudentExperimentController {
     @GetMapping("/info/{experimentId}")
     @ResponseBody
     public ResultVO info(@PathVariable("experimentId") Integer experimentId) {
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         if (user == null) {
             return ResultVOUtil.fail(ResultEnum.USER_NO_LOGIN);
         }
@@ -88,7 +89,7 @@ public class StudentExperimentController {
     @GetMapping("/answer/{experimentAnswerId}")
     @ResponseBody
     public ResultVO answer(@PathVariable("experimentAnswerId")Integer experimentAnswerId){
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         AnswerDTO detail = answerService.selectOne(experimentAnswerId);
         if(detail!=null){
             //将用户ID和实验ID在Redis中进行一次标记，之后在Record的时候进行查看答案标记

@@ -3,6 +3,7 @@ package com.gdou.teaching.web.interceptor;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.dataobject.HostHolder;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.util.WebUtil;
@@ -45,7 +46,7 @@ public class AuthIntercepter implements HandlerInterceptor {
             return true;
         }
         UserIdentEnum admin = annotation.user();
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         if(admin.getCode().byteValue()==user.getUserIdent().byteValue()){
             return true;
         }else {

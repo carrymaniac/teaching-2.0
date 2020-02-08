@@ -1,7 +1,9 @@
 package com.gdou.teaching.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gdou.teaching.mbg.model.User;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 /**
  * @author carrymaniac
