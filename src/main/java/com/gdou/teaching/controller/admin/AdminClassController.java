@@ -60,7 +60,7 @@ public class AdminClassController {
     @ResponseBody
     @GetMapping("/list")
     public ResultVO list(@RequestParam(value = "page", required = false,defaultValue = "1")Integer page,
-                         @RequestParam(value = "size", required = false,defaultValue = "10")Integer size,
+                         @RequestParam(value = "size", required = false,defaultValue = "5")Integer size,
                          @RequestParam(value = "classId",required = false,defaultValue = "0")Integer classId,
                          @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword
     ){
@@ -103,7 +103,7 @@ public class AdminClassController {
     public ResultVO info(
             @PathVariable("userId")Integer userId,
             @RequestParam(value = "page", required = false,defaultValue = "1")Integer page,
-            @RequestParam(value = "size", required = false,defaultValue = "10")Integer size,
+            @RequestParam(value = "size", required = false,defaultValue = "5")Integer size,
             @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword,
             @RequestParam(value = "status",required = false)Integer status
     ) {

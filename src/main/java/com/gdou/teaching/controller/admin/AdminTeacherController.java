@@ -44,7 +44,7 @@ public class AdminTeacherController {
     @ResponseBody
     @GetMapping("/teacherList")
     public ResultVO teacherList(@RequestParam(value = "page",defaultValue = "1",required = false) Integer page,
-                                @RequestParam(value = "size",defaultValue = "10",required = false) Integer size,
+                                @RequestParam(value = "size",defaultValue = "5",required = false) Integer size,
                                 @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword){
         PageInfo<User> userPageInfo = userService.getUserListByClassIdAndKeywordAndIdentInPage(0,page,size,keyword,UserIdentEnum.TEACHER.getCode());
         long total = userPageInfo.getTotal();

@@ -20,6 +20,7 @@ import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +31,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +50,9 @@ public class UserController {
     private final StringRedisTemplate stringRedisTemplate;
     private final UserService userService;
     private final HostHolder hostHolder;
+
+    @Value("${server.servlet.context-path}")
+    String urlHead;
 
     @Autowired
     public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder) {
@@ -221,8 +226,13 @@ public class UserController {
     @ResponseBody
     @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/invalidUser")
-    public ResultVO invalidUser(@RequestBody List<Integer> userIds){
+    public ResultVO invalidUser(@RequestBody List<Integer> userIds,HttpServletResponse response) throws IOException {
         List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        int findSize = usersByUserId.size();
+        if(findSize!=userIds.size()){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        Byte flag = usersByUserId.get(0).getUserIdent();
         //检查身份是否符合要求
         long adminCount = usersByUserId.stream()
                 .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
@@ -235,7 +245,14 @@ public class UserController {
                 .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue()))
                 .count();
         if(BANCount==usersByUserId.size()){
-            return userService.deleteUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+            if(userService.deleteUserByBatch(userIds)){
+                String url =  urlHead+ (flag.equals(UserIdentEnum.SUTUDENT.getCode().byteValue())?"/admin/class/list":"/admin/teacher/teacherList");
+                response.sendRedirect(url);
+                return null;
+            }else {
+                return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+            }
+
         }else {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
@@ -244,12 +261,13 @@ public class UserController {
     @PostMapping("/banUsers")
     @ResponseBody
     @Auth(user=UserIdentEnum.ADMIN)
-    public ResultVO banUser(@RequestBody List<Integer> userIds){
+    public ResultVO banUser(@RequestBody List<Integer> userIds,HttpServletResponse response) throws IOException {
         List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
         int findSize = usersByUserId.size();
         if(findSize!=userIds.size()){
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
+        Byte flag = usersByUserId.get(0).getUserIdent();
         //检查身份是否符合要求
         long adminCount = usersByUserId.stream()
                 .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
@@ -262,7 +280,13 @@ public class UserController {
                 .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.NORMAL.getCode().byteValue()))
                 .count();
         if(NormalCount==usersByUserId.size()){
-            return userService.banUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+            if(userService.banUserByBatch(userIds)){
+                String url =  urlHead+ (flag.equals(UserIdentEnum.SUTUDENT.getCode().byteValue())?"/admin/class/list":"/admin/teacher/teacherList");
+                response.sendRedirect(url);
+                return null;
+            }else {
+                return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+            }
         }else {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
@@ -271,7 +295,7 @@ public class UserController {
     @PostMapping("/recoverUsers")
     @ResponseBody
     @Auth(user=UserIdentEnum.ADMIN)
-    public ResultVO recoverUser(@RequestBody List<Integer> userIds){
+    public Object recoverUser(@RequestBody List<Integer> userIds,HttpServletResponse response) throws IOException {
         List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
         int findSize = usersByUserId.size();
         if(findSize!=userIds.size()){
@@ -284,12 +308,19 @@ public class UserController {
         if(adminCount>0){
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
+        Byte flag = usersByUserId.get(0).getUserIdent();
         //检查状态
         long BANCount = usersByUserId.stream()
                 .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue()))
                 .count();
         if(BANCount==usersByUserId.size()){
-            return userService.recoverUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+            if(userService.recoverUserByBatch(userIds)){
+                String url = urlHead+ (flag.equals(UserIdentEnum.SUTUDENT.getCode().byteValue())?"/admin/class/list":"/admin/teacher/teacherList");
+                response.sendRedirect(url);
+                return null;
+            }else {
+                return ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+            }
         }else {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
