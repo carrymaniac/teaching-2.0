@@ -26,7 +26,7 @@ public interface AnswerService {
     /**
      * 更新实验答案
      * @param experimentDTO
-     * @return
+     * @return 返回experimentAnswerId
      */
-    boolean updateExperimentAnswer(ExperimentDTO experimentDTO);
+    Integer updateExperimentAnswer(ExperimentDTO experimentDTO);
 }

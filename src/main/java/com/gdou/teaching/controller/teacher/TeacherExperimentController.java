@@ -165,8 +165,9 @@ public class TeacherExperimentController {
         }
         ExperimentDTO experimentDTO = new ExperimentDTO();
         BeanUtils.copyProperties(form, experimentDTO);
-        answerService.updateExperimentAnswer(experimentDTO);
-        //更新答案阈值
+        Integer experimentAnswerId = answerService.updateExperimentAnswer(experimentDTO);
+        experimentDTO.setExperimentAnswerId(experimentAnswerId);
+        //更新答案阈值和实验答案Id
         experimentService.updateExperimentInfo(experimentDTO);
         return ResultVOUtil.success();
     }
@@ -177,9 +178,21 @@ public class TeacherExperimentController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        //先删除后增加 todo 等待前端协调
-        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId());
-        fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId(),form.getExperimentAnswerFile());
+        //若ExperimentAnswerId为null,则为新增答案, 创建实验答案表记录,更新experimentAnswerId,保存文件.
+        if (form.getExperimentAnswerId()==null){
+            ExperimentDTO experimentDTO =new ExperimentDTO();
+            experimentDTO.setExperimentId(form.getExperimentId());
+            Integer experimentAnswerId = answerService.updateExperimentAnswer(experimentDTO);
+            experimentDTO.setExperimentAnswerId(experimentAnswerId);
+            //更新实验答案Id
+            experimentService.updateExperimentInfo(experimentDTO);
+            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswerId,form.getExperimentAnswerFile());
+        }else{
+            //先删除后增加 todo 等待前端协调
+            fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId());
+            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),form.getExperimentAnswerId(),form.getExperimentAnswerFile());
+        }
+
         return ResultVOUtil.success();
     }
 

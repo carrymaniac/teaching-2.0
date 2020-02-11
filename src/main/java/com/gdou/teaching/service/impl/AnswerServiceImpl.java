@@ -1,5 +1,6 @@
 package com.gdou.teaching.service.impl;
 
+import com.gdou.teaching.Enum.AnswerStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dto.AnswerDTO;
@@ -66,7 +67,6 @@ public class AnswerServiceImpl implements AnswerService {
                 log.error("保存实验答案,新增实验答案失败,experimentAnswer={}",experimentAnswer);
                 throw new TeachingException(ResultEnum.PARAM_ERROR);
             }
-
             //需要对experiment主表进行更新AnswerID操作
             ExperimentMaster experimentMaster = new ExperimentMaster();
             experimentMaster.setExperimentId(answerDTO.getExperimentId());
@@ -96,13 +96,27 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public boolean updateExperimentAnswer(ExperimentDTO experimentDTO) {
+    public Integer updateExperimentAnswer(ExperimentDTO experimentDTO) {
         ExperimentAnswer experimentAnswer=new ExperimentAnswer();
         BeanUtils.copyProperties(experimentDTO,experimentAnswer);
-        if (answerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
-            log.info("[ExperimentServiceImpl]-更新实验答案失败");
-            throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
+        //如果ExperimentAnswerId为空,则为添加操作
+        if (experimentDTO.getExperimentAnswerId()==null){
+            experimentAnswer.setExperimentAnswerStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
+            if (experimentAnswer.getExperimentAnswerContent()==null){
+                experimentAnswer.setExperimentAnswerContent("");
+            }
+            answerMapper.insert(experimentAnswer);
+            if (experimentAnswer.getExperimentAnswerId()==null){
+                log.error("保存实验答案,新增实验答案失败,experimentAnswer={}",experimentAnswer);
+                throw new TeachingException(ResultEnum.PARAM_ERROR);
+            }
         }
-        return true;
+        else{
+            if (answerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
+                log.info("[ExperimentServiceImpl]-更新实验答案失败");
+                throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
+            }
+        }
+        return experimentAnswer.getExperimentAnswerId();
     }
 }

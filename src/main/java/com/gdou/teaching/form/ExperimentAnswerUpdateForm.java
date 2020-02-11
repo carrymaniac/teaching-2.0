@@ -21,7 +21,6 @@ public class ExperimentAnswerUpdateForm {
     @NotNull(message = "实验答案阈值必填")
     private Float punishment;
     //实验答案Id
-    @NotNull(message = "实验答案Id必填")
     private Integer experimentAnswerId;
     //实验答案文本
     private String experimentAnswerContent;
