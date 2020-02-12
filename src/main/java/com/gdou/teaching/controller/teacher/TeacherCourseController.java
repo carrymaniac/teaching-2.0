@@ -228,6 +228,9 @@ public class TeacherCourseController {
         BeanUtils.copyProperties(form, courseDTO);
         courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
         courseDTO.setCourseNumber(0);
+        if(form.getCourseCover()==null){
+            courseDTO.setCourseCover("");
+        }
         courseService.save(courseDTO);
         //  todo 异步更新成绩表 addAchievementByClazzId
         List<String> addStudentIdList = form.getAddStudentIdList();

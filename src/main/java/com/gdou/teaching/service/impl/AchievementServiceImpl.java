@@ -126,7 +126,7 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public Achievement getAchievementByUserIdAndCourseId(Integer userId, Integer courseId) {
         AchievementExample achievementExample = new AchievementExample();
-        achievementExample.createCriteria().andUserIdEqualTo(userId).andCourseIdEqualTo(courseId);
+        achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdEqualTo(userId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
            return null;
@@ -249,9 +249,7 @@ public class AchievementServiceImpl implements AchievementService {
             log.info("[AchievementServiceImpl]-exportAchievement,实验信息不存在,courseId:{}",courseDTO.getCourseId());
             experimentIdList=new ArrayList<>();
         }else{
-            experimentIdList=experimentDTOList.stream().map(experimentDTO -> {
-                return experimentDTO.getExperimentId();
-            }).collect(Collectors.toList());
+            experimentIdList=experimentDTOList.stream().map(ExperimentDTO::getExperimentId).collect(Collectors.toList());
         }
 
         HashMap<Integer,String> classMap=new HashMap<>();
