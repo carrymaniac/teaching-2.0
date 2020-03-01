@@ -1,6 +1,7 @@
 package com.gdou.teaching.form;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -20,5 +21,6 @@ public class BatchJudgeForm {
     @NotNull(message = "审核状态必填")
     private Integer status;
     //实验得分
+    @Range(min=0, max=100,message = "实验成绩输入错误")
     private Double experimentAchievement;
 }
