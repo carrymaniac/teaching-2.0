@@ -36,7 +36,11 @@ public class ExperimentVO {
      */
     private Integer courseId;
     /**
-     * 实验文本内容
+     * 实验状态
+     */
+    private Byte experimentStatus;
+    /**
+     * 实验简介
      */
     private String experimentIntro;
     /**

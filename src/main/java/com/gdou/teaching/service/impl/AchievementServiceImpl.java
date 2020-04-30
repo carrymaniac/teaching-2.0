@@ -126,11 +126,10 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public Achievement getAchievementByUserIdAndCourseId(Integer userId, Integer courseId) {
         AchievementExample achievementExample = new AchievementExample();
-        achievementExample.createCriteria().andUserIdEqualTo(userId).andCourseIdEqualTo(courseId);
+        achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdEqualTo(userId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
-            log.info("[AchievementServiceImpl]-getAchievementByUserIdAndCourseId,成绩表信息不存在,userId:{},courseId:{}",userId,courseId);
-            throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
+           return null;
         }
         return achievements.get(0);
     }
@@ -147,11 +146,14 @@ public class AchievementServiceImpl implements AchievementService {
         //获取老师名字
         Integer teacherId = achievements.get(0).getTeacherId();
         User teacher = userMapper.selectByPrimaryKey(teacherId);
+        String teacherName;
         if (teacher==null){
+            teacherName="";
             log.info("[AchievementServiceImpl]-getAchievementByCourseId,教师信息不存在,teacherId:{}",teacherId);
-            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }else{
+            teacherName = teacher.getNickname();
         }
-        String teacherName = teacher.getNickname();
+
         //获取班级信息
         HashSet<Integer> classIds = new HashSet<>();
         achievements.stream().forEach(achievement -> {
@@ -247,9 +249,7 @@ public class AchievementServiceImpl implements AchievementService {
             log.info("[AchievementServiceImpl]-exportAchievement,实验信息不存在,courseId:{}",courseDTO.getCourseId());
             experimentIdList=new ArrayList<>();
         }else{
-            experimentIdList=experimentDTOList.stream().map(experimentDTO -> {
-                return experimentDTO.getExperimentId();
-            }).collect(Collectors.toList());
+            experimentIdList=experimentDTOList.stream().map(ExperimentDTO::getExperimentId).collect(Collectors.toList());
         }
 
         HashMap<Integer,String> classMap=new HashMap<>();

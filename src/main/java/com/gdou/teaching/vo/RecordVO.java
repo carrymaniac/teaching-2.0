@@ -54,5 +54,5 @@ public class RecordVO {
     /**
      *  实验提交状态
      */
-    private Integer status;
+    private Byte status;
 }

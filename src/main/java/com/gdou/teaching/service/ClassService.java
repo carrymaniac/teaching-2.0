@@ -23,15 +23,12 @@ public interface ClassService {
      */
     Class registerClass(String clazzName,Integer classSize);
 
-    Class getClassByClazzId(Integer classId);
-
     /**
-     * 分页获取班级列表
-     * @param page
-     * @param size
+     * 通过classID获取class
+     * @param classId
      * @return
      */
-    PageInfo getClassesByPage(Integer page, Integer size);
+    Class selectOne(Integer classId);
 
     /**
      * 班级信息修改
@@ -52,12 +49,5 @@ public interface ClassService {
      * @return
      */
     List<User> getStudentByClazzId(Integer clazzId);
-
-    /**
-     * 根据classId来更新学生数量
-     * @param clazzId
-     * @return
-     */
-    boolean updateStudentCountByClazzId(Integer clazzId);
 
 }

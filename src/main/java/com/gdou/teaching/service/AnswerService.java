@@ -1,6 +1,7 @@
 package com.gdou.teaching.service;
 
 import com.gdou.teaching.dto.AnswerDTO;
+import com.gdou.teaching.dto.ExperimentDTO;
 
 /**
  * @author bo
@@ -13,7 +14,7 @@ public interface AnswerService {
      * @param experimentAnswerId
      * @return
      */
-    AnswerDTO detail(Integer experimentAnswerId);
+    AnswerDTO selectOne(Integer experimentAnswerId);
 
     /**
      * 新增或修改实验答案
@@ -22,11 +23,10 @@ public interface AnswerService {
      */
     AnswerDTO save(AnswerDTO answerDTO);
 
-//    /**
-//     * 根据实验ID删除实验答案
-//     * @param experimentId
-//     * @return
-//     */
-//    boolean invalid(Integer experimentId);
-
+    /**
+     * 更新实验答案
+     * @param experimentDTO
+     * @return 返回experimentAnswerId
+     */
+    Integer updateExperimentAnswer(ExperimentDTO experimentDTO);
 }

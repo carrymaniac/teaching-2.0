@@ -2,7 +2,6 @@ package com.gdou.teaching.service.impl;
 
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.mbg.model.User;
-import com.gdou.teaching.service.impl.ClassServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,6 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.TreeMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @ProjectName: teaching-2.0
@@ -39,7 +36,7 @@ class ClassServiceImplTest {
 
     @Test
     void getClassByClazzId() {
-        Class classByClazzId = classService.getClassByClazzId(1);
+        Class classByClazzId = classService.selectOne(1);
         Assert.notNull(classByClazzId,"error");
     }
 

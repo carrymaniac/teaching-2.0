@@ -2,6 +2,7 @@ package com.gdou.teaching.form;
 
 import com.gdou.teaching.dto.FileDTO;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -27,10 +28,8 @@ public class  ExperimentInfoUpdateForm {
 
     //课程阈值
     @NotNull(message = "课程阈值必填")
+    @Range(min=0, max=1,message = "实验阈值输入错误")
     private Float valve;
 
-    //查看答案的惩罚折扣大小
-    @NotNull(message = "惩罚折扣必填")
-    private Float punishment;
 
 }

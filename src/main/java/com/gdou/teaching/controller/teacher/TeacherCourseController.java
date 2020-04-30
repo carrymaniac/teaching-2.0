@@ -4,8 +4,6 @@ package com.gdou.teaching.controller.teacher;
 import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
-import com.gdou.teaching.Enum.UserIdentEnum;
-import com.gdou.teaching.constant.CommonConstant;
 import com.gdou.teaching.dataobject.Evaluation;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.*;
@@ -16,7 +14,6 @@ import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseVO;
 import com.gdou.teaching.vo.ResultVO;
-import com.gdou.teaching.vo.UserVO;
 import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -64,10 +61,10 @@ public class TeacherCourseController {
      * @return
      */
     @GetMapping("/list")
-    public ResultVO list(){
-        User user = hostHolder.getUser();
+    public ResultVO list(@RequestParam(value = "keyword",required = false)String keyword){
+        UserDTO user = hostHolder.getUser();
         //通过ID获取到用户课程数据
-        List<CourseDTO> list = courseService.listCourseForTeacher(user.getUserId());
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForTeacher(user.getUserId(),keyword);
         if(list==null){
             return ResultVOUtil.success();
         }
@@ -221,7 +218,7 @@ public class TeacherCourseController {
     @PostMapping("/save")
     public ResultVO save(@RequestBody @Valid CourseForm form,
                          BindingResult bindingResult) {
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         if (bindingResult.hasErrors()) {
             log.error("参数格式错误：{}" + form);
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -231,6 +228,9 @@ public class TeacherCourseController {
         BeanUtils.copyProperties(form, courseDTO);
         courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
         courseDTO.setCourseNumber(0);
+        if(form.getCourseCover()==null){
+            courseDTO.setCourseCover("");
+        }
         courseService.save(courseDTO);
         //  todo 异步更新成绩表 addAchievementByClazzId
         List<String> addStudentIdList = form.getAddStudentIdList();
@@ -279,7 +279,7 @@ public class TeacherCourseController {
             throw new TeachingException(ResultEnum.PARAM_ERROR);
         }
         //检查主表是否存在
-        courseService.info(form.getCourseId());
+        courseService.selectOne(form.getCourseId());
         List<String> addStudentIdList = form.getAddStudentIdList();
         List<String> deleteStudentIdList = form.getDeleteStudentIdList();
         //修改
@@ -324,7 +324,7 @@ public class TeacherCourseController {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
-        courseService.addCourseFile(form.getCourseId(),form.getCourseFile());
+        fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),form.getCourseId(),form.getCourseFile());
         return ResultVOUtil.success();
     }
 

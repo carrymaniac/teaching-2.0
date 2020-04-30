@@ -1,16 +1,10 @@
 package com.gdou.teaching.controller.teacher;
 
-import com.gdou.teaching.Enum.CourseStatusEnum;
-import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.RecordStatusEnum;
 import com.gdou.teaching.Enum.ResultEnum;
-import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.dto.*;
-import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.BatchJudgeForm;
-import com.gdou.teaching.form.CourseForm;
-import com.gdou.teaching.form.CourseUpdateStuForm;
 import com.gdou.teaching.form.JudgeForm;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.Class;
@@ -20,11 +14,9 @@ import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.*;
 import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,10 +53,8 @@ public class TeacherAchievementController {
     @Autowired
     PoiUtil poiUtil;
 
-    //todo  根据classId进行筛选,待完成
     @GetMapping("/list/{courseId}")
-    public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId,
-                                  @RequestParam(value = "classId", required = false) Integer classId) {
+    public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId) {
         HashMap<String,Object> map=new HashMap<>();
         //根据courseId查出所有AchievementDTO
         List<AchievementDTO> achievementDTOList = achievementService.getAchievementByCourseId(courseId);
@@ -78,7 +68,7 @@ public class TeacherAchievementController {
         }
         List<HashMap> classList=new ArrayList<>();
         for(Integer clazzId:classIdSet){
-            Class classByClazzId = classService.getClassByClazzId(clazzId);
+            Class classByClazzId = classService.selectOne(clazzId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
@@ -89,7 +79,7 @@ public class TeacherAchievementController {
         List<AchievementVO> achievementVOList =achievementDTOList.stream().map(achievementDTO -> {
             AchievementVO achievementVO = new AchievementVO();
             achievementVO.setCourseAchievement(achievementDTO.getCourseAchievement());
-            User userById = userService.getUserById(achievementDTO.getUserId());
+            UserDTO userById = userService.selectOne(achievementDTO.getUserId());
             achievementVO.setUserId(userById.getUserId());
             achievementVO.setUserNumber(userById.getUserNumber());
             achievementVO.setNickName(userById.getNickname());
@@ -122,7 +112,7 @@ public class TeacherAchievementController {
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId,
                               @RequestParam(value = "userId") Integer userId){
         //获取学生信息
-        User user = userService.getUserById(userId);
+        UserDTO user = userService.selectOne(userId);
         //获取课程成绩信息
         Achievement achievement = achievementService.getAchievementByUserIdAndCourseId(userId, courseId);
         Double score = achievement.getCourseAchievement();
@@ -179,7 +169,7 @@ public class TeacherAchievementController {
         List<HashMap> classList=new ArrayList<>();
         if(classId==null||classId==0){
             for(Integer clazzId:classIdSet){
-                Class classByClazzId = classService.getClassByClazzId(clazzId);
+                Class classByClazzId = classService.selectOne(clazzId);
                 HashMap<String,Object> clazzMap=new HashMap<>();
                 clazzMap.put("classId",classByClazzId.getClassId());
                 clazzMap.put("className",classByClazzId.getClassName());
@@ -190,7 +180,7 @@ public class TeacherAchievementController {
                 map.put("classList",classList);
             }
         }else{
-            Class classByClazzId = classService.getClassByClazzId(classId);
+            Class classByClazzId = classService.selectOne(classId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
@@ -205,7 +195,7 @@ public class TeacherAchievementController {
         //获取学生列表
         List<JudgeVO> judgeVOList= recordDTOS.stream().map(recordDTO -> {
             JudgeVO judgeVO=new JudgeVO();
-            User user = userService.getUserById(recordDTO.getUserId());
+            UserDTO user = userService.selectOne(recordDTO.getUserId());
             judgeVO.setClassId(user.getClassId());
             judgeVO.setUserId(user.getUserId());
             judgeVO.setUserNumber(user.getUserNumber());
@@ -236,7 +226,7 @@ public class TeacherAchievementController {
     public ResultVO<RecordVO> detail(@PathVariable(value = "experimentId") Integer experimentId,
                                      @RequestParam(value = "userId") Integer userId) {
         RecordVO recordVO=new RecordVO();
-        User user = userService.getUserById(userId);
+        UserDTO user = userService.selectOne(userId);
         RecordDTO recordDTO = recordService.selectOne(experimentId, userId);
         if (recordDTO!=null){
             BeanUtils.copyProperties(recordDTO,recordVO);
@@ -296,7 +286,7 @@ public class TeacherAchievementController {
         Set<Integer> classIdSet = recordList.stream().map(c -> c.getClassId()).collect(Collectors.toSet());
         List<HashMap> classList=new ArrayList<>();
         for(Integer clazzId:classIdSet){
-            Class classByClazzId = classService.getClassByClazzId(clazzId);
+            Class classByClazzId = classService.selectOne(clazzId);
             HashMap<String,Object> clazzMap=new HashMap<>();
             clazzMap.put("classId",classByClazzId.getClassId());
             clazzMap.put("className",classByClazzId.getClassName());
@@ -308,7 +298,7 @@ public class TeacherAchievementController {
 
         judgeVOList = recordList.stream().map(record -> {
             JudgeVO judgeVO=new JudgeVO();
-            User user = userService.getUserById(record.getUserId());
+            UserDTO user = userService.selectOne(record.getUserId());
             judgeVO.setClassId(user.getClassId());
             judgeVO.setUserId(user.getUserId());
             judgeVO.setUserNumber(user.getUserNumber());
@@ -378,11 +368,11 @@ public class TeacherAchievementController {
     public String export(HttpServletResponse response,@PathVariable(value = "courseId") Integer courseId) throws IOException {
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
-        CourseDTO detail = courseService.detail(courseId);
-        response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(detail.getCourseName()+"成绩表.xls","UTF-8"));
+        CourseDTO course = courseService.selectOne(courseId);
+        response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode(course.getCourseName()+"成绩表.xls","UTF-8"));
         OutputStream outputStream = response.getOutputStream();
         try{
-            List<List<String>> collect = achievementService.exportAchievement(detail);
+            List<List<String>> collect = achievementService.exportAchievement(course);
             List<ExperimentDTO> experimentDTOList = experimentService.list(courseId);
             List<String> experimentNameList =  experimentDTOList.stream().map(experimentDTO -> {
                 return experimentDTO.getExperimentName();
@@ -393,7 +383,7 @@ public class TeacherAchievementController {
             colunNames.add("姓名");
             colunNames.add("总成绩");
             colunNames.addAll(experimentNameList);
-            Workbook sheet = poiUtil.createSheet(detail.getCourseName()+"成绩表",colunNames,collect);
+            Workbook sheet = poiUtil.createSheet(course.getCourseName()+"成绩表",colunNames,collect);
             sheet.write(outputStream);
         }catch (Exception e){
             log.error(e.getMessage());

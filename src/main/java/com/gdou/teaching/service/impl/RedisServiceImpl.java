@@ -17,8 +17,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisServiceImpl {
 
-    @Autowired
-    StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
+
+    public RedisServiceImpl(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
     /**
      * 获取一条评语
      * @return

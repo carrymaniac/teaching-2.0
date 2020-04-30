@@ -2,8 +2,6 @@ package com.gdou.teaching.controller.admin;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
-import com.gdou.teaching.Enum.UserStatusEnum;
-import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.form.ClazzRegisterForm;
 import com.gdou.teaching.mbg.model.Class;
@@ -17,18 +15,12 @@ import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.web.Auth;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +60,7 @@ public class AdminClassController {
     @ResponseBody
     @GetMapping("/list")
     public ResultVO list(@RequestParam(value = "page", required = false,defaultValue = "1")Integer page,
-                         @RequestParam(value = "size", required = false,defaultValue = "10")Integer size,
+                         @RequestParam(value = "size", required = false,defaultValue = "5")Integer size,
                          @RequestParam(value = "classId",required = false,defaultValue = "0")Integer classId,
                          @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword
     ){
@@ -77,10 +69,21 @@ public class AdminClassController {
         long total = pageInfo.getTotal();
         List<User> list = pageInfo.getList();
         map.put("total",total);
+        HashMap<Integer,String> classMap=new HashMap<>();
         if(list!=null&&!list.isEmpty()){
-            List<UserDTO> userDTOS = list.stream().map(user -> {
-                UserDTO userDTO = new UserDTO();
-                BeanUtils.copyProperties(user, userDTO);
+            List<HashMap<String, Object>> userDTOS = list.stream().map(user -> {
+                HashMap<String, Object> userDTO = new HashMap(4);
+                userDTO.put("userId", user.getUserId());
+                userDTO.put("userNumber", user.getUserNumber());
+                userDTO.put("nickname", user.getNickname());
+                userDTO.put("userStatus", user.getUserStatus());
+                Integer clazzId = user.getClassId();
+                if (classMap.containsKey(clazzId)){
+                    userDTO.put("className", classMap.get(clazzId));
+                }else{
+                    classMap.put(clazzId, classService.selectOne(clazzId).getClassName());
+                    userDTO.put("className", classMap.get(clazzId));
+                }
                 return userDTO;
             }).collect(Collectors.toList());
             map.put("list",userDTOS);
@@ -100,14 +103,14 @@ public class AdminClassController {
     public ResultVO info(
             @PathVariable("userId")Integer userId,
             @RequestParam(value = "page", required = false,defaultValue = "1")Integer page,
-            @RequestParam(value = "size", required = false,defaultValue = "10")Integer size,
+            @RequestParam(value = "size", required = false,defaultValue = "5")Integer size,
             @RequestParam(value = "keyword",required = false,defaultValue = "")String keyword,
             @RequestParam(value = "status",required = false)Integer status
     ) {
         if (userId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
         }
-        User userById = userService.getUserById(userId);
+        UserDTO userById = userService.selectOne(userId);
         if(userById.getUserIdent()==UserIdentEnum.SUTUDENT.getCode().byteValue()){
             UserDTO userInfo = userService.getUserDetailByUserId(userId);
             //查询用户的各课程成绩

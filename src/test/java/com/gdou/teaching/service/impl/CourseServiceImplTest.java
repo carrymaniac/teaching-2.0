@@ -1,18 +1,16 @@
 package com.gdou.teaching.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.gdou.teaching.Enum.CourseStatusEnum;
 import com.gdou.teaching.dto.CourseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @ProjectName: teaching-2.0
@@ -31,7 +29,7 @@ class  CourseServiceImplTest {
     CourseServiceImpl courseService;
     @Test
     void info() {
-        CourseDTO info = courseService.info(1);
+        CourseDTO info = courseService.selectOne(1);
         log.info("info is {}",info);
         Assert.notNull(info,"error");
     }
@@ -72,9 +70,9 @@ class  CourseServiceImplTest {
 
     @Test
     void list() {
-        List<CourseDTO> list = courseService.listCourseForStudent(17);
-        log.info("list is {}",list);
-        Assert.notNull(list,"list is null");
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(3,"数据");
+        log.info("list is {}", JSONUtil.toJsonPrettyStr(list));
+//        Assert.notNull(list,"list is null");
     }
 
     @Test

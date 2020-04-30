@@ -1,8 +1,10 @@
 package com.gdou.teaching.controller.common;
 
 import com.gdou.teaching.Enum.ResultEnum;
+import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.util.FileUtil;
+import com.gdou.teaching.util.PoiUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -40,6 +44,9 @@ public class FileController {
     private String contextPath;
     private final FileUtil fileUtil;
     private final FileService fileService;
+
+    @Autowired
+    PoiUtil poiUtil;
 
     @Autowired
     public FileController(FileUtil fileUtil, FileService fileService) {
@@ -160,7 +167,8 @@ public class FileController {
         List<HashMap<String,Object>> result = new ArrayList<>();
         //获取行数
         int nums = sheet.getPhysicalNumberOfRows();
-        for(int i = 0;i<nums;i++){
+        //跳过第一行列头
+        for(int i = 1;i<nums;i++){
             Row row = sheet.getRow(i);
             Cell userNumberCell = row.getCell(0);
             userNumberCell.setCellType(CellType.STRING);
@@ -174,10 +182,21 @@ public class FileController {
             String password = passwordCell.getStringCellValue();
             HashMap<String,Object> map = new HashMap<>(3);
             map.put("userNumber",userNumber);
-            map.put("nickName",nickName);
+            map.put("nickname",nickName);
             map.put("password",password);
             result.add(map);
         }
         return ResultVOUtil.success(result);
+    }
+
+
+    @GetMapping("/getExcelTemple")
+    public void genTemple(HttpServletResponse response) throws IOException {
+        Workbook sheet = poiUtil.createSheet("新增用户模版", Arrays.asList("工号/学号", "姓名", "初始密码"), null);
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode("新增用户模版.xls","UTF-8"));
+        OutputStream outputStream = response.getOutputStream();
+        sheet.write(outputStream);
     }
 }

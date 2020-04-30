@@ -17,16 +17,27 @@ public interface ExperimentService {
     /**
      * 通过课程ID获取实验列表，以DTO方式返回
      * 此处只查询实验主表即可，用于首页列表显示
+     * COMMON方法
      * @param courseId
      * @return
      */
     List<ExperimentDTO> list(Integer courseId);
     /**
      * 根据experimentId查找实验主表、实验详情纪录
+     *
      * @param experimentId
      * @return
      */
     ExperimentDTO detail(Integer experimentId);
+    /**
+     * 根据experimentId更新实验提交人数
+     * @param experimentId
+     * @return 返回更新后的实验主表
+     */
+    ExperimentMaster updateCommitNumber(Integer experimentId);
+
+
+    //下面是教师端操作
 
     /**
      * 新增实验主表和info表记录
@@ -55,24 +66,7 @@ public interface ExperimentService {
      * @return
      */
     boolean updateExperimentDetail(ExperimentDTO experimentDTO);
-    /**
-     * 更新实验文件
-     * @param experimentDTO
-     * @return
-     */
-    boolean updateExperimentFile(ExperimentDTO experimentDTO);
-    /**
-     * 更新实验答案
-     * @param experimentDTO
-     * @return
-     */
-    boolean updateExperimentAnswer(ExperimentDTO experimentDTO);
-    /**
-     * 更新实验答案文件
-     * @param experimentDTO
-     * @return
-     */
-    boolean updateExperimentAnswerFile(ExperimentDTO experimentDTO);
+
 
     /**
      * 根据experimentId逻辑删除实验主表记录
@@ -89,7 +83,6 @@ public interface ExperimentService {
      */
     boolean end(Integer experimentId);
 
-
     /**
      *根据experimentId设置实验为锁定状态
      * @param experimentId
@@ -104,10 +97,4 @@ public interface ExperimentService {
      */
     boolean unlock(Integer experimentId);
 
-    /**
-     * 根据experimentId更新实验提交人数
-     * @param experimentId
-     * @return 返回更新后的实验主表
-     */
-    ExperimentMaster updateCommitNumber(Integer experimentId);
 }

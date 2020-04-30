@@ -5,6 +5,7 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.RecordDTO;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.RecordForm;
 import com.gdou.teaching.mbg.model.ExperimentMaster;
@@ -53,7 +54,7 @@ public class StudentRecordController {
     @PostMapping("/save")
     public ResultVO save(@RequestBody @Valid RecordForm form,
                          BindingResult bindingResult) {
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.PARAM_ERROR);
