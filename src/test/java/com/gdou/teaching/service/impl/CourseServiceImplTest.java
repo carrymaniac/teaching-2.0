@@ -35,19 +35,18 @@ class  CourseServiceImplTest {
     }
 
     @Test
-    @Transactional
+//    @Transactional
     void save() {
         CourseDTO courseDTO = new CourseDTO();
         courseDTO.setTeacherNickname("涂涂超");
-        //courseDTO.setCourseId(26);
-        //courseDTO.setCourseDetailId(39);
         courseDTO.setTeacherId(15);
-        courseDTO.setCourseName("安卓与大数据");
+        courseDTO.setCourseName("安卓与大数据2020");
         courseDTO.setCourseCredit(5.0);
-        courseDTO.setCourseIntroduction("这课程牛逼疯了");
-        courseDTO.setCourseCode("XSWL6666");
+        courseDTO.setCourseIntroduction("这课程牛逼疯了2020");
+        courseDTO.setCourseCode("XSWL66662020");
         courseDTO.setCourseNumber(60);
         courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
+        courseDTO.setCourseCover("");
         CourseDTO save = courseService.save(courseDTO);
         Assert.notNull(save.getCourseId(),"error");
     }

@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: teaching
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   datasource:
@@ -41,3 +43,13 @@ teaching:
 
 logging:
   config: classpath:logback-dev.xml
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'
+  metrics:
+    tags:
+      application: ${spring.application.name}

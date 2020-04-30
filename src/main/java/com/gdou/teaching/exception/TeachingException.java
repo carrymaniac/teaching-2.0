@@ -10,7 +10,7 @@ import lombok.Getter;
  **/
 @Getter
 public class TeachingException extends RuntimeException{
-    private Integer code ;
+    private final Integer code ;
 
     public TeachingException(ResultEnum resultEnum){
         super(resultEnum.getMsg());

@@ -21,5 +21,5 @@ public interface FileDao {
      * @param files
      * @return
      */
-    public int insertList(List<File> files);
+    int insertList(List<File> files);
 }

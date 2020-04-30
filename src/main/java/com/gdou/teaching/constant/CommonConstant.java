@@ -12,6 +12,6 @@ package com.gdou.teaching.constant;
 public interface CommonConstant {
     Integer ExperimentTextLength = 10;
     Byte STUDENT = 0;
-    public final Byte TEACHER = 1;
+    Byte TEACHER = 1;
     Byte ADMIN = 2;
 }
