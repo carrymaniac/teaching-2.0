@@ -87,7 +87,7 @@ public class UserController {
             User user = userService.login(userNumber, password);
             //判断身份
             if (user.getUserIdent().intValue() == ident) {
-                addToken(user, response);
+//                addToken(user, response);
                 HashMap map = new HashMap(3);
                 map.put("userId", user.getUserId());
                 map.put("nickname", user.getNickname());
