@@ -22,7 +22,15 @@ public interface CourseService {
      * @param courseId
      * @return
      */
-    CourseDTO info(Integer courseId) throws TeachingException;
+    CourseDTO selectOne(Integer courseId);
+
+    /**
+     * 根据课程ID展示课程详情
+     * 需要查询主表和副表
+     * @param courseId
+     * @return
+     */
+    CourseDTO detail(Integer courseId);
 
 
     /**
@@ -33,30 +41,23 @@ public interface CourseService {
     CourseDTO save(CourseDTO courseDTO);
 
 
-
     /**
-     * 根据课程ID展示课程详情
-     * 需要查询主表和副表
-     * @param courseId
-     * @return
-     */
-    CourseDTO detail(Integer courseId) throws TeachingException;
-
-
-    /**
+     * 学生端
      * 展示学生的所有的选修的课程主表记录
      * 不需要副表
-     * @param userId 学生端
+     * @param userId 用户ID
+     * @param keyword 关键词
      * @return
      */
-    List<CourseDTO> listCourseForStudent(Integer userId);
+    List<CourseDTO> listCourseByUserIdAndKeywordForStudent(Integer userId,String keyword);
 
     /**
      * 展示所有的课程主表记录(教师端)
-     * @param userId 教师ID
+     * @param userId 用户ID
+     * @param keyword 关键词
      * @return
      */
-    List<CourseDTO> listCourseForTeacher(Integer userId);
+    List<CourseDTO> listCourseByUserIdAndKeywordForTeacher(Integer userId,String keyword);
 
     /**
      * For Admin
@@ -65,11 +66,11 @@ public interface CourseService {
      * @param userId 用户ID
      * @param page 分页参数
      * @param size 分页参数
-     * @param keyWord 关键词
+     * @param keyword 关键词
      * @param status 状态筛选 有0（进行中），3（已结束）的筛选
      * @return
      */
-    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status);
+    HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyword, Integer status);
 
 
 
@@ -87,13 +88,7 @@ public interface CourseService {
      */
     HashMap<String,Object> listCourseForAdminByStudentIdAndKeywordAndStatusInPage(Integer page, Integer size,Integer userId,String keyword,Integer status);
 
-    /**
-     * 增加课程资源文件
-     * @param courseId
-     * @param courseFile
-     * @return
-     */
-    boolean addCourseFile(Integer courseId, List<FileDTO> courseFile);
+
 
     /**
      * 根据课程ID注销课程

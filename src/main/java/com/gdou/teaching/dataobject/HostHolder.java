@@ -1,5 +1,6 @@
 package com.gdou.teaching.dataobject;
 
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import org.springframework.stereotype.Component;
 
@@ -9,13 +10,13 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 public class HostHolder {
-    public static ThreadLocal<User> users = new ThreadLocal<User>();
+    public static ThreadLocal<UserDTO> users = new ThreadLocal<UserDTO>();
 
-    public User getUser() {
+    public UserDTO getUser() {
         return users.get();
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         users.set(user);
     }
 

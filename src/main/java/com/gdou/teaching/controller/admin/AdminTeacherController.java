@@ -1,6 +1,8 @@
 package com.gdou.teaching.controller.admin;
 
+import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
+import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.CourseService;
@@ -52,14 +54,15 @@ public class AdminTeacherController {
         if(list==null||list.isEmpty()){
             map.put("list",new ArrayList<>(0));
         }else {
-            List<UserDTO> collect = list.stream().map(teacher -> {
-                UserDTO userDTO = new UserDTO();
-                userDTO.setUserId(teacher.getUserId());
-                userDTO.setUserNumber(teacher.getUserNumber());
-                userDTO.setNickname(teacher.getNickname());
+            List<HashMap<String, Object>> userDTOS = list.stream().map(user -> {
+                HashMap<String, Object> userDTO = new HashMap(4);
+                userDTO.put("userId", user.getUserId());
+                userDTO.put("userNumber", user.getUserNumber());
+                userDTO.put("nickname", user.getNickname());
+                userDTO.put("userStatus", user.getUserStatus());
                 return userDTO;
             }).collect(Collectors.toList());
-            map.put("list",collect);
+            map.put("list",userDTOS);
         }
         return ResultVOUtil.success(map);
     }

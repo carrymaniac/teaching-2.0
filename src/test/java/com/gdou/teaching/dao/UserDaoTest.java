@@ -3,6 +3,8 @@ package com.gdou.teaching.dao;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.mbg.model.User;
+import com.gdou.teaching.mbg.model.UserExample;
+import com.gdou.teaching.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,20 @@ import java.util.List;
 class UserDaoTest {
     @Autowired
     UserDao userDao;
+    @Autowired
+    UserService userService;
+
+    @Test
+    void register(){
+        User user=new User();
+        user.setClassId(0);
+        user.setUserIdent(UserIdentEnum.ADMIN.getCode().byteValue());
+        user.setNickname("管理员03");
+        user.setPassword("123456");
+        user.setUserNumber("admin4096");
+        user.setUserStatus(UserStatusEnum.NORMAL.getCode().byteValue());
+        userService.addUser(user);
+    }
 
     @Test
     void insertList() {

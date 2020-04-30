@@ -61,7 +61,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public CourseDTO info(Integer courseId) throws TeachingException{
+    public CourseDTO selectOne(Integer courseId) {
         CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(courseId);
         if(courseMaster==null){
             log.info("[CourseServiceImpl]-获取课程基本信息,课程主表不存在,courseId={}",courseId);
@@ -132,30 +132,22 @@ public class CourseServiceImpl implements CourseService {
         }
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(courseMaster,courseDTO);
-        User user = userMapper.selectByPrimaryKey(courseMaster.getTeacherId());
-        if (user==null){
+        User teacher = userMapper.selectByPrimaryKey(courseMaster.getTeacherId());
+        if (teacher==null){
             log.info("[CourseServiceImpl]-查询课程课程详情 用户ID错误,UserId={}",courseMaster.getTeacherId());
-            throw new TeachingException(ResultEnum.USER_NOT_EXIST);
+        }else{
+            courseDTO.setTeacherNickname(teacher.getNickname());
+            courseDTO.setTeacherId(teacher.getUserId());
         }
-        courseDTO.setTeacherNickname(user.getNickname());
-        courseDTO.setTeacherId(user.getUserId());
         //查询课程详情表
         CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
         if (courseDetail==null){
-            log.error("[CourseServiceImpl]-查询课程 该课程详情不存在,courseDetailId={}",courseMaster.getCourseDetailId());
-            throw new TeachingException(ResultEnum.COURSE_DETAIL_NOT_EXIST);
+           return courseDTO;
         }
         BeanUtils.copyProperties(courseDetail,courseDTO);
         return courseDTO;
     }
 
-    @Override
-    public boolean addCourseFile(Integer courseId,List<FileDTO> courseFile) {
-        if(courseFile!=null&&!courseFile.isEmpty()){
-            fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),courseId,courseFile);
-        }
-        return true;
-    }
 
     /**
      * 注销课程操作 ----隶属老师端
@@ -260,10 +252,13 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     @Override
-    public List<CourseDTO> listCourseForStudent(Integer userId) {
+    public List<CourseDTO> listCourseByUserIdAndKeywordForStudent(Integer userId,String keyword) {
         //查询课程主表记录
         AchievementExample achievementExample = new AchievementExample();
-        achievementExample.createCriteria().andUserIdEqualTo(userId);
+        AchievementExample.Criteria criteria = achievementExample.createCriteria().andUserIdEqualTo(userId);
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andCourseNameLike("%"+keyword+"%");
+        }
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
             //说明该学生无报任何课程
@@ -312,14 +307,17 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public List<CourseDTO> listCourseForTeacher(Integer userId) {
+    public List<CourseDTO> listCourseByUserIdAndKeywordForTeacher(Integer userId,String keyword) {
         User user = userMapper.selectByPrimaryKey(userId);
         if(user==null) {
             throw new TeachingException(ResultEnum.USER_NOT_EXIST);
         }
         //查询课程主表记录
         CourseMasterExample courseMasterExample = new CourseMasterExample();
-        courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
+        if(!StringUtils.isEmpty(keyword)){
+            criteria.andCourseNameLike("%"+keyword+"%");
+        }
         List<CourseMaster> courseMasters = courseMasterMapper.selectByExample(courseMasterExample);
         if(courseMasters==null||courseMasters.isEmpty()){
             //说明该教师暂无授课

@@ -142,15 +142,6 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public void updateExperimentCommitNumber(Integer experimentId) {
-        Integer countByExperimentId = userReExperimentDao.getCountByExperimentId(experimentId);
-        ExperimentMaster experimentMaster = new ExperimentMaster();
-        experimentMaster.setExperimentCommitNum(countByExperimentId);
-        experimentMaster.setExperimentId(experimentId);
-        experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
-    }
-
-    @Override
     public List<RecordDTO> getRecordByUserIdAndCourseId(Integer userId, Integer courseId) {
         //查询课程下属的实验ID
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();

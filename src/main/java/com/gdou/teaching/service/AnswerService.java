@@ -22,4 +22,10 @@ public interface AnswerService {
      */
     AnswerDTO save(AnswerDTO answerDTO);
 
+    /**
+     * 更新实验答案
+     * @param experimentDTO
+     * @return 返回experimentAnswerId
+     */
+    Integer updateExperimentAnswer(ExperimentDTO experimentDTO);
 }

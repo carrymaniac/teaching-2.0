@@ -40,13 +40,14 @@ public interface FileService {
     List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory, Integer fileCategoryId, String keyword);
 
     /**
-     * 增加
+     * 增加文件
      * @param fileCategory
      * @param fileCategoryId
      * @param FileDTOs 文件DTO
      * @return
      */
     int saveFile(Integer fileCategory, Integer fileCategoryId, List<FileDTO> FileDTOs);
+
 
     /**
      * 删除文件

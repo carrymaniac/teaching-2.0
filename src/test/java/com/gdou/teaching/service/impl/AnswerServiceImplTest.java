@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * @ProjectName: teaching-2.0
  * @Package: com.gdou.teaching.service.impl
@@ -28,7 +26,7 @@ class AnswerServiceImplTest {
     AnswerServiceImpl answerService;
     @Test
     void detail() {
-        AnswerDTO detail = answerService.detail(1);
+        AnswerDTO detail = answerService.selectOne(1);
         Assert.notNull(detail,"error");
         log.info("detail: {}",detail);
     }

@@ -3,6 +3,7 @@ package com.gdou.teaching.web.interceptor;
 import com.gdou.teaching.constant.CookieConstant;
 import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.UserService;
 import com.gdou.teaching.util.CookieUtil;
@@ -42,9 +43,8 @@ public class UserIntercepter implements HandlerInterceptor {
         if(StringUtils.isEmpty(tokenValue)){
             return true;
         }
-        User user = userService.getUserById(Integer.parseInt(tokenValue));
-        user.setPassword(null);
-        log.info("【UserIntercepter】此刻注入用户：user:{}",user);
+        UserDTO user = userService.selectOne(Integer.parseInt(tokenValue));
+        log.info("UserIntercepter】此刻注入用户：user:{}",user);
         hostHolder.setUser(user);
         return true;
     }

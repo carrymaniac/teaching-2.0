@@ -88,4 +88,14 @@ public class DevController {
         }
         return null;
     }
+
+    @GetMapping("/getExcelTemple")
+    public void genTemple(HttpServletResponse response) throws IOException {
+        Workbook sheet = poiUtil.createSheet("新增用户模版", Arrays.asList("工号/学号", "姓名", "初始密码"), null);
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition", "attachment;fileName=" + java.net.URLEncoder.encode("新增用户模版.xls","UTF-8"));
+        OutputStream outputStream = response.getOutputStream();
+        sheet.write(outputStream);
+    }
 }

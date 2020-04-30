@@ -6,6 +6,7 @@ import com.gdou.teaching.dataobject.*;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.RecordDTO;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.User;
@@ -62,10 +63,10 @@ public class StudentCourseController {
         if (courseId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_NULL);
         }
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         try {
             //查询课程基本信息
-            CourseDTO courseDTO = courseService.info(courseId);
+            CourseDTO courseDTO = courseService.selectOne(courseId);
             CourseMainPageVO courseMainPageVO = new CourseMainPageVO();
             BeanUtils.copyProperties(courseDTO, courseMainPageVO);
             //查询实验列表信息
@@ -120,11 +121,11 @@ public class StudentCourseController {
      * @return
      */
     @GetMapping("/listForNoPage")
-    public ResultVO listForNoPage(){
-        User user = hostHolder.getUser();
+    public ResultVO listForNoPage(@RequestParam(value = "keyword",required = false)String keyword){
+        UserDTO user = hostHolder.getUser();
         //通过ID获取到用户课程数据
-        List<CourseDTO> list = courseService.listCourseForStudent(user.getUserId());
-        if(list==null){
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForStudent(user.getUserId(),keyword);
+        if(list==null||list.isEmpty()){
             return ResultVOUtil.success();
         }
         //拿到了数据，进行分割，将数据分为"未结束"和"已结束"两部分
@@ -149,7 +150,7 @@ public class StudentCourseController {
      */
     @GetMapping("/score/{courseId}")
     public ResultVO scoreList(@PathVariable(value = "courseId") Integer courseId){
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         Achievement achievement = achievementService.getAchievementByUserIdAndCourseId(user.getUserId(), courseId);
         Double score = achievement.getCourseAchievement();
         //通过课程ID和用户ID获取提交记录列表

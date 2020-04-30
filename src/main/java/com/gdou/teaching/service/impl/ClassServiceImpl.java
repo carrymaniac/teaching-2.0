@@ -59,23 +59,13 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public Class getClassByClazzId(Integer classId) {
+    public Class selectOne(Integer classId) {
         Class Class = classMapper.selectByPrimaryKey(classId);
         if(Class==null){
             log.info("[ClassServiceImpl]-getClassByClazzId,班级信息不存在,classId:{}",classId);
             throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
         }
         return Class;
-    }
-
-    @Override
-    public PageInfo getClassesByPage(Integer page, Integer size) {
-        PageHelper.startPage(page,size);
-        ClassExample classExample = new ClassExample();
-        classExample.createCriteria();
-        List<Class> classes = classMapper.selectByExample(classExample);
-        PageInfo<Class> pageInfo = new PageInfo<>(classes);
-        return pageInfo;
     }
 
     @Override
@@ -91,8 +81,7 @@ public class ClassServiceImpl implements ClassService {
         classExample.createCriteria().andClassStatusEqualTo(ClazzStatusEnum.NORMAL.getCode().byteValue());
         List<Class> classes = classMapper.selectByExample(classExample);
         if(classes==null||classes.isEmpty()){
-            log.info("[ClassServiceImpl]-获取班级列表,班级信息不存在");
-            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+            return null;
         }
         classes.forEach(clazz -> {
             TreeMap<String,Object> map = new TreeMap<>();
@@ -111,14 +100,4 @@ public class ClassServiceImpl implements ClassService {
         return userMapper.selectByExample(userExample);
     }
 
-    @Override
-    public boolean updateStudentCountByClazzId(Integer clazzId) {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andClassIdEqualTo(clazzId).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue()).andUserIdentEqualTo(UserIdentEnum.SUTUDENT.getCode().byteValue());
-        int number = userMapper.countByExample(userExample);
-        Class cl = new Class();
-        cl.setClassId(clazzId);
-        cl.setClassSize(number);
-        return classMapper.updateByPrimaryKeySelective(cl)>0;
-    }
 }

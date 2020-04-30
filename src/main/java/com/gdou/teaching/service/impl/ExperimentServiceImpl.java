@@ -139,15 +139,19 @@ public class ExperimentServiceImpl implements ExperimentService {
         ExperimentDetail experimentDetail=new ExperimentDetail();
         //对experimentAnswer进行新增
         BeanUtils.copyProperties(experimentDTO,experimentAnswer);
-        experimentAnswer.setExperimentAnswerStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
-        if (experimentAnswerMapper.insert(experimentAnswer)<=0){
-            log.error("保存实验,保存实验答案失败,ExperimentAnswer={}",experimentAnswer);
-            throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-        }
-        //新增实验答案的文件：
-        List<FileDTO> experimentAnswerFile = experimentDTO.getExperimentAnswerFile();
-        if(experimentAnswerFile!=null&&!experimentAnswerFile.isEmpty()){
-            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),experimentAnswerFile);
+        //如果存在答案,则添加答案表信息
+        if ((experimentAnswer.getExperimentAnswerContent()!=null&&!experimentAnswer.getExperimentAnswerContent().isEmpty())||
+                experimentDTO.getExperimentAnswerFile()!=null&& !experimentDTO.getExperimentAnswerFile().isEmpty()){
+            experimentAnswer.setExperimentAnswerStatus(AnswerStatusEnum.NORMAL.getCode().byteValue());
+            if (experimentAnswerMapper.insert(experimentAnswer)<=0){
+                log.error("保存实验,保存实验答案失败,ExperimentAnswer={}",experimentAnswer);
+                throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
+            }
+            //新增实验答案的文件：
+            List<FileDTO> experimentAnswerFile = experimentDTO.getExperimentAnswerFile();
+            if(experimentAnswerFile!=null&&!experimentAnswerFile.isEmpty()){
+                fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentAnswer.getExperimentAnswerId(),experimentAnswerFile);
+            }
         }
         // 先对experimentDetail进行新增
         BeanUtils.copyProperties(experimentDTO,experimentDetail);
@@ -266,39 +270,6 @@ public class ExperimentServiceImpl implements ExperimentService {
         if (experimentDetailMapper.updateByPrimaryKeyWithBLOBs(experimentDetail)!=1){
             log.info("[ExperimentServiceImpl]-更新实验详情失败");
             throw new TeachingException(ResultEnum.EXPERIMENT_SAVE_ERROR);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean updateExperimentFile(ExperimentDTO experimentDTO) {
-        List<FileDTO> fileDTOList=experimentDTO.getExperimentDetailFile();
-        //更新，先删除之前所有的文件记录，进行重新插入
-        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_FILE.getCode(),experimentDTO.getExperimentId());
-        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
-            fileService.saveFile(FileCategoryEnum.EXPERIMENT_FILE.getCode(),experimentDTO.getExperimentId(),fileDTOList);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean updateExperimentAnswer(ExperimentDTO experimentDTO) {
-        ExperimentAnswer experimentAnswer=new ExperimentAnswer();
-        BeanUtils.copyProperties(experimentDTO,experimentAnswer);
-        if (experimentAnswerMapper.updateByPrimaryKeySelective(experimentAnswer)!=1){
-            log.info("[ExperimentServiceImpl]-更新实验答案失败");
-            throw new TeachingException(ResultEnum.ANSWER_SAVE_ERROR);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean updateExperimentAnswerFile(ExperimentDTO experimentDTO) {
-        List<FileDTO> fileDTOList=experimentDTO.getExperimentAnswerFile();
-        //更新，先删除之前所有的文件记录，进行重新插入
-        fileService.deleteFiles(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentDTO.getExperimentAnswerId());
-        if(fileDTOList!=null&&!fileDTOList.isEmpty()){
-            fileService.saveFile(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(),experimentDTO.getExperimentAnswerId(),fileDTOList);
         }
         return true;
     }

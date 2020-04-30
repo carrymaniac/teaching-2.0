@@ -16,9 +16,11 @@ import com.gdou.teaching.util.CookieUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.vo.UserVO;
+import com.gdou.teaching.web.Auth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -46,6 +50,9 @@ public class UserController {
     private final StringRedisTemplate stringRedisTemplate;
     private final UserService userService;
     private final HostHolder hostHolder;
+
+    @Value("${server.servlet.context-path}")
+    String urlHead;
 
     @Autowired
     public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder) {
@@ -136,7 +143,7 @@ public class UserController {
     @PostMapping("/updatePassWord")
     @ResponseBody
     public ResultVO updatePassWord(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
-        User user = hostHolder.getUser();
+        UserDTO user = hostHolder.getUser();
         Boolean updatePassword = userService.updatePassword(user.getUserId(), oldPassword, newPassword);
         if (updatePassword) {
             return ResultVOUtil.success();
@@ -210,21 +217,89 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/resetPassword")
-//    @Auth(user=UserIdentEnum.ADMIN)
+    @Auth(user=UserIdentEnum.ADMIN)
     public ResultVO resetPassword(@RequestParam("userId")Integer userId,@RequestParam("password")String newPassword){
         userService.resetPassword(userId,newPassword);
         return ResultVOUtil.success();
     }
 
     @ResponseBody
-//    @Auth(user=UserIdentEnum.ADMIN)
+    @Auth(user=UserIdentEnum.ADMIN)
     @PostMapping("/invalidUser")
-    public ResultVO invalidUser(@RequestBody List<Integer> userId){
-        Boolean flag = userService.deleteUserByBatch(userId);
-        if (flag){
-            return ResultVOUtil.success();
-        }else{
-            return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
+    public ResultVO invalidUser(@RequestBody List<Integer> userIds) throws IOException {
+        List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        int findSize = usersByUserId.size();
+        if(findSize!=userIds.size()){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"部分用户ID无效");
+        }
+        //检查身份是否符合要求
+        long adminCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
+                .count();
+        if(adminCount>0){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        long BANCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue()))
+                .count();
+        if(BANCount==usersByUserId.size()){
+            return userService.deleteUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"用户的状态不符合要求(被停用状态)");
+        }
+    }
+
+    @PostMapping("/banUsers")
+    @ResponseBody
+    @Auth(user=UserIdentEnum.ADMIN)
+    public ResultVO banUser(@RequestBody List<Integer> userIds) throws IOException {
+        List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        int findSize = usersByUserId.size();
+        if(findSize!=userIds.size()){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"部分用户ID无效");
+        }
+        //检查身份是否符合要求
+        long adminCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
+                .count();
+        if(adminCount>0){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        //检查状态
+        long NormalCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.NORMAL.getCode().byteValue()))
+                .count();
+        if(NormalCount==usersByUserId.size()){
+            return userService.banUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"用户的状态不符合要求(正常状态)");
+        }
+    }
+
+    @PostMapping("/recoverUsers")
+    @ResponseBody
+    @Auth(user=UserIdentEnum.ADMIN)
+    public Object recoverUser(@RequestBody List<Integer> userIds) throws IOException {
+        List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
+        int findSize = usersByUserId.size();
+        if(findSize!=userIds.size()){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"部分用户ID无效");
+        }
+        //检查身份是否符合要求
+        long adminCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserIdent().equals(UserIdentEnum.ADMIN.getCode().byteValue()))
+                .count();
+        if(adminCount>0){
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR);
+        }
+        long BANCount = usersByUserId.stream()
+                .filter(userDTO -> userDTO.getUserStatus().equals(UserStatusEnum.BAN.getCode().byteValue()))
+                .count();
+        if(BANCount==usersByUserId.size()){
+            return userService.recoverUserByBatch(userIds)?ResultVOUtil.success():ResultVOUtil.fail(ResultEnum.SERVER_ERROR);
+        }else {
+            return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"用户的状态不符合要求(被停用状态)");
         }
     }
 }

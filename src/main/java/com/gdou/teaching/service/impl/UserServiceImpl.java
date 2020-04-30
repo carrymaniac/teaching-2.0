@@ -20,7 +20,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -76,13 +75,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(int id) {
+    public UserDTO selectOne(int id) {
         User user = userMapper.selectByPrimaryKey(id);
         if (user==null){
             log.info("[UserServiceImpl]-,getUserById,学生信息不存在,userId:{}",id);
             throw new TeachingException(USER_NOT_EXIST);
         }
-        return user;
+        UserDTO userDTO=new UserDTO();
+        BeanUtils.copyProperties(user,userDTO);
+        return userDTO;
     }
 
     @Override
@@ -115,14 +116,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUserNumber(String userNumber) {
+    public UserDTO selectOne(String userNumber) {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUserNumberEqualTo(userNumber);
         List<User> users = userMapper.selectByExample(userExample);
         if(users==null||users.isEmpty()){
             return null;
         }
-        return users.get(0);
+        UserDTO userDTO=new UserDTO();
+        BeanUtils.copyProperties(users.get(0),userDTO);
+        return userDTO;
     }
 
     @Override
@@ -143,9 +146,7 @@ public class UserServiceImpl implements UserService {
             sb.append(" 已存在,请检查数据是否有误");
             throw new TeachingException(PARAM_ERROR.getCode(),sb.toString());
         }
-        userList.forEach(user -> {
-            genUser(user);
-        });
+
         //todo 需要在info表插入信息，需要看看怎么调整一下这些信息
         userList.forEach(user -> {
             genUser(user);
@@ -167,39 +168,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean deleteUserByBatch(List<Integer> userIds) {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdIn(userIds);
-        User user = new User();
-        user.setUserStatus(UserStatusEnum.INVALID.getCode().byteValue());
-        int i = userMapper.updateByExampleSelective(user, userExample);
-        return i==userIds.size();
-    }
-
-    @Override
     public UserDTO getUserDetailByUserId(Integer userId) {
         UserDTO userDTO = new UserDTO();
         User user = userMapper.selectByPrimaryKey(userId);
         if(user==null){
             throw new TeachingException(USER_NOT_EXIST);
         }
-        UserInfoExample userInfoExample = new UserInfoExample();
-        userInfoExample.createCriteria().andUserIdEqualTo(user.getUserId());
-        List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
-        if(userInfos==null||userInfos.isEmpty()){
-            throw new TeachingException(USER_NOT_EXIST);
-        }
-        UserInfo userInfo = userInfos.get(0);
+        BeanUtils.copyProperties(user,userDTO);
         if(user.getClassId()!=0){
             Class aClass = classMapper.selectByPrimaryKey(user.getClassId());
             userDTO.setClassName(aClass.getClassName());
         }
+        UserInfoExample userInfoExample = new UserInfoExample();
+        userInfoExample.createCriteria().andUserIdEqualTo(user.getUserId());
+        List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
+        if(userInfos==null||userInfos.isEmpty()){
+           return userDTO;
+        }
+        UserInfo userInfo = userInfos.get(0);
         BeanUtils.copyProperties(userInfo,userDTO);
-        BeanUtils.copyProperties(user,userDTO);
         return userDTO;
     }
 
-    //todo 万一这个班级没学生呢？直接报错？
     @Override
     public List<UserDTO> getStudentListByClassId(Integer classId) {
         UserExample userExample = new UserExample();
@@ -210,8 +200,7 @@ public class UserServiceImpl implements UserService {
         }
         List<User> users = userMapper.selectByExample(userExample);
         if (users==null||users.isEmpty()){
-            log.info("[UserServiceImpl]-,根据classId查询学生列表,学生信息不存在,classId:{}",classId);
-            throw new TeachingException(ResultEnum.CLASS_NOT_EXIST);
+            return null;
         }
         List<UserDTO> userDTOS = users.stream().map(user -> {
             UserDTO userDTO = new UserDTO();
@@ -229,13 +218,6 @@ public class UserServiceImpl implements UserService {
         return pageInfo;
     }
 
-    @Override
-    public List<User> selectTeacherList() {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdentEqualTo(UserIdentEnum.TEACHER.getCode().byteValue()).andUserStatusEqualTo(UserStatusEnum.NORMAL.getCode().byteValue());
-        List<User> teachers = userMapper.selectByExample(userExample);
-        return teachers;
-    }
 
     @Override
     public List<UserDTO> getUsersByUserId(List<Integer> userIds) {
@@ -280,5 +262,29 @@ public class UserServiceImpl implements UserService {
         user.setSalt(salt);
         user.setPassword(DigestUtils.md5DigestAsHex((newPassword+salt).getBytes()));
         return userMapper.updateByPrimaryKey(user)>0;
+    }
+
+    @Override
+    public Boolean banUserByBatch(List<Integer> userIds){
+        return updateStatusByUserIds(userIds, UserStatusEnum.BAN);
+    }
+
+    @Override
+    public Boolean recoverUserByBatch(List<Integer> userIds){
+        return updateStatusByUserIds(userIds, UserStatusEnum.NORMAL);
+    }
+
+    @Override
+    public Boolean deleteUserByBatch(List<Integer> userIds) {
+        return updateStatusByUserIds(userIds, UserStatusEnum.INVALID);
+    }
+
+    private Boolean updateStatusByUserIds(List<Integer> userIds, UserStatusEnum stauts) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserIdIn(userIds);
+        User user = new User();
+        user.setUserStatus(stauts.getCode().byteValue());
+        int i = userMapper.updateByExampleSelective(user, userExample);
+        return i==userIds.size();
     }
 }
