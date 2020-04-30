@@ -41,3 +41,10 @@ teaching:
 
 logging:
   config: classpath:logback-dev.xml
+
+
+jwt:
+  secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
+  expiration: 200
+  tokenHeader: Authorization
+  tokenHead: Bearer

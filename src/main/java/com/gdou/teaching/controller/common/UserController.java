@@ -13,6 +13,7 @@ import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.UserService;
 import com.gdou.teaching.util.CookieUtil;
+import com.gdou.teaching.util.JWTUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.vo.UserVO;
@@ -50,15 +51,17 @@ public class UserController {
     private final StringRedisTemplate stringRedisTemplate;
     private final UserService userService;
     private final HostHolder hostHolder;
-
+    private final JWTUtil jwtUtil;
     @Value("${server.servlet.context-path}")
     String urlHead;
 
+
     @Autowired
-    public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder) {
+    public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder, JWTUtil jwtUtil) {
         this.stringRedisTemplate = stringRedisTemplate;
         this.userService = userService;
         this.hostHolder = hostHolder;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -185,6 +188,8 @@ public class UserController {
                 map.put("userId", user.getUserId());
                 map.put("nickname", user.getNickname());
                 map.put("headUrl", user.getHeadUrl());
+                //TODO 启动jwt模式项目
+                map.put("token",jwtUtil.genToken(user));
                 return ResultVOUtil.success(map);
             } else {
                 return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
@@ -214,6 +219,7 @@ public class UserController {
         }
         hostHolder.clear();
     }
+
 
     @ResponseBody
     @PostMapping("/resetPassword")
