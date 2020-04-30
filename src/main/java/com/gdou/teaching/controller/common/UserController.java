@@ -111,7 +111,8 @@ public class UserController {
     @RequestMapping(path = {"/logout"}, method = RequestMethod.GET)
     @ResponseBody
     public ResultVO logout(HttpServletRequest request, HttpServletResponse response) {
-        cleanToken(request, response);
+        UserDTO user = hostHolder.getUser();
+        cleanToken(user);
         log.info("注销成功");
         return ResultVOUtil.success();
     }
@@ -214,6 +215,10 @@ public class UserController {
         String token = jwtUtil.genToken(user);
         stringRedisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, user.getUserId()), token, SecurityConstants.EXPIRATION, TimeUnit.SECONDS);
         return token;
+    }
+    private void cleanToken(UserDTO user){
+        stringRedisTemplate.opsForValue().getOperations().delete(String.format(RedisConstant.TOKEN_PREFIX,user.getUserId()));
+        hostHolder.clear();
     }
 
     private void cleanToken(HttpServletRequest request, HttpServletResponse response) {
