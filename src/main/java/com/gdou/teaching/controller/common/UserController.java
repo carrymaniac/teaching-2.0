@@ -5,6 +5,7 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.constant.CookieConstant;
 import com.gdou.teaching.constant.RedisConstant;
+import com.gdou.teaching.constant.SecurityConstants;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
@@ -189,7 +190,8 @@ public class UserController {
                 map.put("nickname", user.getNickname());
                 map.put("headUrl", user.getHeadUrl());
                 //TODO 启动jwt模式项目
-                map.put("token",jwtUtil.genToken(user));
+                map.put("token",genToken(user));
+
                 return ResultVOUtil.success(map);
             } else {
                 return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
@@ -206,6 +208,12 @@ public class UserController {
         stringRedisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, token), String.valueOf(user.getUserId()), RedisConstant.EXPIRE, TimeUnit.SECONDS);
         //设置token到cookie
         CookieUtil.set(response, CookieConstant.TOKEN, token, RedisConstant.EXPIRE);
+    }
+
+    private String genToken(User user){
+        String token = jwtUtil.genToken(user);
+        stringRedisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, user.getUserId()), token, SecurityConstants.EXPIRATION, TimeUnit.SECONDS);
+        return token;
     }
 
     private void cleanToken(HttpServletRequest request, HttpServletResponse response) {

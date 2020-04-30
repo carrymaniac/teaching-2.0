@@ -8,7 +8,7 @@ public interface SecurityConstants {
     /**
      * rememberMe 为 false 的时候过期时间是1个小时
      */
-    public static final long EXPIRATION = 60 * 60L;
+    public static final long EXPIRATION = 2 * 60 * 60L;
     /**
      * rememberMe 为 true 的时候过期时间是7天
      */
