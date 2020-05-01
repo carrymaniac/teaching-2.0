@@ -27,11 +27,15 @@ import static com.gdou.teaching.constant.CommonConstant.*;
 @Component
 @Slf4j
 public class EventConsumer {
-    @Autowired
-    MessageService messageService;
+    private final MessageService messageService;
 
-    @KafkaListener(topics = {TOPIC_CourseUpdate,TOPIC_AchievenmtUpdate,TOPIC_NotifyJob})
+    public EventConsumer(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
+    @KafkaListener(topics = {TOPIC_CourseUpdate,TOPIC_AchievementUpdate,TOPIC_NotifyJob})
     public void handleCommentMessage(ConsumerRecord record) {
+        log.info("[EventConsumer]获取到事件：{}",record);
         if(record==null||record.value()==null){
             log.error("消息的内容为空");
             return;
@@ -45,7 +49,7 @@ public class EventConsumer {
         Message message = new Message();
         message.setFromId(SYSTEM_USER_ID);
         message.setToId(event.getUserId());
-
+        message.setConversationId(event.getTopic());
         //放置其余参数
         Map<String, Object> content = new HashMap<>(2);
         content.put("entityType",event.getEntityType());

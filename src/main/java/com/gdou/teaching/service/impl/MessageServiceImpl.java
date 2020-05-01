@@ -103,13 +103,13 @@ public class MessageServiceImpl implements MessageService {
                 result.put("messageId",message.getMessageId());
                 result.put("time",message.getCreateTime());
                 messageList.add(result);
-            }else if (conversationId.equals(TOPIC_AchievenmtUpdate)){
+            }else if (conversationId.equals(TOPIC_AchievementUpdate)){
                 //成绩更新提醒
                 String entityId = map.get("entityId");
                 Achievement achievement = achievementMapper.selectByPrimaryKey(Integer.valueOf(entityId));
                 String msg = "你选修的课程"+achievement.getCourseName()+"已更新了了成绩，您目前的成绩为："+achievement.getCourseAchievement()+" ,快来看一看吧。";
                 HashMap<String,Object> result = new HashMap<>(6);
-                result.put("entityType",TOPIC_AchievenmtUpdate);
+                result.put("entityType",TOPIC_AchievementUpdate);
                 result.put("msg",msg);
                 result.put("entityId",achievement.getCourseId().toString());
                 result.put("tittle","课程成绩更新通知");
@@ -210,20 +210,5 @@ public class MessageServiceImpl implements MessageService {
             andFromIdEqualTo(0).
             andStatusEqualTo(MessageStatusEnum.UNREAD.getCode());
         return messageMapper.countByExample(example);
-    }
-
-
-
-    public void sendSystemMessage(int toId,String topic,int entityId){
-        Message message = new Message();
-        message.setFromId(SYSTEM_USER_ID);
-        message.setToId(toId);
-        message.setConversationId(topic);
-        Map<String,Object> content = new HashMap<>(3);
-        //todo 进行修改
-        content.put("entityType","");
-        content.put("entityId",entityId);
-        message.setContent(JSONObject.toJSONString(content));
-        this.addMessage(message);
     }
 }

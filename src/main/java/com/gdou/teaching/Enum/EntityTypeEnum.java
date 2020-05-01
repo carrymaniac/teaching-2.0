@@ -13,9 +13,9 @@ import lombok.Getter;
  */
 @Getter
 public enum EntityTypeEnum implements CodeEnum{
-    COURSE(0,"课程文件"),
-    EXPERIMENT(1,"实验文件"),
-    RECORD(3,"学生提交记录文件")
+    COURSE(0,"课程"),
+    Achievement(2,"成绩"),
+    EXPERIMENT(1,"实验")
     ;
     private final Integer code;
     private final String msg;

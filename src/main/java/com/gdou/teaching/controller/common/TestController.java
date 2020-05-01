@@ -1,6 +1,9 @@
 package com.gdou.teaching.controller.common;
 
+import com.gdou.teaching.constant.CommonConstant;
+import com.gdou.teaching.dataobject.Event;
 import com.gdou.teaching.dto.ExperimentDTO;
+import com.gdou.teaching.event.EventProducer;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
@@ -27,14 +30,34 @@ import java.util.List;
 @RequestMapping("/test")
 public class TestController {
 
-    @Autowired
-    ExperimentService experimentService;
+
+    private final ExperimentService experimentService;
+    private final EventProducer eventProducer;
+
+    public TestController(ExperimentService experimentService, EventProducer eventProducer) {
+        this.experimentService = experimentService;
+        this.eventProducer = eventProducer;
+    }
 
     @GetMapping("/ForExperimentList")
     @ResponseBody
     public ResultVO ForExperimentList(@RequestParam(value = "courseId")Integer courseId){
         List<ExperimentDTO> list = experimentService.list(courseId);
         return ResultVOUtil.success(list);
+    }
+
+
+    @GetMapping("/FireEvent")
+    @ResponseBody
+    public ResultVO FireEvent(){
+        Event event = new Event();
+        event.setTopic(CommonConstant.TOPIC_CourseUpdate);
+        event.setEntityId(1);
+        event.setUserId(12);
+        event.setEntityUserId(13);
+        event.setEntityType(1);
+        eventProducer.fireEvent(event);
+        return ResultVOUtil.success();
     }
 }
 

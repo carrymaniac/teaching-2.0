@@ -16,7 +16,7 @@ public interface CommonConstant {
     Byte ADMIN = 2;
 
     String TOPIC_CourseUpdate = "courseUpdate";
-    String TOPIC_AchievenmtUpdate = "achievenmtUpdate";
+    String TOPIC_AchievementUpdate = "achievementUpdate";
     String TOPIC_NotifyJob = "notifyJob";
 
     int SYSTEM_USER_ID = 0;
