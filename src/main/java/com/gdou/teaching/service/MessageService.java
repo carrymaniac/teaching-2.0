@@ -2,6 +2,7 @@ package com.gdou.teaching.service;
 
 import com.gdou.teaching.mbg.mapper.MessageMapper;
 import com.gdou.teaching.mbg.model.Message;
+import com.gdou.teaching.vo.ConversationVO;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
@@ -48,7 +49,7 @@ public interface MessageService {
      * @param offset
      * @param limit
      */
-    List<Message> getConversationList(Integer userId,int offset, int limit);
+    List<ConversationVO> getConversationList(Integer userId, int offset, int limit);
 
     /**
      * 通过会话ID获取消息记录
@@ -78,10 +79,10 @@ public interface MessageService {
     /**
      * 查询未读的通知的数量
      * @param userId
-     * @param topic
      * @return
      */
-    int selectNoticeUnreadCount(int userId, String topic);
+    int selectSystemMessageUnreadCount(int userId);
+
 
 
 }
