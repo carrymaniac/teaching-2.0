@@ -3,7 +3,6 @@ package com.gdou.teaching.service.impl;
 import com.gdou.teaching.Enum.RecordStatusEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
-import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.dao.AchievementDao;
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.dto.CourseDTO;
@@ -13,11 +12,9 @@ import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.service.AchievementService;
-import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.ExperimentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -238,29 +235,29 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public List<List<String>> exportAchievement(CourseDTO courseDTO) {
         List<AchievementDTO> achievementList = getAchievementByCourseId(courseDTO.getCourseId());
-        if (achievementList==null||achievementList.isEmpty()){
-            log.info("[AchievementServiceImpl]-exportAchievement,成绩表信息不存在,courseId:{}",courseDTO.getCourseId());
+        if (achievementList == null || achievementList.isEmpty()) {
+            log.info("[AchievementServiceImpl]-exportAchievement,成绩表信息不存在,courseId:{}", courseDTO.getCourseId());
             throw new TeachingException(ResultEnum.ACHIEVEMENT_NOT_EXIST);
         }
         List<ExperimentDTO> experimentDTOList = experimentService.list(courseDTO.getCourseId());
         //获取实验列表
         List<Integer> experimentIdList;
-        if (experimentDTOList==null||experimentDTOList.isEmpty()){
-            log.info("[AchievementServiceImpl]-exportAchievement,实验信息不存在,courseId:{}",courseDTO.getCourseId());
-            experimentIdList=new ArrayList<>();
-        }else{
-            experimentIdList=experimentDTOList.stream().map(ExperimentDTO::getExperimentId).collect(Collectors.toList());
+        if (experimentDTOList == null || experimentDTOList.isEmpty()) {
+            log.info("[AchievementServiceImpl]-exportAchievement,实验信息不存在,courseId:{}", courseDTO.getCourseId());
+            experimentIdList = new ArrayList<>();
+        } else {
+            experimentIdList = experimentDTOList.stream().map(ExperimentDTO::getExperimentId).collect(Collectors.toList());
         }
 
-        HashMap<Integer,String> classMap=new HashMap<>();
-        List<List<String>> collect=achievementList.stream().map(achievement -> {
+        HashMap<Integer, String> classMap = new HashMap<>();
+        List<List<String>> collect = achievementList.stream().map(achievement -> {
             List<String> list = new ArrayList<>();
             Integer classId = achievement.getClassId();
-            if (classMap.containsKey(classId)){
+            if (classMap.containsKey(classId)) {
                 list.add(classMap.get(classId));
-            }else{
+            } else {
                 Class aClass = classMapper.selectByPrimaryKey(classId);
-                classMap.put(classId,aClass.getClassName());
+                classMap.put(classId, aClass.getClassName());
                 list.add(aClass.getClassName());
             }
             User user = userMapper.selectByPrimaryKey(achievement.getUserId());
@@ -268,13 +265,13 @@ public class AchievementServiceImpl implements AchievementService {
             list.add(user.getNickname());
             list.add(achievement.getCourseAchievement().toString());
             UserReExperimentExample userReExperimentExample = new UserReExperimentExample();
-            for (int experimentId:experimentIdList){
+            for (int experimentId : experimentIdList) {
                 userReExperimentExample.clear();
                 userReExperimentExample.createCriteria().andExperimentIdEqualTo(experimentId).andUserIdEqualTo(user.getUserId());
                 List<UserReExperiment> userReExperiments = userReExperimentMapper.selectByExample(userReExperimentExample);
-                if (userReExperiments==null||userReExperiments.isEmpty()){
+                if (userReExperiments == null || userReExperiments.isEmpty()) {
                     list.add("0");
-                }else{
+                } else {
                     list.add(userReExperiments.get(0).getExperimentAchievement().toString());
                 }
             }

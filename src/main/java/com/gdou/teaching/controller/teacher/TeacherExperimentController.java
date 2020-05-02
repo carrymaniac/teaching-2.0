@@ -7,10 +7,8 @@ import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.*;
-import com.gdou.teaching.service.AnswerService;
-import com.gdou.teaching.service.CourseService;
-import com.gdou.teaching.service.ExperimentService;
-import com.gdou.teaching.service.FileService;
+import com.gdou.teaching.mbg.model.AchievementExample;
+import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseMainPageVO;
 import com.gdou.teaching.vo.ExperimentVO;
@@ -38,14 +36,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @Auth
 public class TeacherExperimentController {
-    @Autowired
-    private ExperimentService experimentService;
-    @Autowired
-    private CourseService courseService;
-    @Autowired
-    private AnswerService answerService;
-    @Autowired
-    private FileService fileService;
+    private final ExperimentService experimentService;
+    private final CourseService courseService;
+    private final AnswerService answerService;
+    private final FileService fileService;
+
+    public TeacherExperimentController(ExperimentService experimentService, CourseService courseService, AnswerService answerService, FileService fileService) {
+        this.experimentService = experimentService;
+        this.courseService = courseService;
+        this.answerService = answerService;
+        this.fileService = fileService;
+    }
+
     /**
      * 实验列表
      * @param courseId
@@ -171,6 +173,7 @@ public class TeacherExperimentController {
         experimentService.updateExperimentInfo(experimentDTO);
         return ResultVOUtil.success();
     }
+
     @PostMapping("/updateExperimentAnswerFile")
     public ResultVO updateExperimentAnswerFile(@RequestBody @Valid ExperimentAnswerFileUpdateForm form,
                                          BindingResult bindingResult) {
