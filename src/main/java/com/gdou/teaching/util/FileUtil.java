@@ -52,7 +52,7 @@ public class FileUtil {
             return "excel";
         }
         if(".pdf".equals(suffixName)){
-            return "excel";
+            return "pdf";
         }
         if(".txt".equals(suffixName)){
             return "txt";

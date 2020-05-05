@@ -81,7 +81,9 @@ public class StudentCourseController {
                     //设置状态
                     if(ExperimentStatusEnum.LOCK.getCode().byteValue()==experimentDTO.getExperimentStatus()){
                         experimentVO.setRecordStatus(RecordStatusEnum.LOCK.getCode());
-                    }else{
+                    }else if(ExperimentStatusEnum.END.getCode().byteValue()==experimentDTO.getExperimentStatus()){
+                        experimentVO.setRecordStatus(RecordStatusEnum.FINISH.getCode());
+                    } else{
                         RecordDTO recordDTO = recordService.selectOne(experimentDTO.getExperimentId(), user.getUserId());
                         if(recordDTO!=null){
                             experimentVO.setRecordStatus(recordDTO.getStatus().intValue());

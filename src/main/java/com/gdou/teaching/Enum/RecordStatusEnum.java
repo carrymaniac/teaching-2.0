@@ -17,7 +17,8 @@ public enum RecordStatusEnum implements CodeEnum {
     PASS(1,"通过审核"),
     NOT_PASS(2,"未通过审核"),
     NOT_FINISH(3,"未提交过"),
-    LOCK(4,"实验锁定中");
+    LOCK(4,"实验锁定中"),
+    FINISH(5,"实验已结束");
     private final Integer code;
     private final String msg;
     RecordStatusEnum(Integer code,String msg) {
