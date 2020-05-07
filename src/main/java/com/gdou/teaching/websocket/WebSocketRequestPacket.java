@@ -15,9 +15,28 @@ import java.util.Date;
  */
 @Data
 public class WebSocketRequestPacket {
+    /**
+     * 发送人ID
+     */
     Integer fromId;
+    /**
+     * 接收人ID
+     */
     Integer toId;
+    /**
+     * RequestPacket类型
+     */
     Integer type;
+    /**
+     * 内容
+     */
     String content;
-    Date time;
+    /**
+     * 时间戳
+     */
+    String timestamp;
+    /**
+     * 扩展字段
+     */
+    String Describe;
 }

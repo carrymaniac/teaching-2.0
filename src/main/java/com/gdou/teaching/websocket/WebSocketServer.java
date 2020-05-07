@@ -53,6 +53,7 @@ public class WebSocketServer {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") Integer userId) {
+        //todo 还需要校验用户ID的合法程度？
         this.session = session;
         this.userId = userId;
 
@@ -87,7 +88,6 @@ public class WebSocketServer {
          * 2。检查toID对象是否在线。如果在线发送消息给对象
          * 3。将消息记录写入数据库。完成操作
          */
-        //todo 还需要校验用户ID的合法程度？
         if (!StringUtils.isEmpty(message)) {
             try {
                 //解析为JSON对象
@@ -99,20 +99,29 @@ public class WebSocketServer {
                 }else if(request.type.equals(WebSocketConstant.REQUEST_MESSAGE)){
                     if (request.getToId()!=null) {
                         Integer toID = request.getToId();
-                        Message m = messageService.addMessage(userId, toID, content);
+                        messageService.addMessage(userId, toID, content);
+                        //发送消息告知发送成功
+                        WebSocketResponsePacket successResponse = new WebSocketResponsePacket();
+                        successResponse.setType(WebSocketConstant.RESPONSE_SUCCESS);
+                        successResponse.setTimestamp(request.getTimestamp());
+                        successResponse.setToId(this.userId);
+                        successResponse.setFromId(WebSocketConstant.SEVER_ID);
+                        this.sendMessage(JSON.toJSONString(successResponse));
+
+                        //如果对方在线 发送消息告知
                         if (webSocketMap.containsKey(toID)) {
                             //用户在线，发给他
                             WebSocketServer webSocketServer = webSocketMap.get(toID);
                             //构建包
                             WebSocketResponsePacket response = new WebSocketResponsePacket();
-                            //额外信息查询
+                            //额外信息查询 用户名 头像
                             UserDTO userDTO = userService.selectOne(this.userId);
                             HashMap map = new HashMap(2);
                             map.put("userName",userDTO.getNickname());
                             map.put("headURL",userDTO.getHeadUrl());
                             response.setContent(content);
                             response.setFromId(this.userId);
-                            response.setTime(m.getCreateTime());
+                            response.setTimestamp(request.getTimestamp());
                             response.setToId(toID);
                             response.setType(WebSocketConstant.RESPONSE_MESSAGE);
                             response.setDescribe(JSON.toJSONString(map));
@@ -122,18 +131,9 @@ public class WebSocketServer {
                 }
             } catch (JSONException e) {
                 //解析错误，用户发来的消息有误
-                log.info("[WebSocketServer] 接受消息失败，告知用户发送失败,{}",e);
-                WebSocketResponsePacket response = new WebSocketResponsePacket();
-                //构建包
-                response.setContent(null);
-                response.setType(WebSocketConstant.RESPONSE_FAIL);
-                response.setTime(new Date());
-                try {
-                    this.sendMessage(JSON.toJSONString(response));
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+                log.info("[WebSocketServer] 接受消息失败，沉默即可,{}",e);
             } catch (IOException e) {
+                //无法发给在线用户，转储数据库
                 log.info("[WebSocketServer] 发送消息失败，放弃本次发送");
             }
         }

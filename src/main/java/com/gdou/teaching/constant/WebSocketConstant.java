@@ -12,7 +12,12 @@ package com.gdou.teaching.constant;
 public interface WebSocketConstant {
     Integer REQUEST_MESSAGE = 0;
     Integer REQUEST_READ = 1;
-    Integer RESPONSE_MESSAGE = 0;
-    Integer RESPONSE_FAIL = 0;
+
+    Integer RESPONSE_SUCCESS = 0;
+    Integer RESPONSE_FAIL = 1;
+    Integer RESPONSE_MESSAGE = 2;
+
+    Integer SEVER_ID = 0;
+
 
 }
