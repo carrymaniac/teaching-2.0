@@ -99,7 +99,7 @@ public class WebSocketServer {
                 }else if(request.type.equals(WebSocketConstant.REQUEST_MESSAGE)){
                     if (request.getToId()!=null) {
                         Integer toID = request.getToId();
-                        messageService.addMessage(userId, toID, content);
+                        Message m = messageService.addMessage(userId, toID, content);
                         //发送消息告知发送成功
                         WebSocketResponsePacket successResponse = new WebSocketResponsePacket();
                         successResponse.setType(WebSocketConstant.RESPONSE_SUCCESS);
@@ -116,9 +116,10 @@ public class WebSocketServer {
                             WebSocketResponsePacket response = new WebSocketResponsePacket();
                             //额外信息查询 用户名 头像
                             UserDTO userDTO = userService.selectOne(this.userId);
-                            HashMap map = new HashMap(2);
+                            HashMap map = new HashMap(3);
                             map.put("userName",userDTO.getNickname());
                             map.put("headURL",userDTO.getHeadUrl());
+                            map.put("messageId",m.getMessageId());
                             response.setContent(content);
                             response.setFromId(this.userId);
                             response.setTimestamp(request.getTimestamp());
