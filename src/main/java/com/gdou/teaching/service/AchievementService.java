@@ -3,6 +3,7 @@ package com.gdou.teaching.service;
 
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.dto.CourseDTO;
+import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.vo.ClazzVO;
 

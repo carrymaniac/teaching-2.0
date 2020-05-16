@@ -5,6 +5,7 @@ import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.Enum.UserStatusEnum;
 import com.gdou.teaching.constant.CookieConstant;
 import com.gdou.teaching.constant.RedisConstant;
+import com.gdou.teaching.constant.SecurityConstants;
 import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
@@ -13,6 +14,7 @@ import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.UserService;
 import com.gdou.teaching.util.CookieUtil;
+import com.gdou.teaching.util.JWTUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
 import com.gdou.teaching.vo.UserVO;
@@ -50,15 +52,17 @@ public class UserController {
     private final StringRedisTemplate stringRedisTemplate;
     private final UserService userService;
     private final HostHolder hostHolder;
-
+    private final JWTUtil jwtUtil;
     @Value("${server.servlet.context-path}")
     String urlHead;
 
+
     @Autowired
-    public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder) {
+    public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder, JWTUtil jwtUtil) {
         this.stringRedisTemplate = stringRedisTemplate;
         this.userService = userService;
         this.hostHolder = hostHolder;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -83,11 +87,13 @@ public class UserController {
             User user = userService.login(userNumber, password);
             //判断身份
             if (user.getUserIdent().intValue() == ident) {
-                addToken(user, response);
-                HashMap map = new HashMap(3);
+//                addToken(user, response);
+                HashMap map = new HashMap(4);
                 map.put("userId", user.getUserId());
                 map.put("nickname", user.getNickname());
                 map.put("headUrl", user.getHeadUrl());
+                //TODO 启动jwt模式项目
+                map.put("token",genToken(user));
                 return ResultVOUtil.success(map);
             } else {
                 return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
@@ -107,7 +113,8 @@ public class UserController {
     @RequestMapping(path = {"/logout"}, method = RequestMethod.GET)
     @ResponseBody
     public ResultVO logout(HttpServletRequest request, HttpServletResponse response) {
-        cleanToken(request, response);
+        UserDTO user = hostHolder.getUser();
+        cleanToken(user);
         log.info("注销成功");
         return ResultVOUtil.success();
     }
@@ -185,6 +192,9 @@ public class UserController {
                 map.put("userId", user.getUserId());
                 map.put("nickname", user.getNickname());
                 map.put("headUrl", user.getHeadUrl());
+                //TODO 启动jwt模式项目
+                map.put("token",genToken(user));
+
                 return ResultVOUtil.success(map);
             } else {
                 return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);
@@ -203,6 +213,16 @@ public class UserController {
         CookieUtil.set(response, CookieConstant.TOKEN, token, RedisConstant.EXPIRE);
     }
 
+    private String genToken(User user){
+        String token = jwtUtil.genToken(user);
+        stringRedisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, user.getUserId()), token, SecurityConstants.EXPIRATION, TimeUnit.SECONDS);
+        return token;
+    }
+    private void cleanToken(UserDTO user){
+        stringRedisTemplate.opsForValue().getOperations().delete(String.format(RedisConstant.TOKEN_PREFIX,user.getUserId()));
+        hostHolder.clear();
+    }
+
     private void cleanToken(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
         if (cookie != null) {
@@ -214,6 +234,7 @@ public class UserController {
         }
         hostHolder.clear();
     }
+
 
     @ResponseBody
     @PostMapping("/resetPassword")
