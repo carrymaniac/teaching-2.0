@@ -31,7 +31,7 @@ spring:
 server:
   servlet:
     context-path: /teaching
-  port: 8080
+  port: 8081
 mybatis:
   mapper-locations:
    - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml

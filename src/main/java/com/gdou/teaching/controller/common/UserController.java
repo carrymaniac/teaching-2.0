@@ -88,10 +88,12 @@ public class UserController {
             //判断身份
             if (user.getUserIdent().intValue() == ident) {
 //                addToken(user, response);
-                HashMap map = new HashMap(3);
+                HashMap map = new HashMap(4);
                 map.put("userId", user.getUserId());
                 map.put("nickname", user.getNickname());
                 map.put("headUrl", user.getHeadUrl());
+                //TODO 启动jwt模式项目
+                map.put("token",genToken(user));
                 return ResultVOUtil.success(map);
             } else {
                 return ResultVOUtil.fail(ResultEnum.USER_NOT_EXIST);

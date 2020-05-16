@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,8 +27,7 @@ import java.util.Map;
 public class JWTUtil {
 
     private static final byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(SecurityConstants.JWT_SECRET_KEY);
-    private static final SecretKey secretKey = Keys.hmacShaKeyFor(apiKeySecretBytes);
-
+    private static SecretKey secretKey = Keys.hmacShaKeyFor(apiKeySecretBytes);
     /**
      * 生成Token
      * @param userNumber
@@ -41,7 +41,7 @@ public class JWTUtil {
                 .setSubject(userNumber) //Subject
                 .setClaims(claims) //负载
                 .setExpiration(expirationDate) //过期时间
-                .signWith(secretKey,SignatureAlgorithm.HS512) //签名
+                .signWith(secretKey,SignatureAlgorithm.HS256) //签名
                 .compact(); }
 
     public String genToken(User user){
