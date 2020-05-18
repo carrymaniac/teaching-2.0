@@ -51,14 +51,17 @@ public class UserInterceptorForJWT implements HandlerInterceptor {
          */
         String authHeader = request.getHeader(this.tokenHeader);
         if (authHeader != null && authHeader.startsWith(this.tokenHead)) {
-            String token = authHeader.substring(this.tokenHead.length());
+            String token = authHeader.substring(this.tokenHead.length()+1);
             Integer userID = jwtUtil.getUserIdFromToken(token);
-            String tokenValue = stringRedisTemplate.opsForValue().get(String.format(RedisConstant.TOKEN_PREFIX, userID));
+            String format = String.format(RedisConstant.TOKEN_PREFIX, userID);
+            String tokenValue = stringRedisTemplate.opsForValue().get(format);
             if (!StringUtils.isEmpty(tokenValue) && tokenValue.equals(token)) {
                 //当Redis中的token不为空且与Request中的Token相同时，说明验证成功 可以注入用户数据了
-                UserDTO user = userService.selectOne(Integer.parseInt(tokenValue));
-                log.info("UserInterceptor】此刻注入用户：user:{}", user);
+                UserDTO user = userService.selectOne(userID);
+                log.info("【UserInterceptor】此刻注入用户：user:{}", user);
                 hostHolder.setUser(user);
+            }else{
+                log.info("【UserInterceptor】校验失败，无法注入用户");
             }
         }
         return true;

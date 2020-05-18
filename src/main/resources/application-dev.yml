@@ -1,5 +1,10 @@
 teaching:
   uploadPath: /Users/carrymaniac/upload/
+jwt:
+  secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
+  expiration: 200
+  tokenHeader: Authorization
+  tokenHead: Bearer
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -44,3 +49,11 @@ pagehelper:
   params: count=countSql
 logging:
   config: classpath:logback-dev.xml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'
+  metrics:
+    tags:
+      application: ${spring.application.name}
