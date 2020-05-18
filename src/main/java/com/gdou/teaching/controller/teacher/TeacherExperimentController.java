@@ -5,6 +5,7 @@ import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
+import com.gdou.teaching.event.EventProducer;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.form.*;
 import com.gdou.teaching.mbg.model.AchievementExample;
@@ -40,12 +41,16 @@ public class TeacherExperimentController {
     private final CourseService courseService;
     private final AnswerService answerService;
     private final FileService fileService;
+    private final AchievementService achievementService;
+    private final EventProducer eventProducer;
 
-    public TeacherExperimentController(ExperimentService experimentService, CourseService courseService, AnswerService answerService, FileService fileService) {
+    public TeacherExperimentController(ExperimentService experimentService, CourseService courseService, AnswerService answerService, FileService fileService, AchievementService achievementService, EventProducer eventProducer) {
         this.experimentService = experimentService;
         this.courseService = courseService;
         this.answerService = answerService;
         this.fileService = fileService;
+        this.achievementService = achievementService;
+        this.eventProducer = eventProducer;
     }
 
     /**
@@ -118,6 +123,12 @@ public class TeacherExperimentController {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         BeanUtils.copyProperties(form, experimentDTO);
         experimentService.add(experimentDTO);
+        Integer courseId = experimentDTO.getCourseId();
+        List<Integer> userId = achievementService.getUserListByCourseId(courseId);
+        if(userId!=null&&!userId.isEmpty()){
+            //推送消息
+            userId.stream().forEach(id -> eventProducer.fireCourseUpdateEvent(id,courseId));
+        }
         return ResultVOUtil.success();
     }
     @PostMapping("/updateExperimentInfo")

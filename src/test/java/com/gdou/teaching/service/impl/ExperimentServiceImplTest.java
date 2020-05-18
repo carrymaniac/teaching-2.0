@@ -29,9 +29,15 @@ class ExperimentServiceImplTest {
     ExperimentServiceImpl experimentService;
     @Test
     void detail() {
-        ExperimentDTO detail = experimentService.detail(1);
+        ExperimentDTO detail = experimentService.detail(10);
+        experimentService.detail(10);
+        experimentService.detail(10);
+        experimentService.detail(10);
+        experimentService.detail(10);
+
         Assert.notNull(detail,"error for detail");
         log.info("detail:{}",detail);
+        log.info("detail:{}", experimentService.detail(1));
     }
 
     @Test
@@ -51,8 +57,15 @@ class ExperimentServiceImplTest {
     @Test
     void list() {
         List<ExperimentDTO> list = experimentService.list(1);
-        Assert.isTrue(!list.isEmpty(),"error ");
-        log.info("list: {}",list);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(10);
+        experimentService.list(1);
+
+//        Assert.isTrue(!list.isEmpty(),"error ");
+//        log.info("list: {}",list);
     }
 
     @Test

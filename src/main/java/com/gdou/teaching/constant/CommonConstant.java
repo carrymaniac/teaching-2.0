@@ -14,4 +14,18 @@ public interface CommonConstant {
     Byte STUDENT = 0;
     Byte TEACHER = 1;
     Byte ADMIN = 2;
+
+    String TOPIC_CourseUpdate = "courseUpdate";
+    String TOPIC_AchievementUpdate = "achievementUpdate";
+    String TOPIC_NotifyJob = "notifyJob";
+
+    int SYSTEM_USER_ID = 0;
+
+    int ENTITY_TYPE_COURSE = 0;
+    int ENTITY_TYPE_EXPERIMENT = 1;
+    int ENTITY_TYPE_RECORD = 2;
+
+
+
+
 }

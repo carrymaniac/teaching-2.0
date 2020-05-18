@@ -75,4 +75,12 @@ public interface AchievementService {
      * @return
      */
     List<List<String>> exportAchievement(CourseDTO courseDTO);
+
+
+    /**
+     * 根据课程ID获取用户ID列表
+     * @param courseId 课程ID
+     * @return 用户ID列表
+     */
+    List<Integer> getUserListByCourseId(Integer courseId);
 }

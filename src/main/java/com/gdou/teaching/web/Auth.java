@@ -12,6 +12,7 @@ import java.lang.annotation.*;
  * @Date: 2019/12/28 1:36 下午
  * @Version:
  */
+
 @Inherited
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

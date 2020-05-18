@@ -279,4 +279,23 @@ public class AchievementServiceImpl implements AchievementService {
         }).collect(Collectors.toList());
         return collect;
     }
+
+    @Override
+    public List<Integer> getUserListByCourseId(Integer courseId) {
+        /**
+         * 1。查询数据库
+         * 2。转化为DTO
+         */
+        AchievementExample example = new AchievementExample();
+        example.createCriteria()
+                .andCourseIdEqualTo(courseId);
+        List<Achievement> achievements = achievementMapper.selectByExample(example);
+        if(!achievements.isEmpty()){
+            List<Integer> result = achievements.stream()
+                    .map(achievement -> achievement.getUserId())
+                    .collect(Collectors.toList());
+            return result;
+        }
+        return null;
+    }
 }

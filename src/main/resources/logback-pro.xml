@@ -24,14 +24,12 @@
         <level>debug</level>
     </filter>
 </appender>
-
         <contextName>teaching</contextName>
         <!--   日志文件存放目录-->
             <property name="LOG_PATH" value="/root/log"/>
 <!--        <property name="LOG_PATH" value="/Users/carrymaniac/log/"/>-->
         <!--   二级存放目录 -->
         <property name="APPDIR" value="teaching"/>
-
         <!-- error file -->
         <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_PATH}/${APPDIR}/log_error.log</file>

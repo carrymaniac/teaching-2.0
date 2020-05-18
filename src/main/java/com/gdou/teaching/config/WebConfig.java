@@ -36,9 +36,21 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(userInterceptorForJWT()).excludePathPatterns("/common/kaptcha","/static/**","/dev/**","/user/login","/user/register","/index.html","/download/**","/user/loginForTest");
-        registry.addInterceptor(loginRuquireInterceptor()).excludePathPatterns("/common/kaptcha","/static/**","/dev/**","/user/login","/user/register","/index.html","/download/**","/user/loginForTest");
-        registry.addInterceptor(authIntercepter()).excludePathPatterns("/common/kaptcha","/static/**","/dev/**","/user/login","/user/register","/index.html","/download/**","/user/loginForTest");
+        registry.addInterceptor(userInterceptorForJWT())
+                .excludePathPatterns("/common/kaptcha","/static/**",
+                        "/dev/**","/user/login","/user/register",
+                        "/index.html","/download/**",
+                        "/user/loginForTest","/test/**");
+        registry.addInterceptor(loginRuquireInterceptor())
+                .excludePathPatterns("/common/kaptcha","/static/**",
+                        "/dev/**","/user/login","/user/register",
+                        "/index.html","/download/**",
+                        "/user/loginForTest","/test/**");
+        registry.addInterceptor(authIntercepter())
+                .excludePathPatterns("/common/kaptcha","/static/**",
+                        "/dev/**","/user/login",
+                        "/user/register","/index.html",
+                        "/download/**","/user/loginForTest","/test/**");
     }
 
     @Override

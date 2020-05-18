@@ -69,5 +69,8 @@
         <table tableName="user_re_experiment">
             <generatedKey column="user_experiment_id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="message">
+            <generatedKey column="message_id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

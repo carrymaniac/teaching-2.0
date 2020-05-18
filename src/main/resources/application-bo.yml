@@ -38,6 +38,17 @@ spring:
       enabled: true
       max-file-size: 50MB
       max-request-size: 50MB
+#kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: test-consumer-group
+      #如果为true，则消费者的偏移量将在后台定期提交，默认值为true
+      enable-auto-commit: true
+      #如果'enable.auto.commit'为true，则消费者偏移自动提交给Kafka的频率（以毫秒为单位），默认值为5000。
+      auto-commit-interval: 3000
+    listener:
+      missing-topics-fatal: false
 server:
   servlet:
     context-path: /teaching
@@ -48,6 +59,18 @@ mybatis:
    - classpath:mappers/com/gdou/teaching/dao/*.xml
 logging:
   config: classpath:logback-dev.xml
+
+#caffeine缓存的参数
+caffeine:
+  course:
+    #热点数据的最大数量
+    maxSize: 15
+    #淘汰时间
+    expire-seconds: 180
+  experiment:
+    maxSize: 15
+    expire-seconds: 180
+
 pagehelper:
   helper-dialect: mysql
   reasonable: true

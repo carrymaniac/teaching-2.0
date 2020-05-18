@@ -45,8 +45,17 @@ mybatis:
     - classpath:mappers/com/gdou/teaching/dao/*.xml
 logging:
   config: classpath:logback-pro.xml
+
 pagehelper:
   helper-dialect: mysql
   reasonable: true
   support-methods-arguments: true
   params: count=countSql
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'
+  metrics:
+    tags:
+      application: ${spring.application.name}
