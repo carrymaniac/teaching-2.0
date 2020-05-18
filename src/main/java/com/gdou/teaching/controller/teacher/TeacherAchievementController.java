@@ -186,8 +186,6 @@ public class TeacherAchievementController {
             clazzMap.put("className",classByClazzId.getClassName());
             classList.add(clazzMap);
         }
-
-
         List<RecordDTO> recordDTOS  = recordService.getRecordListByExperimentId(experimentId);
         if (recordDTOS==null||recordDTOS.isEmpty()){
             return ResultVOUtil.success(map);

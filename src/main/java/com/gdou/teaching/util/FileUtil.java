@@ -42,23 +42,40 @@ public class FileUtil {
     }
 
     public String getType(String suffixName){
-        if(DOC.equals(suffixName)|| DOCX.equals(suffixName)){
-            return "doc";
+        switch (suffixName){
+            case DOC:
+            case DOCX: return "doc";
+            case PPT:
+            case PPTX: return "ppt";
+            case ".xls":
+            case ".xlsx": return "excel";
+            case ".pdf": return "pdf";
+            case ".txt": return "txt";
+            case ".png": return "png";
+            case ".jpg":
+            case ".jpeg": return "jpg";
+            default: return "other";
         }
-        if(PPT.equals(suffixName)|| PPTX.equals(suffixName)){
-            return "ppt";
-        }
-        if(".xls".equals(suffixName)|| ".xlsx".equals(suffixName)){
-            return "excel";
-        }
-        if(".pdf".equals(suffixName)){
-            return "pdf";
-        }
-        if(".txt".equals(suffixName)){
-            return "txt";
-        }
-        return "other";
+
+//        if(DOC.equals(suffixName)|| DOCX.equals(suffixName)){
+//            return "doc";
+//        }
+//        if(PPT.equals(suffixName)|| PPTX.equals(suffixName)){
+//            return "ppt";
+//        }
+//        if(".xls".equals(suffixName)|| ".xlsx".equals(suffixName)){
+//            return "excel";
+//        }
+//        if(".pdf".equals(suffixName)){
+//            return "pdf";
+//        }
+//        if(".txt".equals(suffixName)){
+//            return "txt";
+//        }
+//        return "other";
     }
+
+
 
     public String getFileSize(Long fileSize){
         DecimalFormat df = new DecimalFormat("#.00");
