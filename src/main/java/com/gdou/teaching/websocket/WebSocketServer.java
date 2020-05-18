@@ -151,7 +151,6 @@ public class WebSocketServer {
      * 使用json字符串来传递
      */
     public void sendMessage(String message) throws IOException {
-
         this.session.getBasicRemote().sendText(message);
     }
 

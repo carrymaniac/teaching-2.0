@@ -155,7 +155,7 @@ public class MessageController {
 
     @PostMapping("/messageRead")
     @ResponseBody
-    ResultVO messageRead(@RequestParam("messageIdList")List<Integer> messageIdList){
+    ResultVO messageRead(@RequestBody List<Integer> messageIdList){
         if(!messageIdList.isEmpty()){
             messageService.setMessageRead(messageIdList);
         }

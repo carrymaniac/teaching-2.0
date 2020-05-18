@@ -1,3 +1,3 @@
 spring:
   profiles:
-    active: bo
+    active: dev
