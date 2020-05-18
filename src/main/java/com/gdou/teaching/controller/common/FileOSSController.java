@@ -105,15 +105,12 @@ public class FileOSSController {
         //文件后缀名字
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        Random r = new Random();
-        StringBuilder tempName = new StringBuilder();
-        tempName.append(sdf.format(new Date())).append(r.nextInt(100)).append(suffixName);
-        String newFileName = tempName.toString();
-        //文件存储目录
-        File fileDirectory = new File(fileUtil.genUploadPath());
+
+        String newFileName = sdf.format(new Date())+new Random().nextInt(100)+suffixName;
+        String path=fileUtil.getPath(suffixName);
         HashMap<String, String> map = new HashMap<>();
         try {
-            String url = fileOSSService.uploadFile(newFileName,"/images",file.getInputStream());
+            String url = fileOSSService.uploadFile(newFileName,path,file.getInputStream());
             file.getSize();
             map.put("fileName", fileName);
             map.put("fileType", fileUtil.getType(suffixName));

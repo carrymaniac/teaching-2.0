@@ -75,7 +75,27 @@ public class FileUtil {
 //        return "other";
     }
 
-
+    /**
+     * 根据文件类型获取 文成存储路径
+     * @param suffixName
+     * @return
+     */
+    public String getPath(String suffixName){
+        switch (suffixName){
+            case DOC:
+            case DOCX:
+            case PPT:
+            case PPTX:
+            case ".xls":
+            case ".xlsx":
+            case ".pdf":
+            case ".txt": return "/file";
+            case ".png":
+            case ".jpg":
+            case ".jpeg": return "/images";
+            default: return "/other";
+        }
+    }
 
     public String getFileSize(Long fileSize){
         DecimalFormat df = new DecimalFormat("#.00");

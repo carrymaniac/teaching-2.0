@@ -8,6 +8,7 @@ import com.aliyun.oss.model.*;
 import com.gdou.teaching.dao.FileDao;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.mbg.mapper.FileMapper;
+import com.gdou.teaching.mbg.model.FileExample;
 import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,6 @@ public class FileOSSServiceImpl implements FileService {
 
     private final FileMapper fileMapper;
     private final FileDao fileDao;
-    private final FileUtil fileUtil;
 
     /**
      * 斜杠
@@ -100,26 +100,50 @@ public class FileOSSServiceImpl implements FileService {
     private String fileHost;
 
 
-    public FileOSSServiceImpl(FileMapper fileMapper, FileDao fileDao, FileUtil fileUtil) {
+    public FileOSSServiceImpl(FileMapper fileMapper, FileDao fileDao) {
         this.fileMapper = fileMapper;
         this.fileDao = fileDao;
-        this.fileUtil = fileUtil;
     }
 
     @Override
     public FileDTO selectFileById(Integer fileId) {
-        return null;
+        com.gdou.teaching.mbg.model.File file = fileMapper.selectByPrimaryKey(fileId);
+        if(file==null){
+            return null;
+        }
+        FileDTO fileDTO = new FileDTO();
+        BeanUtils.copyProperties(file,fileDTO);
+        return fileDTO;
     }
 
     @Override
     public List<FileDTO> selectFileByCategoryAndFileCategoryId(Integer fileCategory, Integer fileCategoryId) {
-        return null;
+        FileExample fileExample = new FileExample();
+        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
+        return getFileDTOS(fileExample);
+    }
+
+    private List<FileDTO> getFileDTOS(FileExample fileExample) {
+        List<com.gdou.teaching.mbg.model.File> files = fileMapper.selectByExample(fileExample);
+        if(files==null||files.isEmpty()){
+            return null;
+        }
+        List<FileDTO> FileDTOs = files.stream().map(file -> {
+            FileDTO fileDTO = new FileDTO();
+            BeanUtils.copyProperties(file, fileDTO);
+            return fileDTO;
+        }).collect(Collectors.toList());
+        return FileDTOs;
     }
 
     @Override
-    public List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory, Integer fileCategoryId, String keyword) {
-        return null;
+    public List<FileDTO> selectFileByCategoryAndFileCategoryIdAndKeyword(Integer fileCategory,Integer fileCategoryId,String keyword) {
+        FileExample fileExample = new FileExample();
+        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue())
+                .andFileCategoryIdEqualTo(fileCategoryId).andFileNameLike("%"+keyword+"%");
+        return getFileDTOS(fileExample);
     }
+
 
     @Override
     public int saveFile(Integer fileCategory, Integer fileCategoryId, List<FileDTO> FileDTOs) {
@@ -134,15 +158,9 @@ public class FileOSSServiceImpl implements FileService {
         return fileDao.insertList(files);
     }
 
-    @Override
-    public boolean deleteFiles(Integer fileCategory, Integer fileCategoryId) {
-        return false;
-    }
 
     /**
      * 核心上传功能
-     * @Author: Captain&D
-     * @cnblogs: https://www.cnblogs.com/captainad
      * @param fileName 文件名
      * @param filePath 文件路径
      * @param inputStream 文件输入流
@@ -150,30 +168,24 @@ public class FileOSSServiceImpl implements FileService {
      */
     private String coreUpload(String fileName, String filePath, InputStream inputStream) {
         if(StringUtils.isEmpty(fileName) || inputStream == null) {
-            log.error("文件上传时缺少文件名或输入流");
+            log.error("上传文件,缺少文件名或输入流");
             return null;
         }
-        //生成文件路径
-//        if(StringUtils.isEmpty(filePath)) {
-//            log.warn("File path is lack when upload file but we automatically generated");
-//            String dateCategory = DateUtil.getFormatDate(new Date(), "yyyyMMdd");
-//            filePath = FLAG_SLANTING_ROD.concat(dateCategory).concat(FLAG_SLANTING_ROD);
-//        }
         String fileUrl;
         OSS ossClient = null;
         try{
             // If the upload file size exceeds the limit
             long maxSizeAllowed = getMaximumFileSizeAllowed();
             if(Long.valueOf(inputStream.available()) > maxSizeAllowed) {
-                log.error("文件过大,上传失败.");
+                log.error("上传文件,文件大小超过限制");
                 return null;
             }
-            // Create OSS instance
+            // 创建OSS 实例
             ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
 
             // 如果bucket不存在, 自动创建新的 bucket
             if (!ossClient.doesBucketExist(bucketName)) {
-                log.info("{} 不存在,正在新建 ", bucketName);
+                log.info("{}不存在,正在新建 ", bucketName);
                 ossClient.createBucket(bucketName);
                 CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
                 //设置公共读权限
@@ -192,14 +204,14 @@ public class FileOSSServiceImpl implements FileService {
             StringBuilder buffer = new StringBuilder();
             buffer.append(fileHost).append(filePath).append(fileName);
             fileUrl = buffer.toString();
-            log.info("格式化后文件url为 {}", fileUrl);
+            log.info("格式化后文件url为:{}", fileUrl);
 
             // 上传文件
             PutObjectResult result = ossClient.putObject(new PutObjectRequest(bucketName, fileUrl, inputStream));
             ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
             if(result != null) {
                 log.info("上传结果:{}", result.getETag());
-                log.info("上传 {} 成功", fileName);
+                log.info("上传:{} 成功", fileName);
             }
             fileUrl = getHostUrl().concat(fileUrl);
 
@@ -233,16 +245,9 @@ public class FileOSSServiceImpl implements FileService {
      * @return
      */
     public String uploadFile(String fileName, String filePath, File file) {
-        if(file == null) {
-            log.warn("File is lack when upload.");
+        if(fileName == null || file == null ) {
+            log.warn("上传文件,文件名或文件不能空");
             return null;
-        }
-        if(StringUtils.isEmpty(fileName)) {
-            log.warn("File name is lack when upload file but we automatically generated");
-            String uuidFileName = UUID.randomUUID().toString().replace(FLAG_CROSSBAR, FLAG_EMPTY_STRING);
-            String fname = file.getName();
-            String suffix = fname.substring(fname.lastIndexOf(FLAG_DOT), fname.length());
-            fileName = uuidFileName.concat(suffix);
         }
         InputStream inputStream = null;
         String fileUrl = null;
@@ -250,13 +255,24 @@ public class FileOSSServiceImpl implements FileService {
             inputStream = new FileInputStream(file);
             fileUrl = uploadFile(fileName, filePath, inputStream);
         }catch (Exception e){
-            log.error("Upload file error.", e);
+            log.error("上传文件失败", e);
         }finally {
             IOUtils.safeClose(inputStream);
         }
         return fileUrl;
     }
 
+    @Override
+    public boolean deleteFiles(Integer fileCategory, Integer fileCategoryId) {
+        FileExample fileExample = new FileExample();
+        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
+        List<com.gdou.teaching.mbg.model.File> files = fileMapper.selectByExample(fileExample);
+
+        for(com.gdou.teaching.mbg.model.File file:files){
+            deleteFile(file.getFileId());
+        }
+        return fileMapper.deleteByExample(fileExample)>0;
+    }
 
 
     /**
@@ -272,16 +288,13 @@ public class FileOSSServiceImpl implements FileService {
              * http:// bucketName.oss-cn-shenzhen.aliyuncs.com/images/abc.jpg
              */
             com.gdou.teaching.mbg.model.File file = fileMapper.selectByPrimaryKey(fileId);
-
-            String key = getHostUrl()+file.getFilePath();
-            if(log.isDebugEnabled()) {
-                log.debug("Delete file key is {}", key);
-            }
+            String key = file.getFilePath();
+            key = key.replace(getHostUrl(), FLAG_EMPTY_STRING);
             ossClient =new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
             ossClient.deleteObject(bucketName, key);
 
         }catch (Exception e){
-            log.error("Delete file error.", e);
+            log.error("删除文件错误", e);
         } finally {
             if(ossClient != null) {
                 ossClient.shutdown();
@@ -289,27 +302,6 @@ public class FileOSSServiceImpl implements FileService {
         }
         //删除数据库记录
         return fileMapper.deleteByPrimaryKey(fileId)!=1;
-    }
-
-    public void test() throws Exception{
-        //String objectName = "images/login.png";
-        String objectName = "images/设计总说明.docx";
-        System.out.println(endpoint);
-        System.out.println(accessKeyId);
-        System.out.println(accessKeySecret);
-        // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-
-        // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
-        OSSObject ossObject = ossClient.getObject(bucketName, objectName);
-        // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
-        InputStream content = ossObject.getObjectContent();
-
-        // 下载OSS文件到本地文件。如果指定的本地文件存在会覆盖，不存在则新建。
-        ossClient.getObject(new GetObjectRequest(bucketName, objectName), new File(fileUtil.uploadPath+"test"));
-        
-        // 关闭OSSClient。
-        ossClient.shutdown();
     }
 
     /**

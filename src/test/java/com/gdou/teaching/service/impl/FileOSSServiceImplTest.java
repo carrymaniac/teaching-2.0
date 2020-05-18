@@ -16,8 +16,4 @@ public class FileOSSServiceImplTest {
     @Autowired
     FileOSSServiceImpl fileOSSService;
 
-    @Test
-    public void test() throws Exception{
-        fileOSSService.test();
-    }
 }
