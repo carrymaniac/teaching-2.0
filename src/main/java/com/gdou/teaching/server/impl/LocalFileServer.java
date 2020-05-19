@@ -62,7 +62,7 @@ public class LocalFileServer implements FileServer {
         }
         String url;
         try {
-            url = FileUtil.getHost(new URI(httpServletRequest.getRequestURL() + "")) + contextPath + "/download/" + fileName;
+            url = FileUtil.getHost(new URI(httpServletRequest.getRequestURL() + "")) + contextPath + "/download/" + newFileName;
         } catch (URISyntaxException e) {
             log.error("文件上传失败，异常为: {}",e);
             return null;
