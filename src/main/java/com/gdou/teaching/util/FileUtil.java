@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
 @Component
 public class FileUtil {
 
-    @Value("${teaching.uploadPath}")
+    @Value("${fileServer.uploadPath}")
     public String uploadPath;
 
     public String genUploadPath(){return uploadPath;}

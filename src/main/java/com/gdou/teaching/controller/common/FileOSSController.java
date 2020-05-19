@@ -107,7 +107,7 @@ public class FileOSSController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
         String newFileName = sdf.format(new Date())+new Random().nextInt(100)+suffixName;
-        String path=fileUtil.getPath(suffixName);
+        String path = fileUtil.getPath(suffixName);
         HashMap<String, String> map = new HashMap<>();
         try {
             String url = fileOSSService.uploadFile(newFileName,path,file.getInputStream());

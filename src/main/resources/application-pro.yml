@@ -1,5 +1,3 @@
-teaching:
-  uploadPath: /root/upload/
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -40,4 +38,6 @@ mybatis:
     - classpath:mappers/com/gdou/teaching/dao/*.xml
 logging:
   config: classpath:logback-pro.xml
-
+fileServer:
+  type: oss
+  uploadPath: /root/upload/

@@ -11,7 +11,7 @@ import lombok.Getter;
 public enum  ResultEnum implements CodeEnum {
     //通用的状态码
     SUCCESS(0, "请求成功"),
-    USER_NO_LOGIN(1,"用户未登陆"),
+    USER_NO_LOGIN(1,"用户未登陆,或登陆凭证失效"),
     SERVER_ERROR(500,"服务器异常，请联系管理员"),
     Forbidden(403,"权限错误"),
     PARAM_ERROR(203, "参数有误，请检查"),
