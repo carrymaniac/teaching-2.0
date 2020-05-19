@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.*;
  **/
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    @Value("${teaching.uploadPath}")
+    @Value("${fileServer.uploadPath}")
     public String uploadPath;
 
     @Bean

@@ -45,6 +45,10 @@ mybatis:
     - classpath:mappers/com/gdou/teaching/dao/*.xml
 logging:
   config: classpath:logback-pro.xml
+fileServer:
+  type: oss
+  uploadPath: /root/upload/
+
 pagehelper:
   helper-dialect: mysql
   reasonable: true

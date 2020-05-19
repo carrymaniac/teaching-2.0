@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
 @Component
 public class FileUtil {
 
-    @Value("${teaching.uploadPath}")
+    @Value("${fileServer.uploadPath}")
     public String uploadPath;
 
     public String genUploadPath(){return uploadPath;}
@@ -42,22 +42,59 @@ public class FileUtil {
     }
 
     public String getType(String suffixName){
-        if(DOC.equals(suffixName)|| DOCX.equals(suffixName)){
-            return "doc";
+        switch (suffixName){
+            case DOC:
+            case DOCX: return "doc";
+            case PPT:
+            case PPTX: return "ppt";
+            case ".xls":
+            case ".xlsx": return "excel";
+            case ".pdf": return "pdf";
+            case ".txt": return "txt";
+            case ".png": return "png";
+            case ".jpg":
+            case ".jpeg": return "jpg";
+            default: return "other";
         }
-        if(PPT.equals(suffixName)|| PPTX.equals(suffixName)){
-            return "ppt";
+
+//        if(DOC.equals(suffixName)|| DOCX.equals(suffixName)){
+//            return "doc";
+//        }
+//        if(PPT.equals(suffixName)|| PPTX.equals(suffixName)){
+//            return "ppt";
+//        }
+//        if(".xls".equals(suffixName)|| ".xlsx".equals(suffixName)){
+//            return "excel";
+//        }
+//        if(".pdf".equals(suffixName)){
+//            return "pdf";
+//        }
+//        if(".txt".equals(suffixName)){
+//            return "txt";
+//        }
+//        return "other";
+    }
+
+    /**
+     * 根据文件类型获取 文成存储路径
+     * @param suffixName
+     * @return
+     */
+    public String getPath(String suffixName){
+        switch (suffixName){
+            case DOC:
+            case DOCX:
+            case PPT:
+            case PPTX:
+            case ".xls":
+            case ".xlsx":
+            case ".pdf":
+            case ".txt": return "/file";
+            case ".png":
+            case ".jpg":
+            case ".jpeg": return "/images";
+            default: return "/other";
         }
-        if(".xls".equals(suffixName)|| ".xlsx".equals(suffixName)){
-            return "excel";
-        }
-        if(".pdf".equals(suffixName)){
-            return "pdf";
-        }
-        if(".txt".equals(suffixName)){
-            return "txt";
-        }
-        return "other";
     }
 
     public String getFileSize(Long fileSize){

@@ -2,6 +2,7 @@ package com.gdou.teaching.controller.common;
 
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dto.CourseDTO;
+import com.gdou.teaching.server.FileServer;
 import com.gdou.teaching.service.FileService;
 import com.gdou.teaching.util.FileUtil;
 import com.gdou.teaching.util.PoiUtil;
@@ -47,6 +48,9 @@ public class FileController {
 
     @Autowired
     PoiUtil poiUtil;
+
+    @Autowired
+    FileServer fileServer;
 
     @Autowired
     public FileController(FileUtil fileUtil, FileService fileService) {
@@ -106,27 +110,11 @@ public class FileController {
     public HashMap<String, String> uploadFile(HttpServletRequest httpServletRequest, MultipartFile file) throws IOException {
         //文件原始名字
         String fileName = file.getOriginalFilename();
+        String url = fileServer.uploadFile(httpServletRequest, fileName, file);
         //文件后缀名字
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        Random r = new Random();
-        StringBuilder tempName = new StringBuilder();
-        tempName.append(sdf.format(new Date())).append(r.nextInt(100)).append(suffixName);
-        String newFileName = tempName.toString();
-        //文件存储目录
-        File fileDirectory = new File(fileUtil.genUploadPath());
-        //文件
-        File destFile = new File(fileUtil.genUploadPath() + newFileName);
         HashMap<String, String> map = new HashMap<>();
         try {
-            if (!fileDirectory.exists()) {
-                if (!fileDirectory.mkdir()) {
-                    throw new IOException("文件夹创建失败,路径为：" + fileDirectory);
-                }
-            }
-            file.transferTo(destFile);
-            String url = FileUtil.getHost(new URI(httpServletRequest.getRequestURL() + "")) + contextPath + "/download/" + newFileName;
-            file.getSize();
             map.put("fileName", fileName);
             map.put("fileType", fileUtil.getType(suffixName));
             map.put("filePath", url);
