@@ -4,6 +4,7 @@ import com.gdou.teaching.dataobject.condition.LocalFileServerCondition;
 import com.gdou.teaching.dataobject.condition.OSSFileServerCondition;
 import com.gdou.teaching.server.FileServer;
 import com.gdou.teaching.server.impl.LocalFileServer;
+import com.gdou.teaching.server.impl.OSSFileServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ public class FileConfig {
     @Bean
     @Conditional(OSSFileServerCondition.class)
     public FileServer OSSFileServer(){
-        return new LocalFileServer();
+        return new OSSFileServer();
     }
 
     @Bean

@@ -41,7 +41,7 @@ public class DevController {
 
     @Value("${spring.profiles.active}")
     private String profiles;
-    @Value("${teaching.uploadPath}")
+    @Value("${fileServer.uploadPath}")
     public String uploadPath;
 
     final

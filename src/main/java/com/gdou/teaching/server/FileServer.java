@@ -20,7 +20,7 @@ public interface FileServer {
     /**
      * 文件上传
      * @param fileName 文件名
-     * @param fileDirectory 文件存储路径
+     * @param fileName 文件存储路径
      * @param file
      * @return
      */
