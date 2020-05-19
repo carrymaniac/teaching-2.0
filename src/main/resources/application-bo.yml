@@ -40,7 +40,7 @@ spring:
       max-request-size: 50MB
 #kafka
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 118.31.16.137:9092
     consumer:
       group-id: test-consumer-group
       #如果为true，则消费者的偏移量将在后台定期提交，默认值为true
@@ -52,7 +52,7 @@ spring:
 server:
   servlet:
     context-path: /teaching
-  port: 8080
+  port: 8081
 mybatis:
   mapper-locations:
    - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml
