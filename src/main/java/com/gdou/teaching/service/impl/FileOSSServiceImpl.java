@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -262,15 +263,35 @@ public class FileOSSServiceImpl implements FileService {
         return fileUrl;
     }
 
+    /**
+     *  删除多个文件
+     * @param fileCategory
+     * @param fileCategoryId
+     * @return
+     */
     @Override
     public boolean deleteFiles(Integer fileCategory, Integer fileCategoryId) {
         FileExample fileExample = new FileExample();
-        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
-        List<com.gdou.teaching.mbg.model.File> files = fileMapper.selectByExample(fileExample);
+        OSS ossClient = null;
+        try{
+            //获取相关文件
+            fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
+            List<com.gdou.teaching.mbg.model.File> files = fileMapper.selectByExample(fileExample);
+            // 格式化文件路径
+            List<String> keys =files.stream().map( file -> {
+                return file.getFilePath().replace(getHostUrl(),FLAG_EMPTY_STRING);
+            }).collect(Collectors.toList());
 
-        for(com.gdou.teaching.mbg.model.File file:files){
-            deleteFile(file.getFileId());
+            ossClient =new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+            ossClient.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keys));
+        }catch (Exception e){
+            log.error("删除文件错误", e);
+        } finally {
+            if(ossClient != null) {
+                ossClient.shutdown();
+            }
         }
+        //删除数据库的记录
         return fileMapper.deleteByExample(fileExample)>0;
     }
 
@@ -284,8 +305,9 @@ public class FileOSSServiceImpl implements FileService {
         OSS ossClient = null;
         try{
             /**
+             * 删除文件。key等同于ObjectName，表示删除OSS文件时需要指定包含文件后缀在内的完整路径，例如images/abc.jpg。
              * http:// bucketname                              images/abc.jpg = key
-             * http:// bucketName.oss-cn-shenzhen.aliyuncs.com/images/abc.jpg
+             * http:// bucketname.oss-cn-shenzhen.aliyuncs.com/images/anbc.jpg
              */
             com.gdou.teaching.mbg.model.File file = fileMapper.selectByPrimaryKey(fileId);
             String key = file.getFilePath();

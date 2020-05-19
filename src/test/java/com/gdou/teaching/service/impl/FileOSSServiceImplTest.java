@@ -16,4 +16,9 @@ public class FileOSSServiceImplTest {
     @Autowired
     FileOSSServiceImpl fileOSSService;
 
+
+    @Test
+    public void deleteFiles(){
+        fileOSSService.deleteFiles(100,99);
+    }
 }
