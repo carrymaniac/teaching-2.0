@@ -52,3 +52,12 @@ pagehelper:
   reasonable: true
   support-methods-arguments: true
   params: count=countSql
+
+# aliyun oss
+aliyun.oss.endpoint: "http://oss-cn-shenzhen.aliyuncs.com"
+aliyun.oss.keyid: "LTAI4Fs1Ty9PLMeHW4WKjcm8"
+aliyun.oss.keysecret: "BLXbfGH6j6ob5RnKMLY72q0UftC7qL"
+aliyun.oss.bucketname: "20200514"
+
+# aliyun filehost based on dev/test/prod(tha/idn)
+aliyun.oss.filehost: dev
