@@ -35,6 +35,7 @@ public class LocalFileServer implements FileServer {
 
     @Autowired
     FileUtil fileUtil;
+    private com.gdou.teaching.mbg.model.File FileName;
 
     @Override
     public String uploadFile(HttpServletRequest httpServletRequest,String fileName, MultipartFile file) {
@@ -77,11 +78,29 @@ public class LocalFileServer implements FileServer {
 
     @Override
     public void deleteFiles(List<com.gdou.teaching.mbg.model.File> list) {
-
+        if(list==null || list.size() == 0){
+            return ;
+        }
+        for(com.gdou.teaching.mbg.model.File file:list){
+            deleteFile(file);
+        }
     }
 
     @Override
     public void deleteFile(com.gdou.teaching.mbg.model.File file) {
-
+        if(file == null){
+            return ;
+        }
+        //从文件路径上获取文件名
+        String path= file.getFilePath();
+        path= path.substring(path.lastIndexOf('/')+1);
+        path= fileUtil.genUploadPath().concat(path);
+        //读取文件
+        File localFile = new File(path);
+        if ( !localFile.exists() ){
+            log.error("文件删除失败，文件不存在");
+        }else{
+            localFile.delete();
+        }
     }
 }
