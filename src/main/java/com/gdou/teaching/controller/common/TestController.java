@@ -50,13 +50,10 @@ public class TestController {
     @GetMapping("/FireEvent")
     @ResponseBody
     public ResultVO FireEvent(){
-        Event event = new Event();
-        event.setTopic(CommonConstant.TOPIC_CourseUpdate);
-        event.setEntityId(1);
-        event.setUserId(12);
-        event.setEntityUserId(13);
-        event.setEntityType(1);
-        eventProducer.fireEvent(event);
+        eventProducer.fireCourseUpdateEvent(71,1);
+        eventProducer.fireCourseUpdateEvent(71,2);
+        eventProducer.fireCourseUpdateEvent(71,3);
+        eventProducer.fireCourseUpdateEvent(71,4);
         return ResultVOUtil.success();
     }
 }

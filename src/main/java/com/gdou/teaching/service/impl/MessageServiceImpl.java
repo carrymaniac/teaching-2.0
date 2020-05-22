@@ -95,26 +95,24 @@ public class MessageServiceImpl implements MessageService {
                 CourseMaster courseMaster = courseMasterMapper.selectByPrimaryKey(Integer.valueOf(entityId));
                 //todo 这里看看是否catch错误 如果查询不到
                 String msg = "你选修的课程"+courseMaster.getCourseName()+"已更新了新的实验啦，快来看一看吧。";
-                HashMap<String,Object> result = new HashMap<>(6);
-                result.put("entityType",TOPIC_CourseUpdate);
+                HashMap<String,Object> result = new HashMap<>(5);
                 result.put("msg",msg);
-                result.put("entityId",entityId);
                 result.put("tittle","课程内容更新通知");
                 result.put("messageId",message.getMessageId());
                 result.put("time",message.getCreateTime());
+                result.put("routerUrl",String.format("/courseList/experiment/%s",entityId));
                 messageList.add(result);
             }else if (conversationId.equals(TOPIC_AchievementUpdate)){
                 //成绩更新提醒
                 String entityId = map.get("entityId");
                 Achievement achievement = achievementMapper.selectByPrimaryKey(Integer.valueOf(entityId));
                 String msg = "你选修的课程"+achievement.getCourseName()+"已更新了了成绩，您目前的成绩为："+achievement.getCourseAchievement()+" ,快来看一看吧。";
-                HashMap<String,Object> result = new HashMap<>(6);
-                result.put("entityType",TOPIC_AchievementUpdate);
+                HashMap<String,Object> result = new HashMap<>(5);
                 result.put("msg",msg);
-                result.put("entityId",achievement.getCourseId().toString());
                 result.put("tittle","课程成绩更新通知");
                 result.put("messageId",message.getMessageId());
                 result.put("time",message.getCreateTime());
+                result.put("routerUrl",String.format("/courseList/score/%d",achievement.getCourseId()));
                 messageList.add(result);
             }else if(conversationId.equals(TOPIC_NotifyJob)){
                 //提醒事件
@@ -122,13 +120,12 @@ public class MessageServiceImpl implements MessageService {
                 String entityId = map.get("entityId");
                 ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(Integer.valueOf(entityId));
                 String msg = "您的老师提醒您,您的实验"+experimentMaster.getExperimentName()+"尚未完成，快来看一看吧。";
-                HashMap<String,Object> result = new HashMap<>(6);
-                result.put("entityType",TOPIC_NotifyJob);
+                HashMap<String,Object> result = new HashMap<>(5);
                 result.put("msg",msg);
-                result.put("entityId",entityId);
                 result.put("tittle","实验进度提醒通知");
                 result.put("messageId",message.getMessageId());
                 result.put("time",message.getCreateTime());
+                result.put("routerUrl",String.format("/courseList/%d/content/%s",experimentMaster.getCourseId(),entityId));
                 messageList.add(result);
             }
             //这里可以继续写其他类型的事件
