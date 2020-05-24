@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -155,7 +157,10 @@ public class MessageController {
 
     @PostMapping("/messageRead")
     @ResponseBody
-    ResultVO messageRead(@RequestBody List<Integer> messageIdList){
+    //todo 记录为笔记
+    ResultVO messageRead(@RequestBody Map<String,List> data){
+        List messageIdList = data.get("messageIdList");
+        messageIdList = (ArrayList<Integer>) messageIdList;
         if(!messageIdList.isEmpty()){
             messageService.setMessageRead(messageIdList);
         }

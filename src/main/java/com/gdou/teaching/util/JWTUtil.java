@@ -65,8 +65,13 @@ public class JWTUtil {
     }
     public Integer getUserIdFromToken(String token){
         Claims claimsFromToken = getClaimsFromToken(token);
-        Integer userId = (Integer)claimsFromToken.get("CLAIM_KEY_USER_ID");
-        return userId;
+        if(claimsFromToken.get("CLAIM_KEY_USER_ID")!=null){
+            Integer userId = (Integer)claimsFromToken.get("CLAIM_KEY_USER_ID");
+            return userId;
+        }else {
+            return null;
+        }
+
     }
     public String getUserNumberFromToken(String token){
         Claims claimsFromToken = getClaimsFromToken(token);

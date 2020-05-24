@@ -40,17 +40,24 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/common/kaptcha","/static/**",
                         "/dev/**","/user/login","/user/register",
                         "/index.html","/download/**",
-                        "/user/loginForTest","/test/**","/common/file/getExcelTemple");
+                        "/user/loginForTest","/test/**","/common/file/getExcelTemple",
+                        "/common/file/upload","/common/file/uploadBatch"
+
+                );
         registry.addInterceptor(loginRuquireInterceptor())
                 .excludePathPatterns("/common/kaptcha","/static/**",
                         "/dev/**","/user/login","/user/register",
                         "/index.html","/download/**",
-                        "/user/loginForTest","/test/**","/common/file/getExcelTemple");
+                        "/user/loginForTest","/test/**","/common/file/getExcelTemple",
+                        "/common/file/upload","/common/file/uploadBatch"
+                        );
         registry.addInterceptor(authIntercepter())
                 .excludePathPatterns("/common/kaptcha","/static/**",
                         "/dev/**","/user/login",
                         "/user/register","/index.html",
-                        "/download/**","/user/loginForTest","/test/**");
+                        "/download/**","/user/loginForTest","/test/**",
+                        "/common/file/upload","/common/file/uploadBatch"
+                        );
     }
 
     @Override
