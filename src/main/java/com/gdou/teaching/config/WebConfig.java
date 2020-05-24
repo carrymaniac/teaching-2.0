@@ -46,7 +46,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/dev/**", "/user/login", "/user/register",
                         "/index.html", "/download/**",
                         "/user/loginForTest", "/test/**", "/common/file/getExcelTemple",
-                        "/common/file/upload", "/common/file/uploadBatch"
+                        "/common/file/upload", "/common/file/uploadBatch",
+                        "/common/file/readFile","/teacher/achievement/export/**"
 
                 );
         registry.addInterceptor(loginRuquireInterceptor())
@@ -54,14 +55,16 @@ public class WebConfig implements WebMvcConfigurer {
                         "/dev/**", "/user/login", "/user/register",
                         "/index.html", "/download/**",
                         "/user/loginForTest", "/test/**", "/common/file/getExcelTemple",
-                        "/common/file/upload", "/common/file/uploadBatch"
+                        "/common/file/upload", "/common/file/uploadBatch",
+                        "/common/file/readFile","/teacher/achievement/export/**"
                 );
         registry.addInterceptor(authIntercepter())
                 .excludePathPatterns("/common/kaptcha", "/static/**",
                         "/dev/**", "/user/login",
                         "/user/register", "/index.html",
                         "/download/**", "/user/loginForTest", "/test/**",
-                        "/common/file/upload", "/common/file/uploadBatch"
+                        "/common/file/upload", "/common/file/uploadBatch",
+                        "/common/file/readFile","/teacher/achievement/export/**"
                 );
     }
 
