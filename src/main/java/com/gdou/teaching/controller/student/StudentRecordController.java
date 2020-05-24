@@ -63,12 +63,10 @@ public class StudentRecordController {
         BeanUtils.copyProperties(form, recordDTO);
         recordDTO.setUserId(user.getUserId());
         recordDTO.setClassId(user.getClassId());
-        if(form.getUserExperimentId()==null){
-            //第一次提交，查询是否查看过答案
-            String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, form.getExperimentId());
-            Boolean checkAnswer = redisTemplate.opsForSet().isMember(key, user.getUserId().toString());
-            recordDTO.setHaveCheckAnswer(checkAnswer);
-        }
+        //第一次提交，查询是否查看过答案
+        String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, form.getExperimentId());
+        Boolean checkAnswer = redisTemplate.opsForSet().isMember(key, user.getUserId().toString());
+        recordDTO.setHaveCheckAnswer(checkAnswer);
         try {
             recordService.save(recordDTO);
             //UserExperimentId为空,为新增提交记录.
