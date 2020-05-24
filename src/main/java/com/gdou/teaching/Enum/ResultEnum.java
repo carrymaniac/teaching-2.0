@@ -20,6 +20,7 @@ public enum  ResultEnum implements CodeEnum {
     USER_PASSWORD_ERROR(10,"密码错误"),
     USER_NOT_EXIST(10,"用户不存在"),
     VERIFYCODE_ERROR(10,"验证码错误"),
+    USER_STATUS_ERROR(10,"用户状态异常，请联系管理员"),
 
 
     //以下错误只用于后台内部,不返回到前台。

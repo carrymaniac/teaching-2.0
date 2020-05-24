@@ -49,7 +49,7 @@ logging:
   config: classpath:logback-dev.xml
 # 配置文件服务类型
 fileServer:
-  type: local
+  type: oss
   uploadPath: /Users/bo/upload/
 
 pagehelper:

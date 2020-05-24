@@ -185,6 +185,9 @@ public class UserController {
         httpSession.removeAttribute("verifyCode");
         try {
             User user = userService.login(userNumber, password);
+            if(!user.getUserStatus().equals(UserStatusEnum.NORMAL.getCode().byteValue())){
+                return ResultVOUtil.fail(ResultEnum.USER_STATUS_ERROR);
+            }
             if (user.getUserIdent().intValue() == ident) {
                 addToken(user, response);
                 log.info("登陆的用户为：{}", hostHolder.getUser());
