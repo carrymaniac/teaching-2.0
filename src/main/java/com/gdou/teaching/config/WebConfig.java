@@ -16,54 +16,62 @@ import org.springframework.web.servlet.config.annotation.*;
  **/
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    @Value("${teaching.uploadPath}")
+    @Value("${fileServer.uploadPath}")
     public String uploadPath;
 
     @Bean
-    LoginRuquireInterceptor loginRuquireInterceptor(){
+    LoginRuquireInterceptor loginRuquireInterceptor() {
         return new LoginRuquireInterceptor();
     }
+
     @Bean
-    UserIntercepter userIntercepter(){
+    UserIntercepter userIntercepter() {
         return new UserIntercepter();
     }
+
     @Bean
-    UserInterceptorForJWT userInterceptorForJWT(){
+    UserInterceptorForJWT userInterceptorForJWT() {
         return new UserInterceptorForJWT();
     }
+
     @Bean
-    AuthIntercepter authIntercepter(){return new AuthIntercepter();}
+    AuthIntercepter authIntercepter() {
+        return new AuthIntercepter();
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(userInterceptorForJWT())
-                .excludePathPatterns("/common/kaptcha","/static/**",
-                        "/dev/**","/user/login","/user/register",
-                        "/index.html","/download/**",
-                        "/user/loginForTest","/test/**","/common/file/getExcelTemple",
-                        "/common/file/upload","/common/file/uploadBatch"
+                .excludePathPatterns("/common/kaptcha", "/static/**",
+                        "/dev/**", "/user/login", "/user/register",
+                        "/index.html", "/download/**",
+                        "/user/loginForTest", "/test/**", "/common/file/getExcelTemple",
+                        "/common/file/upload", "/common/file/uploadBatch",
+                        "/common/file/readFile","/teacher/achievement/export/**"
 
                 );
         registry.addInterceptor(loginRuquireInterceptor())
-                .excludePathPatterns("/common/kaptcha","/static/**",
-                        "/dev/**","/user/login","/user/register",
-                        "/index.html","/download/**",
-                        "/user/loginForTest","/test/**","/common/file/getExcelTemple",
-                        "/common/file/upload","/common/file/uploadBatch"
-                        );
+                .excludePathPatterns("/common/kaptcha", "/static/**",
+                        "/dev/**", "/user/login", "/user/register",
+                        "/index.html", "/download/**",
+                        "/user/loginForTest", "/test/**", "/common/file/getExcelTemple",
+                        "/common/file/upload", "/common/file/uploadBatch",
+                        "/common/file/readFile","/teacher/achievement/export/**"
+                );
         registry.addInterceptor(authIntercepter())
-                .excludePathPatterns("/common/kaptcha","/static/**",
-                        "/dev/**","/user/login",
-                        "/user/register","/index.html",
-                        "/download/**","/user/loginForTest","/test/**",
-                        "/common/file/upload","/common/file/uploadBatch"
-                        );
+                .excludePathPatterns("/common/kaptcha", "/static/**",
+                        "/dev/**", "/user/login",
+                        "/user/register", "/index.html",
+                        "/download/**", "/user/loginForTest", "/test/**",
+                        "/common/file/upload", "/common/file/uploadBatch",
+                        "/common/file/readFile","/teacher/achievement/export/**"
+                );
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/download/**").addResourceLocations("file:"+uploadPath);
+        registry.addResourceHandler("/download/**").addResourceLocations("file:" + uploadPath);
     }
 
     @Override

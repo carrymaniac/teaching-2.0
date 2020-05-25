@@ -1,5 +1,3 @@
-teaching:
-  uploadPath: /root/upload/
 jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
   expiration: 200
@@ -56,6 +54,10 @@ mybatis:
     - classpath:mappers/com/gdou/teaching/dao/*.xml
 logging:
   config: classpath:logback-pro.xml
+fileServer:
+  type: oss
+  uploadPath: /root/upload/
+
 
 pagehelper:
   helper-dialect: mysql
@@ -80,3 +82,12 @@ caffeine:
   experiment:
     maxSize: 15
     expire-seconds: 180
+
+# aliyun oss
+aliyun.oss.endpoint: "http://oss-cn-shenzhen.aliyuncs.com"
+aliyun.oss.keyid: "LTAI4Fs1Ty9PLMeHW4WKjcm8"
+aliyun.oss.keysecret: "BLXbfGH6j6ob5RnKMLY72q0UftC7qL"
+aliyun.oss.bucketname: "20200514"
+
+# aliyun filehost based on dev/test/prod(tha/idn)
+aliyun.oss.filehost: dev

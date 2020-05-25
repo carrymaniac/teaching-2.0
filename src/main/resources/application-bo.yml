@@ -1,5 +1,3 @@
-teaching:
-  uploadPath: /Users/carrymaniac/upload/
 jwt:
   secretKey: C*F-JaNdRgUkXn2r5u8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w
   expiration: 200
@@ -52,13 +50,19 @@ spring:
 server:
   servlet:
     context-path: /teaching
-  port: 8081
+  port: 8080
 mybatis:
   mapper-locations:
    - classpath:mappers/com/gdou/teaching/mbg/mapper/*.xml
    - classpath:mappers/com/gdou/teaching/dao/*.xml
+
 logging:
   config: classpath:logback-dev.xml
+# 配置文件服务类型
+fileServer:
+  type: oss
+  uploadPath: /Users/bo/upload/
+
 
 #caffeine缓存的参数
 caffeine:
@@ -84,3 +88,13 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+# aliyun oss
+aliyun.oss.endpoint: "http://oss-cn-shenzhen.aliyuncs.com"
+aliyun.oss.keyid: "LTAI4Fs1Ty9PLMeHW4WKjcm8"
+aliyun.oss.keysecret: "BLXbfGH6j6ob5RnKMLY72q0UftC7qL"
+aliyun.oss.bucketname: "20200514"
+
+# aliyun filehost based on dev/test/prod(tha/idn)
+aliyun.oss.filehost: dev
+
