@@ -4,6 +4,7 @@ import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.Enum.UserIdentEnum;
 import com.gdou.teaching.constant.RedisConstant;
 import com.gdou.teaching.dataobject.HostHolder;
+import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
@@ -63,10 +64,13 @@ public class StudentRecordController {
         BeanUtils.copyProperties(form, recordDTO);
         recordDTO.setUserId(user.getUserId());
         recordDTO.setClassId(user.getClassId());
-        //第一次提交，查询是否查看过答案
-        String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, form.getExperimentId());
-        Boolean checkAnswer = redisTemplate.opsForSet().isMember(key, user.getUserId().toString());
-        recordDTO.setHaveCheckAnswer(checkAnswer);
+        //需要拿到这个实验的详情数据
+        ExperimentDTO detail = experimentService.detail(form.getExperimentId());
+        if(detail.getExperimentAnswerId()!=null){
+            String key = String.format(RedisConstant.BIZ_CHECK_ANSWER, detail.getExperimentAnswerId());
+            Boolean checkAnswer = redisTemplate.opsForSet().isMember(key, user.getUserId().toString());
+            recordDTO.setHaveCheckAnswer(checkAnswer);
+        }
         try {
             recordService.save(recordDTO);
             //UserExperimentId为空,为新增提交记录.
