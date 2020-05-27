@@ -2,6 +2,7 @@ package com.gdou.teaching.controller.common;
 
 import com.gdou.teaching.dto.AchievementDTO;
 import com.gdou.teaching.service.AchievementService;
+import com.gdou.teaching.service.impl.RedisServiceImpl;
 import com.gdou.teaching.util.PoiUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.ResultVO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletOutputStream;
@@ -43,6 +45,9 @@ public class DevController {
     private String profiles;
     @Value("${fileServer.uploadPath}")
     public String uploadPath;
+
+    @Autowired
+    RedisServiceImpl redisService;
 
     final
     PoiUtil poiUtil;
@@ -98,4 +103,5 @@ public class DevController {
         OutputStream outputStream = response.getOutputStream();
         sheet.write(outputStream);
     }
+
 }

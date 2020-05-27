@@ -9,6 +9,7 @@ import com.gdou.teaching.form.JudgeForm;
 import com.gdou.teaching.mbg.model.Achievement;
 import com.gdou.teaching.mbg.model.Class;
 import com.gdou.teaching.service.*;
+import com.gdou.teaching.service.impl.RedisServiceImpl;
 import com.gdou.teaching.util.PoiUtil;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.*;
@@ -52,6 +53,8 @@ public class TeacherAchievementController {
     CourseService courseService;
     @Autowired
     PoiUtil poiUtil;
+    @Autowired
+    RedisServiceImpl redisService;
 
     @GetMapping("/list/{courseId}")
     public ResultVO<HashMap> list(@PathVariable(value = "courseId") Integer courseId) {
@@ -392,5 +395,11 @@ public class TeacherAchievementController {
 
         System.out.println("success");
         return null;
+    }
+
+    @GetMapping("/judge/getOneComment")
+    @ResponseBody
+    public ResultVO getComment(@RequestParam Double score){
+        return ResultVOUtil.success(redisService.getOneComment(score));
     }
 }
