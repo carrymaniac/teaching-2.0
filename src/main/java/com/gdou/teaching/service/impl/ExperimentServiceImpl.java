@@ -5,11 +5,13 @@ import com.gdou.teaching.Enum.ExperimentStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
 import com.gdou.teaching.dao.CourseMasterDao;
+import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.FileDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
+import com.gdou.teaching.service.AnswerService;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.service.FileService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +44,9 @@ public class ExperimentServiceImpl implements ExperimentService {
     private final ExperimentAnswerMapper answerMapper;
     private final UserReExperimentMapper userReExperimentMapper;
     private final ExperimentAnswerMapper experimentAnswerMapper;
+    private final AnswerService answerService;
 
-    public ExperimentServiceImpl(ExperimentMasterMapper experimentMasterMapper, ExperimentDetailMapper experimentDetailMapper, FileMapper fileMapper, FileService fileService, CourseMasterMapper courseMasterMapper, ExperimentAnswerMapper answerMapper, UserReExperimentMapper userReExperimentMapper, ExperimentAnswerMapper experimentAnswerMapper) {
+    public ExperimentServiceImpl(ExperimentMasterMapper experimentMasterMapper, ExperimentDetailMapper experimentDetailMapper, FileMapper fileMapper, FileService fileService, CourseMasterMapper courseMasterMapper, ExperimentAnswerMapper answerMapper, UserReExperimentMapper userReExperimentMapper, ExperimentAnswerMapper experimentAnswerMapper,AnswerService answerService) {
         this.experimentMasterMapper = experimentMasterMapper;
         this.experimentDetailMapper = experimentDetailMapper;
         this.fileMapper = fileMapper;
@@ -52,13 +55,14 @@ public class ExperimentServiceImpl implements ExperimentService {
         this.answerMapper = answerMapper;
         this.userReExperimentMapper = userReExperimentMapper;
         this.experimentAnswerMapper = experimentAnswerMapper;
+        this.answerService = answerService;
     }
 
     @Override
     public ExperimentDTO detail(Integer experimentId) {
         ExperimentDTO experimentDTO = new ExperimentDTO();
         //需要查询的数据有：
-        // 主表数据 副表detail数据 实验文件数据 实验答案数据
+        // 主表数据 副表detail数据 实验文件数据
         ExperimentMaster experimentMaster = experimentMasterMapper.selectByPrimaryKey(experimentId);
         if(experimentMaster==null){
             log.info("[ExperimentServiceImpl]-datail查询实验详情信息,实验主表不存在,experimentId={}",experimentId);
@@ -172,7 +176,13 @@ public class ExperimentServiceImpl implements ExperimentService {
         }
         return true;
     }
-
+    /**
+     * 通过课程ID获取实验列表，以DTO方式返回
+     * 此处只查询实验主表即可，用于首页列表显示
+     * COMMON方法
+     * @param courseId
+     * @return
+     */
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
@@ -310,5 +320,42 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentMaster.setExperimentCommitNum(i);
         experimentMasterMapper.updateByPrimaryKeySelective(experimentMaster);
         return experimentMasterMapper.selectByPrimaryKey(experimentId);
+    }
+
+    /**
+     * 把已有课程下的实验导入新的课程
+     * @param oldCourseId 已有的课程ID
+     * @param newCourseId 新的课程ID
+     * @return
+     */
+    @Override
+    public boolean importExperiment(Integer oldCourseId, Integer newCourseId) {
+        // 获取原有课程下的实验列表
+        ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(oldCourseId).andExperimentStatusNotEqualTo(ExperimentStatusEnum.INVALID.getCode().byteValue());
+        List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
+        List<ExperimentDTO> experimentDTOList = experimentMasters.stream().map( experimentMaster -> {
+            ExperimentDTO detail = detail(experimentMaster.getExperimentId());
+            //设置实验内容的初始值
+            detail.setCourseId(newCourseId);
+            detail.setExperimentId(null);
+            detail.setExperimentDetailId(null);
+            detail.setExperimentCommitNum(0);
+            detail.setCreateTime(null);
+            detail.setExperimentStatus(ExperimentStatusEnum.LOCK.getCode().byteValue());
+            //查找实验答案和附件
+            if(detail.getExperimentAnswerId()!=null){
+                AnswerDTO answerDTO = answerService.selectOne(detail.getExperimentAnswerId());
+                detail.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList());
+                detail.setExperimentAnswerContent(answerDTO.getExperimentAnswerContent());
+            }
+            detail.setExperimentAnswerId(null);
+            return detail;
+        }).collect(Collectors.toList());
+        //批量新增实验
+        for(ExperimentDTO experimentDTO:experimentDTOList){
+            add(experimentDTO);
+        }
+        return true;
     }
 }

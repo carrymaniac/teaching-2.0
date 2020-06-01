@@ -86,6 +86,7 @@ public class TeacherExperimentController {
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
+        //查找实验答案及附件
         if(experimentDTO.getExperimentAnswerId()!=null){
             AnswerDTO answerDTO = answerService.selectOne(experimentDTO.getExperimentAnswerId());
             experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList()==null?new ArrayList<>():answerDTO.getExperimentAnswerFileList());
