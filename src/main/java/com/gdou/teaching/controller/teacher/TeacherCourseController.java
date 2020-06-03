@@ -122,6 +122,40 @@ public class TeacherCourseController {
         }
         return ResultVOUtil.success(list);
     }
+
+    /**
+     * 教师端导入课程
+     * @return
+     */
+    @GetMapping("/courseImport")
+    public ResultVO courseImport(@RequestParam(value = "courseId",required = false)Integer courseId){
+        UserDTO user = hostHolder.getUser();
+        HashMap<String, Object> map = new HashMap<>(2);
+        //通过ID获取到用户课程数据
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForTeacher(user.getUserId(),null);
+        ArrayList<HashMap>  options = new ArrayList<>(list.size());
+
+        for(CourseDTO courseDTO : list){
+            HashMap<String,Object> courseMap = new HashMap<>(2);
+            courseMap.put("value",courseDTO.getCourseId());
+            courseMap.put("label",courseDTO.getCourseName());
+            options.add(courseMap);
+        }
+        map.put("options",options);
+        if(courseId != null){
+            CourseDTO detail = courseService.detail(courseId);
+            //将不必要的信息置空
+            detail.setCourseNumber(null);
+            detail.setCourseStatus(null);
+            detail.setCourseDetailId(null);
+            detail.setTeacherId(null);
+            detail.setTeacherNickname(null);
+            detail.setCreateTime(null);
+            map.put("course",detail);
+        }
+        return ResultVOUtil.success(map);
+    }
+
     /**
      * 课程学生管理
      * @param
