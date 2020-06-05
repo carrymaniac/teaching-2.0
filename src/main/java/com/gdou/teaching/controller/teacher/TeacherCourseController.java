@@ -46,6 +46,8 @@ public class TeacherCourseController {
     @Autowired
     private UserService userService;
     @Autowired
+    private ExperimentService experimentService;
+    @Autowired
     private ClassService classService;
     @Autowired
     private AchievementService achievementService;
@@ -120,6 +122,40 @@ public class TeacherCourseController {
         }
         return ResultVOUtil.success(list);
     }
+
+    /**
+     * 教师端导入课程
+     * @return
+     */
+    @GetMapping("/courseImport")
+    public ResultVO courseImport(@RequestParam(value = "courseId",required = false)Integer courseId){
+        UserDTO user = hostHolder.getUser();
+        HashMap<String, Object> map = new HashMap<>(2);
+        //通过ID获取到用户课程数据
+        List<CourseDTO> list = courseService.listCourseByUserIdAndKeywordForTeacher(user.getUserId(),null);
+        ArrayList<HashMap>  options = new ArrayList<>(list.size());
+
+        for(CourseDTO courseDTO : list){
+            HashMap<String,Object> courseMap = new HashMap<>(2);
+            courseMap.put("value",courseDTO.getCourseId());
+            courseMap.put("label",courseDTO.getCourseName());
+            options.add(courseMap);
+        }
+        map.put("options",options);
+        if(courseId != null){
+            CourseDTO detail = courseService.detail(courseId);
+            //将不必要的信息置空
+            detail.setCourseNumber(null);
+            detail.setCourseStatus(null);
+            detail.setCourseDetailId(null);
+            detail.setTeacherId(null);
+            detail.setTeacherNickname(null);
+            detail.setCreateTime(null);
+            map.put("course",detail);
+        }
+        return ResultVOUtil.success(map);
+    }
+
     /**
      * 课程学生管理
      * @param
@@ -224,9 +260,12 @@ public class TeacherCourseController {
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
         }
         CourseDTO courseDTO = new CourseDTO();
+        //设置授课教师id
         courseDTO.setTeacherId(user.getUserId());
         BeanUtils.copyProperties(form, courseDTO);
+        //设置默认课程状态
         courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
+        //设置上课人数
         courseDTO.setCourseNumber(0);
         if(form.getCourseCover()==null){
             courseDTO.setCourseCover("");
@@ -234,7 +273,7 @@ public class TeacherCourseController {
         courseService.save(courseDTO);
         //  todo 异步更新成绩表 addAchievementByClazzId
         List<String> addStudentIdList = form.getAddStudentIdList();
-        //过滤多余的字符
+        //过滤多余的字符,获取学生id列表
         List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
             String[] split = studentId.trim().split("-");
             return Integer.parseInt(split[split.length-1]);
@@ -246,7 +285,56 @@ public class TeacherCourseController {
         }
         return ResultVOUtil.success();
     }
-
+    /**
+     * 导入课程
+     * @param form
+     * @param bindingResult
+     * @return
+     */
+    //todo  课程封面非必传参数,需要在新增时设置一个默认封面
+    @PostMapping("/import")
+    public ResultVO importCourse(@RequestBody @Valid CourseForm form,
+                         BindingResult bindingResult) {
+        // 此请求中courseId参数为必填
+        if (bindingResult.hasErrors() || form.getCourseId() == null ) {
+            log.error("参数格式错误：{}" + form);
+            return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
+        }
+        UserDTO user = hostHolder.getUser();
+        CourseDTO courseDTO = new CourseDTO();
+        //设置授课教师id
+        courseDTO.setTeacherId(user.getUserId());
+        BeanUtils.copyProperties(form, courseDTO);
+        //设置默认课程状态
+        courseDTO.setCourseStatus(CourseStatusEnum.NORMAL.getCode().byteValue());
+        //设置上课人数
+        courseDTO.setCourseNumber(0);
+        //设置courseId为空,含义为新增课程,而非修改课程.
+        courseDTO.setCourseId(null);
+        if(form.getCourseCover() == null){
+            courseDTO.setCourseCover("");
+        }
+        //保存新的课程
+        CourseDTO newCourse = courseService.save(courseDTO);
+        //导入原有课程的课程文件
+        List<FileDTO> courseFile = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(),form.getCourseId());
+        fileService.saveFile(FileCategoryEnum.COURSE_FILE.getCode(),newCourse.getCourseId(),courseFile);
+        //导入原有课程的实验列表
+        experimentService.importExperiment(form.getCourseId(),newCourse.getCourseId());
+        //  todo 异步更新成绩表 addAchievementByClazzId
+        List<String> addStudentIdList = form.getAddStudentIdList();
+        //过滤多余的字符,获取学生id列表
+        List<Integer> studentIdList =addStudentIdList.stream().map(studentId->{
+            String[] split = studentId.trim().split("-");
+            return Integer.parseInt(split[split.length-1]);
+        }).collect(Collectors.toList());
+        if(studentIdList!=null&&!studentIdList.isEmpty()){
+            achievementService.addAchievementByStudentList(courseDTO.getCourseId(),studentIdList);
+            // 异步更新课程及其下属实验的上课人数
+            courseService.updateNumber(newCourse.getCourseId());
+        }
+        return ResultVOUtil.success();
+    }
     /**
      * 更新课程基本信息
      * @param form

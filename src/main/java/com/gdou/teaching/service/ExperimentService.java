@@ -39,6 +39,7 @@ public interface ExperimentService {
 
     //下面是教师端操作
 
+
     /**
      * 新增实验主表和info表记录
      * 需要主动调用AnswerService的Save方法保存答案
@@ -96,5 +97,14 @@ public interface ExperimentService {
      * @return
      */
     boolean unlock(Integer experimentId);
+
+
+    /**
+     * 把已有课程下的实验导入新的课程
+     * @param oldCourseId 已有的课程ID
+     * @param newCourseId 新的课程ID
+     * @return
+     */
+    boolean importExperiment(Integer oldCourseId,Integer newCourseId);
 
 }

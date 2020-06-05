@@ -98,7 +98,7 @@ public class FileServiceImpl implements FileService {
 
 
     /**
-     *  删除多个文件
+     *  删除多个文件 (不再删除实际文件)
      * @param fileCategory
      * @param fileCategoryId
      * @return
@@ -106,46 +106,31 @@ public class FileServiceImpl implements FileService {
     @Override
     public boolean deleteFiles(Integer fileCategory, Integer fileCategoryId) {
         FileExample fileExample = new FileExample();
-        OSS ossClient = null;
-        try{
-            //获取相关文件
-            fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
-            List<com.gdou.teaching.mbg.model.File> files = fileMapper.selectByExample(fileExample);
-            fileServer.deleteFiles(files);
-        }catch (Exception e){
-            log.error("删除文件错误", e);
-        } finally {
-            if(ossClient != null) {
-                ossClient.shutdown();
-            }
-        }
+        //获取相关文件
+        fileExample.createCriteria().andFileCategoryEqualTo(fileCategory.byteValue()).andFileCategoryIdEqualTo(fileCategoryId);
+//        try{
+//            List<com.gdou.teaching.mbg.model.File> files = fileMapper.selectByExample(fileExample);
+//            fileServer.deleteFiles(files);
+//        }catch (Exception e){
+//            log.error("删除文件错误", e);
+//        }
         //删除数据库的记录
         return fileMapper.deleteByExample(fileExample)>0;
     }
 
 
     /**
-     * 删除文件
+     * 删除文件 (不再删除实际文件)
      * @param fileId 文件 id
      */
     @Override
     public boolean deleteFile(Integer fileId) {
-        OSS ossClient = null;
-        try{
-            /**
-             * 删除文件。key等同于ObjectName，表示删除OSS文件时需要指定包含文件后缀在内的完整路径，例如images/abc.jpg。
-             * http:// bucketname                              images/abc.jpg = key
-             * http:// bucketname.oss-cn-shenzhen.aliyuncs.com/images/anbc.jpg
-             */
-            com.gdou.teaching.mbg.model.File file = fileMapper.selectByPrimaryKey(fileId);
-            fileServer.deleteFile(file);
-        }catch (Exception e){
-            log.error("删除文件错误", e);
-        } finally {
-            if(ossClient != null) {
-                ossClient.shutdown();
-            }
-        }
+//        try{
+//            com.gdou.teaching.mbg.model.File file = fileMapper.selectByPrimaryKey(fileId);
+//            fileServer.deleteFile(file);
+//        }catch (Exception e){
+//            log.error("删除文件错误", e);
+//        }
         //删除数据库记录
         return fileMapper.deleteByPrimaryKey(fileId)!=1;
     }

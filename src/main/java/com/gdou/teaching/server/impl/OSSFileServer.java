@@ -157,7 +157,6 @@ public class OSSFileServer implements FileServer {
 
             // 上传文件
             PutObjectResult result = ossClient.putObject(new PutObjectRequest(bucketName, fileUrl, inputStream));
-            ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
             if(result != null) {
                 log.info("上传结果:{}", result.getETag());
                 log.info("上传:{} 成功", fileName);
@@ -195,6 +194,11 @@ public class OSSFileServer implements FileServer {
     public void deleteFile(com.gdou.teaching.mbg.model.File file) {
         OSS ossClient = null;
         try{
+            /**
+             * 删除文件。key等同于ObjectName，表示删除OSS文件时需要指定包含文件后缀在内的完整路径，例如images/abc.jpg。
+             * http:// bucketname                              images/abc.jpg = key
+             * http:// bucketname.oss-cn-shenzhen.aliyuncs.com/images/anbc.jpg
+             */
             String key = file.getFilePath();
             key = key.replace(getHostUrl(), FLAG_EMPTY_STRING);
             ossClient =new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);

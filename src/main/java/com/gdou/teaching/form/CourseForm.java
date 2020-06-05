@@ -14,6 +14,10 @@ import java.util.List;
 @Data
 public class CourseForm {
     /**
+     * 课程id
+     */
+    private Integer courseId;
+    /**
      * 课程代码
      */
     @NotEmpty(message = "课程代码必填")
