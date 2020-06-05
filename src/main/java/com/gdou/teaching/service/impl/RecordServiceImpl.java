@@ -26,15 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @ProjectName: teaching-2.0
- * @Package: com.gdou.teaching.service.impl
- * @ClassName: RecordServiceImpl
- * @Author: carrymaniac
- * @Description: 实验提交记录实现类
- * @Date: 2019/12/7 10:54 上午
- * @Version:
- */
+
 @Slf4j
 @Service
 public class RecordServiceImpl implements RecordService {

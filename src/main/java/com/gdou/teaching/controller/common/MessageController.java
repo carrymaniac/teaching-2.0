@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +27,9 @@ import java.util.stream.Collectors;
  * @Date: 2020/1/18 4:42 下午
  * @Version:
  */
+
+
+//todo
 @Controller
 @RequestMapping("/message")
 public class MessageController {
@@ -90,6 +90,7 @@ public class MessageController {
          */
         if(conversation.getSize()!=0){
             List<Message> list = conversation.getList();
+            Collections.reverse(list);
             HashMap<String,Object> map = new HashMap<>(5);
             //分出me you
             List<HashMap<String, Object>> messageList = list.stream()
@@ -98,6 +99,7 @@ public class MessageController {
                                 obj.put("time", message.getCreateTime());
                                 obj.put("content", message.getContent());
                                 obj.put("fromMe",message.getFromId().equals(userId));
+                                obj.put("messageId",message.getMessageId());
                                 return obj;
                             }
                     ).collect(Collectors.toList());

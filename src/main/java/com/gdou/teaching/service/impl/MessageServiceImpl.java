@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.gdou.teaching.constant.CommonConstant.*;
 
@@ -147,6 +148,7 @@ public class MessageServiceImpl implements MessageService {
                 conversation.setContent(message.getContent());
                 //放置未读数
                 conversation.setUnreadCount(this.selectLetterUnreadCount(userId, message.getConversationId()));
+                conversation.setUnreadIdList(this.getUnReadMessageId(userId,message.getConversationId()));
                 //查询目标的头像以及个人信息
                 int targetId = userId.equals(message.getFromId()) ? message.getToId() : message.getFromId();
                 UserDTO userById = userService.selectOne(targetId);
@@ -207,5 +209,17 @@ public class MessageServiceImpl implements MessageService {
             andFromIdEqualTo(0).
             andStatusEqualTo(MessageStatusEnum.UNREAD.getCode());
         return messageMapper.countByExample(example);
+    }
+
+    @Override
+    public List<Integer> getUnReadMessageId(int userId,String conversationId) {
+        MessageExample example = new MessageExample();
+        example.createCriteria().
+                andToIdEqualTo(userId).
+                andFromIdNotEqualTo(0).
+                andStatusEqualTo(MessageStatusEnum.UNREAD.getCode()).
+                andConversationIdEqualTo(conversationId);
+        List<Message> messages = messageMapper.selectByExample(example);
+        return messages.stream().map(Message::getMessageId).collect(Collectors.toList());
     }
 }

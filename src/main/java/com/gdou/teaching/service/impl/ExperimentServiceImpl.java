@@ -26,15 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * @ProjectName: teaching-2.0
- * @Package: com.gdou.teaching.service.impl
- * @ClassName: ExperimentServiceImpl
- * @Author: carrymaniac
- * @Description: 实验Service实现类
- * @Date: 2019/12/6 9:43 上午
- * @Version:
- */
+
 @Slf4j
 @Service
 public class ExperimentServiceImpl implements ExperimentService {

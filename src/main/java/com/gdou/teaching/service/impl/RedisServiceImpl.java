@@ -47,7 +47,7 @@ public class RedisServiceImpl {
     /**
      * 初始化评语库
      */
-    void initComment(){
+    public void initComment(){
         redisTemplate.opsForSet().add(RedisConstant.BIZ_SCORE_COMMENT_FOR_A,
                 "该生按时完成实验内容，实验步骤准确完整，实验总结全面，实验结果正确",
                 "该生在实验过程中按时完成实验，实验结果正确，实验报告版面整洁",

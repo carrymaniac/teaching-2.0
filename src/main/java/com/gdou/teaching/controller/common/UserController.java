@@ -40,11 +40,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author carrymaniac
- * @date Created in 16:24 2019-08-09
- * @description 用户控制器
- **/
 @Controller
 @RequestMapping("/user")
 @Slf4j
@@ -55,7 +50,6 @@ public class UserController {
     private final JWTUtil jwtUtil;
     @Value("${server.servlet.context-path}")
     String urlHead;
-
 
     @Autowired
     public UserController(StringRedisTemplate stringRedisTemplate, UserService userService, HostHolder hostHolder, JWTUtil jwtUtil) {
@@ -304,7 +298,7 @@ public class UserController {
     @PostMapping("/recoverUsers")
     @ResponseBody
     @Auth(user=UserIdentEnum.ADMIN)
-    public Object recoverUser(@RequestBody List<Integer> userIds) throws IOException {
+    public ResultVO recoverUser(@RequestBody List<Integer> userIds) throws IOException {
         List<UserDTO> usersByUserId = userService.getUsersByUserId(userIds);
         int findSize = usersByUserId.size();
         if(findSize!=userIds.size()){
@@ -325,5 +319,20 @@ public class UserController {
         }else {
             return ResultVOUtil.fail(ResultEnum.PARAM_ERROR.getCode(),"用户的状态不符合要求(被停用状态)");
         }
+    }
+
+    @PostMapping("/updateInfo")
+    @ResponseBody
+    public ResultVO updateInfo(@RequestParam(value = "email",required = false) String email,
+                               @RequestParam(value = "phone",required = false)String phone,
+                               @RequestParam(value = "headUrl",required = false)String headUrl
+                               ){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(hostHolder.getUser().getUserId());
+        userDTO.setPhone(phone);
+        userDTO.setHeadUrl(headUrl);
+        userDTO.setMail(email);
+        userService.updateUserInfo(userDTO);
+        return ResultVOUtil.success();
     }
 }

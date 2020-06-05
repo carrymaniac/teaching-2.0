@@ -84,5 +84,10 @@ public interface MessageService {
     int selectSystemMessageUnreadCount(int userId);
 
 
+    /**
+     * 查询该会话中的未读消息ID
+     * @return
+     */
+    List<Integer> getUnReadMessageId(int userId,String conversationId);
 
 }

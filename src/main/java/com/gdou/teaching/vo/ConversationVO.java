@@ -3,6 +3,8 @@ package com.gdou.teaching.vo;
 import com.gdou.teaching.dto.UserDTO;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ConversationVO {
     String conversationID;
@@ -11,6 +13,7 @@ public class ConversationVO {
      */
     String content;
     Integer unreadCount;
+    List<Integer> unreadIdList;
     Integer targetId;
     String targetHeadUrl;
     String targetName;

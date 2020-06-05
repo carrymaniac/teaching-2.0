@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @author carrymaniac
- */
 @Service
 @Slf4j
 public class CourseServiceImpl implements CourseService {
@@ -362,7 +359,11 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status) {
+    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId,
+                                                                                Integer page,
+                                                                                Integer size,
+                                                                                String keyWord,
+                                                                                Integer status) {
         CourseMasterExample courseMasterExample = new CourseMasterExample();
         CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
         if(!StringUtils.isEmpty(keyWord)){
