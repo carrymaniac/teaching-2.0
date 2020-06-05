@@ -294,7 +294,7 @@ public class TeacherCourseController {
     //todo  课程封面非必传参数,需要在新增时设置一个默认封面
     @PostMapping("/import")
     public ResultVO importCourse(@RequestBody @Valid CourseForm form,
-                         BindingResult bindingResult) {
+                                 BindingResult bindingResult) {
         // 此请求中courseId参数为必填
         if (bindingResult.hasErrors() || form.getCourseId() == null ) {
             log.error("参数格式错误：{}" + form);
@@ -343,7 +343,7 @@ public class TeacherCourseController {
      */
     @PostMapping("/updateCourseInfo")
     public ResultVO updateCourseInfo(@RequestBody @Valid CourseInfoUpdateForm form,
-                         BindingResult bindingResult) {
+                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数格式错误：{}" + form);
             return ResultVOUtil.fail(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -407,7 +407,7 @@ public class TeacherCourseController {
 
     @PostMapping("/addCourseFile")
     public ResultVO addCourseFile(@RequestBody @Valid CourseFileUpdateForm form,
-                                         BindingResult bindingResult) {
+                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());

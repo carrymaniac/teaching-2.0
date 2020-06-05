@@ -91,7 +91,6 @@ public class TeacherExperimentController {
     public ResultVO<ExperimentDTO> detail(@PathVariable("experimentId") Integer experimentId) {
         ExperimentDTO experimentDTO=new ExperimentDTO();
         experimentDTO = experimentService.detail(experimentId);
-        //查找实验答案及附件
         if(experimentDTO.getExperimentAnswerId()!=null){
             AnswerDTO answerDTO = answerService.selectOne(experimentDTO.getExperimentAnswerId());
             experimentDTO.setExperimentAnswerFile(answerDTO.getExperimentAnswerFileList()==null?new ArrayList<>():answerDTO.getExperimentAnswerFileList());
@@ -116,7 +115,7 @@ public class TeacherExperimentController {
 
     @PostMapping("/add")
     public ResultVO add(@RequestBody @Valid ExperimentForm form,
-                         BindingResult bindingResult) {
+                        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -134,7 +133,7 @@ public class TeacherExperimentController {
     }
     @PostMapping("/updateExperimentInfo")
     public ResultVO updateExperimentInfo(@RequestBody @Valid ExperimentInfoUpdateForm form,
-                                     BindingResult bindingResult) {
+                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -147,7 +146,7 @@ public class TeacherExperimentController {
 
     @PostMapping("/updateExperimentDetail")
     public ResultVO updateExperimentDetail(@RequestBody @Valid ExperimentDetailUpdateForm form,
-                                         BindingResult bindingResult) {
+                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -172,7 +171,7 @@ public class TeacherExperimentController {
     }
     @PostMapping("/updateExperimentAnswer")
     public ResultVO updateExperimentAnswer(@RequestBody @Valid ExperimentAnswerUpdateForm form,
-                                         BindingResult bindingResult) {
+                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());
@@ -188,7 +187,7 @@ public class TeacherExperimentController {
 
     @PostMapping("/updateExperimentAnswerFile")
     public ResultVO updateExperimentAnswerFile(@RequestBody @Valid ExperimentAnswerFileUpdateForm form,
-                                         BindingResult bindingResult) {
+                                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("参数不正确：{}" + form);
             throw new TeachingException(ResultEnum.BAD_REQUEST.getCode(), ResultEnum.BAD_REQUEST.getMsg());

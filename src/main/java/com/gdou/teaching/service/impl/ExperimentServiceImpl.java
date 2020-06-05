@@ -4,7 +4,6 @@ import com.gdou.teaching.Enum.AnswerStatusEnum;
 import com.gdou.teaching.Enum.ExperimentStatusEnum;
 import com.gdou.teaching.Enum.FileCategoryEnum;
 import com.gdou.teaching.Enum.ResultEnum;
-import com.gdou.teaching.dao.CourseMasterDao;
 import com.gdou.teaching.dto.AnswerDTO;
 import com.gdou.teaching.dto.ExperimentDTO;
 import com.gdou.teaching.dto.FileDTO;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -99,9 +99,6 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     public ExperimentDTO detailFromDB(Integer experimentId) {
-        //需要查询的数据有：
-        // 主表数据 副表detail数据 实验文件数据
-        log.info("load detail from DB.");
         ExperimentDTO experimentDTO = new ExperimentDTO();
         //需要查询的数据有：
         // 主表数据 副表detail数据 实验文件数据
@@ -114,14 +111,9 @@ public class ExperimentServiceImpl implements ExperimentService {
         if(experimentDetail!=null){
             BeanUtils.copyProperties(experimentDetail,experimentDTO);
         }
-        ExperimentAnswer experimentAnswer =experimentAnswerMapper.selectByPrimaryKey(experimentMaster.getExperimentAnswerId());
-        if(experimentAnswer!=null){
-            BeanUtils.copyProperties(experimentAnswer,experimentDTO);
-        }
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
-        experimentDTO.setExperimentDetailFile(fileDTOList);
-        List<FileDTO> answerFiles = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(), experimentMaster.getExperimentAnswerId());
-        experimentDTO.setExperimentAnswerFile(answerFiles);
+        //fileDTOList为null, 则new一个新的List,不为空则设置进去.
+        experimentDTO.setExperimentDetailFile(fileDTOList==null?new ArrayList<>():fileDTOList);
         //属性拷贝
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
         return experimentDTO;
@@ -239,7 +231,7 @@ public class ExperimentServiceImpl implements ExperimentService {
     public List<ExperimentDTO> listFromDB(Integer courseId){
         log.info("load list from DB.");
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
-        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId).andExperimentStatusNotEqualTo(ExperimentStatusEnum.INVALID.getCode().byteValue());
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
             return null;
@@ -250,6 +242,7 @@ public class ExperimentServiceImpl implements ExperimentService {
             return experimentDTO;
         }).collect(Collectors.toList());
         return experimentDTOList;
+
 
     }
 

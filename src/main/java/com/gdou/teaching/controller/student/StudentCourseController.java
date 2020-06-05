@@ -54,7 +54,7 @@ public class StudentCourseController {
      * @return
      */
     @GetMapping(path = "/info/{courseId}")
-     public ResultVO<CourseVO> info(@PathVariable(value = "courseId") Integer courseId) {
+    public ResultVO<CourseVO> info(@PathVariable(value = "courseId") Integer courseId) {
         if (courseId == null) {
             return ResultVOUtil.fail(ResultEnum.PARAM_NULL);
         }
@@ -175,10 +175,10 @@ public class StudentCourseController {
     public ResultVO resource(@PathVariable(value = "courseId") Integer courseId, @RequestParam(required = false)String keyword){
         if(StringUtils.isEmpty(keyword)){
             //通过课程ID获取课程关连的文件
-                return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId));
+            return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.COURSE_FILE.getCode(), courseId));
         }else {
             //通过关键字和课程ID获取关联的文件
-                return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword));
+            return ResultVOUtil.success(fileService.selectFileByCategoryAndFileCategoryIdAndKeyword(FileCategoryEnum.COURSE_FILE.getCode(),courseId,keyword));
         }
     }
 }

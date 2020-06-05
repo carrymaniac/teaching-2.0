@@ -10,6 +10,7 @@ import com.gdou.teaching.dataobject.HostHolder;
 import com.gdou.teaching.dto.CourseDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
+import com.gdou.teaching.form.UserInfoUpdateForm;
 import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.CourseService;
 import com.gdou.teaching.service.UserService;
@@ -323,15 +324,12 @@ public class UserController {
 
     @PostMapping("/updateInfo")
     @ResponseBody
-    public ResultVO updateInfo(@RequestParam(value = "email",required = false) String email,
-                               @RequestParam(value = "phone",required = false)String phone,
-                               @RequestParam(value = "headUrl",required = false)String headUrl
-                               ){
+    public ResultVO updateInfo(@RequestBody UserInfoUpdateForm form){
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(hostHolder.getUser().getUserId());
-        userDTO.setPhone(phone);
-        userDTO.setHeadUrl(headUrl);
-        userDTO.setMail(email);
+        userDTO.setPhone(form.getPhone());
+        userDTO.setHeadUrl(form.getHeadUrl());
+        userDTO.setMail(form.getEmail());
         userService.updateUserInfo(userDTO);
         return ResultVOUtil.success();
     }

@@ -50,10 +50,8 @@ public class TestController {
     @GetMapping("/FireEvent")
     @ResponseBody
     public ResultVO FireEvent(){
-        eventProducer.fireCourseUpdateEvent(71,1);
-        eventProducer.fireCourseUpdateEvent(71,2);
-        eventProducer.fireCourseUpdateEvent(71,3);
-        eventProducer.fireCourseUpdateEvent(71,4);
+        eventProducer.fireCourseUpdateEvent(78,1);
+        eventProducer.fireCourseUpdateEvent(78,2);
         return ResultVOUtil.success();
     }
 }

@@ -281,12 +281,7 @@ public class TeacherAchievementController {
         map.put("time",experimentDTO.getCreateTime());
         map.put("commitNum",experimentDTO.getExperimentCommitNum());
 
-        //获取提交记录
         List<RecordDTO> recordDTOList = recordService.getRecordListByExperimentId(experimentDTO.getExperimentId());
-        if( recordDTOList == null){
-            return ResultVOUtil.success(map);
-        }
-        //过滤出待审核的提交记录
         List<RecordDTO> recordList= recordDTOList.stream().filter(c->c.getStatus().intValue()==RecordStatusEnum.REVIEWING.getCode()).collect(Collectors.toList());
         //获取班级列表
         Set<Integer> classIdSet = recordList.stream().map(c -> c.getClassId()).collect(Collectors.toSet());
@@ -401,7 +396,6 @@ public class TeacherAchievementController {
         System.out.println("success");
         return null;
     }
-
     @GetMapping("/judge/getOneComment")
     @ResponseBody
     public ResultVO getComment(@RequestParam Double score){

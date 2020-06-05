@@ -126,7 +126,7 @@ public class AchievementServiceImpl implements AchievementService {
         achievementExample.createCriteria().andCourseIdEqualTo(courseId).andUserIdEqualTo(userId);
         List<Achievement> achievements = achievementMapper.selectByExample(achievementExample);
         if(achievements==null||achievements.isEmpty()){
-           return null;
+            return null;
         }
         return achievements.get(0);
     }
@@ -279,7 +279,6 @@ public class AchievementServiceImpl implements AchievementService {
         }).collect(Collectors.toList());
         return collect;
     }
-
     @Override
     public List<Integer> getUserListByCourseId(Integer courseId) {
         /**

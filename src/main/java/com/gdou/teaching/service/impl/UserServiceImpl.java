@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
         userInfoExample.createCriteria().andUserIdEqualTo(user.getUserId());
         List<UserInfo> userInfos = userInfoMapper.selectByExample(userInfoExample);
         if(userInfos==null||userInfos.isEmpty()){
-           return userDTO;
+            return userDTO;
         }
         UserInfo userInfo = userInfos.get(0);
         BeanUtils.copyProperties(userInfo,userDTO);
@@ -271,6 +271,15 @@ public class UserServiceImpl implements UserService {
         return updateStatusByUserIds(userIds, UserStatusEnum.INVALID);
     }
 
+    private Boolean updateStatusByUserIds(List<Integer> userIds, UserStatusEnum stauts) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUserIdIn(userIds);
+        User user = new User();
+        user.setUserStatus(stauts.getCode().byteValue());
+        int i = userMapper.updateByExampleSelective(user, userExample);
+        return i==userIds.size();
+    }
+
     @Override
     public void updateUserInfo(UserDTO user) {
         if(!StringUtils.isEmpty(user.getHeadUrl())){
@@ -293,12 +302,4 @@ public class UserServiceImpl implements UserService {
         userInfoMapper.updateByPrimaryKeySelective(userInfo);
     }
 
-    private Boolean updateStatusByUserIds(List<Integer> userIds, UserStatusEnum stauts) {
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUserIdIn(userIds);
-        User user = new User();
-        user.setUserStatus(stauts.getCode().byteValue());
-        int i = userMapper.updateByExampleSelective(user, userExample);
-        return i==userIds.size();
-    }
 }

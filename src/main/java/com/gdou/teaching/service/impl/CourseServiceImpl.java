@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author carrymaniac
+ */
 @Service
 @Slf4j
 public class CourseServiceImpl implements CourseService {
@@ -139,7 +142,7 @@ public class CourseServiceImpl implements CourseService {
         //查询课程详情表
         CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
         if (courseDetail==null){
-           return courseDTO;
+            return courseDTO;
         }
         BeanUtils.copyProperties(courseDetail,courseDTO);
         return courseDTO;
@@ -359,11 +362,7 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId,
-                                                                                Integer page,
-                                                                                Integer size,
-                                                                                String keyWord,
-                                                                                Integer status) {
+    public HashMap<String,Object> listCourseForAdminByTeacherIdAndKeywordInPage(Integer userId, Integer page, Integer size, String keyWord, Integer status) {
         CourseMasterExample courseMasterExample = new CourseMasterExample();
         CourseMasterExample.Criteria criteria = courseMasterExample.createCriteria().andTeacherIdEqualTo(userId).andCourseStatusNotEqualTo(CourseStatusEnum.INVALID.getCode().byteValue());
         if(!StringUtils.isEmpty(keyWord)){
@@ -386,7 +385,7 @@ public class CourseServiceImpl implements CourseService {
             result.put("total",total);
             return result;
         }
-            collect = list.stream().map(courseMaster -> {
+        collect = list.stream().map(courseMaster -> {
             CourseDetail courseDetail = courseDetailMapper.selectByPrimaryKey(courseMaster.getCourseDetailId());
             CourseDTO courseDTO = new CourseDTO();
             BeanUtils.copyProperties(courseMaster, courseDTO);
