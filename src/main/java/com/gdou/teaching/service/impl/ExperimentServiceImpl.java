@@ -12,25 +12,21 @@ import com.gdou.teaching.mbg.mapper.*;
 import com.gdou.teaching.mbg.model.*;
 import com.gdou.teaching.service.ExperimentService;
 import com.gdou.teaching.service.FileService;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-/**
- * @ProjectName: teaching-2.0
- * @Package: com.gdou.teaching.service.impl
- * @ClassName: ExperimentServiceImpl
- * @Author: carrymaniac
- * @Description: 实验Service实现类
- * @Date: 2019/12/6 9:43 上午
- * @Version:
- */
+
 @Slf4j
 @Service
 public class ExperimentServiceImpl implements ExperimentService {
@@ -54,8 +50,54 @@ public class ExperimentServiceImpl implements ExperimentService {
         this.experimentAnswerMapper = experimentAnswerMapper;
     }
 
+    @Value("${caffeine.course.expire-seconds}")
+    private int courseExpireSeconds;
+
+    @Value("${caffeine.course.maxSize}")
+    private int courseMaxSize;
+
+    @Value("${caffeine.experiment.expire-seconds}")
+    private int experimentExpireSeconds;
+
+    @Value("${caffeine.experiment.maxSize}")
+    private int experimentMaxSize;
+
+    //Caffeine核心接口：cache,LoadingCache,AsyncLoadingCache
+    /**
+     * ExperimentDTOLis的缓存
+     */
+    private LoadingCache<Integer,List<ExperimentDTO>> experimentDTOListCache;
+    /**
+     * Experiment的缓存
+     */
+    private LoadingCache<Integer,ExperimentDTO> experimentCache;
+
+    /**
+     * 被@PostConstruct修饰的方法会在服务器加载Servlet的时候运行，并且只会被服务器执行一次。
+     */
+    @PostConstruct
+    public void init(){
+        //初始化课程ID对应的实验列表的缓存
+        experimentDTOListCache = Caffeine.newBuilder()
+                .maximumSize(courseMaxSize)
+                .expireAfterWrite(courseExpireSeconds, TimeUnit.SECONDS)
+                //在这里的方法可以加入二级缓存
+                .build((courseId)-> listFromDB(courseId));
+        experimentCache = Caffeine.newBuilder()
+                .maximumSize(experimentMaxSize)
+                .expireAfterWrite(courseExpireSeconds, TimeUnit.SECONDS)
+                //在这里的方法可以加入二级缓存
+                .build((experimentId)-> detailFromDB(experimentId));
+    }
     @Override
-    public ExperimentDTO detail(Integer experimentId) {
+    public ExperimentDTO detail(Integer experimentId){
+        return experimentCache.get(experimentId);
+    }
+
+    public ExperimentDTO detailFromDB(Integer experimentId) {
+        //需要查询的数据有：
+        // 主表数据 副表detail数据 实验文件数据
+        log.info("load detail from DB.");
         ExperimentDTO experimentDTO = new ExperimentDTO();
         //需要查询的数据有：
         // 主表数据 副表detail数据 实验文件数据 实验答案数据
@@ -68,9 +110,14 @@ public class ExperimentServiceImpl implements ExperimentService {
         if(experimentDetail!=null){
             BeanUtils.copyProperties(experimentDetail,experimentDTO);
         }
+        ExperimentAnswer experimentAnswer =experimentAnswerMapper.selectByPrimaryKey(experimentMaster.getExperimentAnswerId());
+        if(experimentAnswer!=null){
+            BeanUtils.copyProperties(experimentAnswer,experimentDTO);
+        }
         List<FileDTO> fileDTOList = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_FILE.getCode(), experimentId);
-        //fileDTOList为null, 则new一个新的List,不为空则设置进去.
-        experimentDTO.setExperimentDetailFile(fileDTOList==null?new ArrayList<>():fileDTOList);
+        experimentDTO.setExperimentDetailFile(fileDTOList);
+        List<FileDTO> answerFiles = fileService.selectFileByCategoryAndFileCategoryId(FileCategoryEnum.EXPERIMENT_ANSWER_FILE.getCode(), experimentMaster.getExperimentAnswerId());
+        experimentDTO.setExperimentAnswerFile(answerFiles);
         //属性拷贝
         BeanUtils.copyProperties(experimentMaster,experimentDTO);
         return experimentDTO;
@@ -175,11 +222,17 @@ public class ExperimentServiceImpl implements ExperimentService {
 
     @Override
     public List<ExperimentDTO> list(Integer courseId) {
+//        return listFromDB(courseId);
+        return experimentDTOListCache.get(courseId);
+    }
+
+    public List<ExperimentDTO> listFromDB(Integer courseId){
+        log.info("load list from DB.");
         ExperimentMasterExample experimentMasterExample = new ExperimentMasterExample();
-        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId).andExperimentStatusNotEqualTo(ExperimentStatusEnum.INVALID.getCode().byteValue());
+        experimentMasterExample.createCriteria().andCourseIdEqualTo(courseId);
         List<ExperimentMaster> experimentMasters = experimentMasterMapper.selectByExample(experimentMasterExample);
         if(experimentMasters==null||experimentMasters.isEmpty()){
-           return null;
+            return null;
         }
         List<ExperimentDTO> experimentDTOList = experimentMasters.stream().map(experimentMaster -> {
             ExperimentDTO experimentDTO = new ExperimentDTO();

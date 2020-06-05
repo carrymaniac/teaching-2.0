@@ -9,7 +9,6 @@ import com.gdou.teaching.dto.RecordDTO;
 import com.gdou.teaching.dto.UserDTO;
 import com.gdou.teaching.exception.TeachingException;
 import com.gdou.teaching.mbg.model.Achievement;
-import com.gdou.teaching.mbg.model.User;
 import com.gdou.teaching.service.*;
 import com.gdou.teaching.util.ResultVOUtil;
 import com.gdou.teaching.vo.CourseMainPageVO;
@@ -28,11 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @author bo
- * @date Created in 22:39 2019/8/14
- * @description
- **/
+
 @RestController
 @RequestMapping("/student/course")
 @Slf4j

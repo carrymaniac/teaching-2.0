@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -31,15 +32,6 @@ import java.util.stream.Collectors;
 import static com.gdou.teaching.Enum.ResultEnum.PARAM_ERROR;
 import static com.gdou.teaching.Enum.ResultEnum.USER_NOT_EXIST;
 
-/**
- * @ProjectName: teaching-2.0
- * @Package: com.gdou.teaching.service
- * @ClassName: UserServiceImpl
- * @Author: carrymaniac
- * @Description:
- * @Date: 2019/12/2 4:50 下午
- * @Version:
- */
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -277,6 +269,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean deleteUserByBatch(List<Integer> userIds) {
         return updateStatusByUserIds(userIds, UserStatusEnum.INVALID);
+    }
+
+    @Override
+    public void updateUserInfo(UserDTO user) {
+        if(!StringUtils.isEmpty(user.getHeadUrl())){
+            User u1 = new User();
+            u1.setUserId(user.getUserId());
+            u1.setHeadUrl(user.getHeadUrl());
+            userMapper.updateByPrimaryKeySelective(u1);
+        }
+        UserInfoExample example = new UserInfoExample();
+        example.createCriteria().andUserIdEqualTo(user.getUserId());
+        List<UserInfo> userInfos = userInfoMapper.selectByExample(example);
+        UserInfo userInfo  =  userInfos.get(0);
+        userInfo.setUserId(user.getUserId());
+        if(!StringUtils.isEmpty(user.getPhone())){
+            userInfo.setPhone(user.getPhone());
+        }
+        if(!StringUtils.isEmpty(user.getPhone())){
+            userInfo.setMail(user.getMail());
+        }
+        userInfoMapper.updateByPrimaryKeySelective(userInfo);
     }
 
     private Boolean updateStatusByUserIds(List<Integer> userIds, UserStatusEnum stauts) {

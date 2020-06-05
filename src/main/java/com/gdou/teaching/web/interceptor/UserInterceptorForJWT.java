@@ -53,6 +53,10 @@ public class UserInterceptorForJWT implements HandlerInterceptor {
         if (authHeader != null && authHeader.startsWith(this.tokenHead)) {
             String token = authHeader.substring(this.tokenHead.length()+1);
             Integer userID = jwtUtil.getUserIdFromToken(token);
+            if(userID==null){
+                log.info("[UserInterceptorForJWT]无法从token中获取用户信息，token为:{}",token);
+                return true;
+            }
             String format = String.format(RedisConstant.TOKEN_PREFIX, userID);
             String tokenValue = stringRedisTemplate.opsForValue().get(format);
             if (!StringUtils.isEmpty(tokenValue) && tokenValue.equals(token)) {

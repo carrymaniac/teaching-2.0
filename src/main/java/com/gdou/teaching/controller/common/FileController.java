@@ -43,19 +43,18 @@ import java.util.*;
 public class FileController {
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
     private final FileUtil fileUtil;
     private final FileService fileService;
+    private final PoiUtil poiUtil;
+    private final FileServer fileServer;
 
     @Autowired
-    PoiUtil poiUtil;
-
-    @Autowired
-    FileServer fileServer;
-
-    @Autowired
-    public FileController(FileUtil fileUtil, FileService fileService) {
+    public FileController(FileUtil fileUtil, FileService fileService, PoiUtil poiUtil, FileServer fileServer) {
         this.fileUtil = fileUtil;
         this.fileService = fileService;
+        this.poiUtil = poiUtil;
+        this.fileServer = fileServer;
     }
 
     @PostMapping("/upload")

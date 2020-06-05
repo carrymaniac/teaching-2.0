@@ -18,15 +18,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-/**
- * @ProjectName: teaching
- * @Package: com.gdou.teaching.server.impl
- * @ClassName: LocalFileServer
- * @Author: carrymaniac
- * @Description: 本地文件存储
- * @Date: 2020/5/19 8:47 下午
- * @Version:
- */
 
 @Slf4j
 public class LocalFileServer implements FileServer {

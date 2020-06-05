@@ -139,4 +139,10 @@ public interface UserService {
      */
     Boolean deleteUserByBatch(List<Integer> userId);
 
+    /**
+     * 更新用户信息
+     * @param user
+     */
+    void updateUserInfo(UserDTO user);
+
 }
